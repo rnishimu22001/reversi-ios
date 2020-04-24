@@ -63,7 +63,7 @@ class ReversiViewControllerTests: XCTestCase {
             ]
             XCTAssertNil(target.sideWithMoreDisks())
         }
-        XCTContext.runActivity(named: "darkが多い") { _ in
+        XCTContext.runActivity(named: "lightが多い") { _ in
             // Given
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
@@ -76,7 +76,7 @@ class ReversiViewControllerTests: XCTestCase {
             XCTAssertEqual(target.sideWithMoreDisks(), .light)
         }
         
-        XCTContext.runActivity(named: "lightが多い") { _ in
+        XCTContext.runActivity(named: "darkが多い") { _ in
             // Given
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
