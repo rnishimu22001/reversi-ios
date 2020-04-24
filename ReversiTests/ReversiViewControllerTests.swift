@@ -89,5 +89,16 @@ class ReversiViewControllerTests: XCTestCase {
             XCTAssertEqual(target.sideWithMoreDisks(), .dark)
         }
     }
+    
+    func testCanPlaceDisk() {
+        XCTContext.runActivity(named: "盤面にDiskがない") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            mockBord.dummyDisks = [:]
+            XCTAssertFalse(target.canPlaceDisk(.dark, atX: 0, y: 0))
+        }
+    }
 
 }
