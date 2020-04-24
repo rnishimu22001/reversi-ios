@@ -91,14 +91,62 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     func testCanPlaceDisk() {
-        XCTContext.runActivity(named: "盤面にDiskがない") { _ in
+        XCTContext.runActivity(named: "すでにDiskが置かれている") { _ in
             // Given
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
-            mockBord.dummyDisks = [:]
-            XCTAssertFalse(target.canPlaceDisk(.dark, atX: 0, y: 0))
+            let path = Path(x: 0, y: 0)
+            mockBord.dummyDisks = [path: .light]
+            XCTAssertFalse(target.canPlaceDisk(.dark, atX: path.x, y: path.y))
+        }
+        XCTContext.runActivity(named: "dark") { _ in
+            XCTContext.runActivity(named: "flipできない") { _ in
+                // Given
+                let target = ViewController()
+                let mockBord = MockBoardView(frame: .zero)
+                target.boardView = mockBord
+                mockBord.dummyDisks = [
+                    Path(x: 1, y: 1): .light,
+                    Path(x: 2, y: 2): .dark
+                ]
+                XCTAssertTrue(target.canPlaceDisk(.dark, atX: 0, y: 0))
+            }
+            XCTContext.runActivity(named: "flipできる") { _ in
+                // Given
+                let target = ViewController()
+                let mockBord = MockBoardView(frame: .zero)
+                target.boardView = mockBord
+                mockBord.dummyDisks = [
+                    Path(x: 1, y: 1): .dark,
+                    Path(x: 2, y: 2): .dark
+                ]
+                XCTAssertFalse(target.canPlaceDisk(.dark, atX: 0, y: 0))
+            }
+        }
+        XCTContext.runActivity(named: "light") { _ in
+            XCTContext.runActivity(named: "flipできる") { _ in
+                // Given
+                let target = ViewController()
+                let mockBord = MockBoardView(frame: .zero)
+                target.boardView = mockBord
+                mockBord.dummyDisks = [
+                    Path(x: 1, y: 1): .dark,
+                    Path(x: 2, y: 2): .light
+                ]
+                XCTAssertTrue(target.canPlaceDisk(.light, atX: 0, y: 0))
+            }
+            XCTContext.runActivity(named: "flipできない") { _ in
+                // Given
+                let target = ViewController()
+                let mockBord = MockBoardView(frame: .zero)
+                target.boardView = mockBord
+                mockBord.dummyDisks = [
+                    Path(x: 1, y: 1): .light,
+                    Path(x: 2, y: 2): .dark
+                ]
+                XCTAssertFalse(target.canPlaceDisk(.light, atX: 0, y: 0))
+            }
         }
     }
-
 }
