@@ -149,4 +149,20 @@ class ReversiViewControllerTests: XCTestCase {
             }
         }
     }
+    
+    func testValidMoves() {
+        // Given
+        let target = ViewController()
+        let mockBord = MockBoardView(frame: .zero)
+        target.boardView = mockBord
+        mockBord.dummyDisks = [
+            Path(x: 1, y: 1): .light,
+            Path(x: 2, y: 2): .dark,
+            // 範囲外
+            Path(x: mockBord.width, y: mockBord.height): .dark,
+            Path(x: mockBord.width + 1, y: mockBord.height + 1): .light,
+        ]
+        XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ $0.x == 0 && $0.y == 0 })), "範囲内")
+        XCTAssertFalse(target.validMoves(for: .light).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外")
+    }
 }
