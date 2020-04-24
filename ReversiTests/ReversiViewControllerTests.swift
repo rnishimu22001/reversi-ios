@@ -27,7 +27,14 @@ class ReversiViewControllerTests: XCTestCase {
         let target = ViewController()
         let mockBord = MockBoardView(frame: .zero)
         target.boardView = mockBord
-        let dummyDisks = self.dummyDisks
+        let dummyDisks = [
+            Path(x: 0, y: 0): Disk.dark,
+            Path(x: 1, y: BoardView().height - 1): Disk.light,
+            Path(x: BoardView().width - 1, y: 2): Disk.light,
+            // 範囲外のデータ
+            Path(x: 1, y: BoardView().height): Disk.light,
+            Path(x: BoardView().width, y: 1): Disk.light,
+        ]
         mockBord.dummyDisks = dummyDisks
         
         // When Then
@@ -44,8 +51,43 @@ class ReversiViewControllerTests: XCTestCase {
                        "範囲外のデータはカウントに含まれないこと")
     }
 
-    func testRest() {
+    func testSideWithMoreDisks() {
+        XCTContext.runActivity(named: "引き分け") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            mockBord.dummyDisks = [
+                Path(x: 0, y: 0): .light,
+                Path(x: 1, y: 1): .dark,
+            ]
+            XCTAssertNil(target.sideWithMoreDisks())
+        }
+        XCTContext.runActivity(named: "darkが多い") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            mockBord.dummyDisks = [
+                Path(x: 0, y: 0): .light,
+                Path(x: 1, y: 0): .light,
+                Path(x: 1, y: 1): .dark,
+            ]
+            XCTAssertEqual(target.sideWithMoreDisks(), .light)
+        }
         
+        XCTContext.runActivity(named: "lightが多い") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            mockBord.dummyDisks = [
+                Path(x: 0, y: 0): .light,
+                Path(x: 1, y: 0): .dark,
+                Path(x: 1, y: 1): .dark,
+            ]
+            XCTAssertEqual(target.sideWithMoreDisks(), .dark)
+        }
     }
 
 }
