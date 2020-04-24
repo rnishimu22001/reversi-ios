@@ -22,8 +22,8 @@ final class MockBoardView: BoardView {
         resetCompletion?()
     }
     
-    var dummyDisk: Disk?
+    var dummyDisks: [Path: Disk] = [:]
     override func diskAt(x: Int, y: Int) -> Disk? {
-        return dummyDisk
+        return dummyDisks[Path(x: x, y: y)]
     }
 }

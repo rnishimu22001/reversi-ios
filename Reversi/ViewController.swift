@@ -1,7 +1,7 @@
 import UIKit
 
-class ViewController: UIViewController {
-    @IBOutlet private var boardView: BoardView!
+final class ViewController: UIViewController {
+    @IBOutlet var boardView: BoardView!
     
     @IBOutlet private var messageDiskView: DiskView!
     @IBOutlet private var messageLabel: UILabel!
