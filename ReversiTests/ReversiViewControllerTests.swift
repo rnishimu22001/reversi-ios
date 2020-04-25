@@ -164,11 +164,11 @@ class ReversiViewControllerTests: XCTestCase {
          --------
          --------
          */
+        boardView.setDisk(.dark, atX: 2, y: 3, animated: false)
+        boardView.setDisk(.dark, atX: 3, y: 3, animated: false)
+        boardView.setDisk(.dark, atX: 4, y: 3, animated: false)
         boardView.setDisk(.dark, atX: 3, y: 4, animated: false)
-        boardView.setDisk(.dark, atX: 4, y: 4, animated: false)
-        boardView.setDisk(.dark, atX: 5, y: 4, animated: false)
-        boardView.setDisk(.dark, atX: 4, y: 5, animated: false)
-        boardView.setDisk(.light, atX: 5, y: 5, animated: false)
+        boardView.setDisk(.light, atX: 4, y: 4, animated: false)
         let target = ViewController()
         target.boardView = boardView
         var controls: [UISegmentedControl] = []
@@ -180,15 +180,16 @@ class ReversiViewControllerTests: XCTestCase {
             controls.append(control)
         }
         target.playerControls = controls
-        let path = target.path
-        let fileIO = FileIO(path: path)
+        let mockIO = MockFileIO()
+        target.fileIO = mockIO
         // When
         do {
             try target.saveGame()
         } catch {
             fatalError()
         }
-        XCTAssertEqual(try! fileIO.read(), """
+        // 最後の行に開業が含まれるので空白行が必要
+        XCTAssertEqual(mockIO.written!, """
 x01
 --------
 --------
@@ -198,6 +199,7 @@ x01
 --------
 --------
 --------
+
 """)
         
     }

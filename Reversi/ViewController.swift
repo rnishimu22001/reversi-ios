@@ -428,7 +428,7 @@ extension ViewController {
         }
         
         do {
-            try output.write(toFile: path, atomically: true, encoding: .utf8)
+            try fileIO.write(output)
         } catch let error {
             throw FileIOError.read(path: path, cause: error)
         }

@@ -7,7 +7,6 @@
 //
 
 protocol FileIOAdapter {
-    var path: String { get }
     func write(_ data: String) throws
     func read() throws -> String
 }
