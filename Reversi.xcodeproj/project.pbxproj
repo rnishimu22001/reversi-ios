@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5A62FA962453E5DF0097D64D /* BoardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA952453E5DF0097D64D /* BoardRepository.swift */; };
 		5A62FA992453E9D80097D64D /* dummyGame in Resources */ = {isa = PBXBuildFile; fileRef = 5A62FA982453E9D80097D64D /* dummyGame */; };
+		5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA9A2453F5060097D64D /* MockFileIO.swift */; };
 		5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE68245303AC007C45B8 /* MockBoardView.swift */; };
 		5AFEEE6B24530AB0007C45B8 /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */; };
 		5AFEEE6D24532395007C45B8 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6C24532395007C45B8 /* Board.swift */; };
@@ -41,6 +42,7 @@
 /* Begin PBXFileReference section */
 		5A62FA952453E5DF0097D64D /* BoardRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardRepository.swift; sourceTree = "<group>"; };
 		5A62FA982453E9D80097D64D /* dummyGame */ = {isa = PBXFileReference; lastKnownFileType = text; path = dummyGame; sourceTree = "<group>"; };
+		5A62FA9A2453F5060097D64D /* MockFileIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockFileIO.swift; sourceTree = "<group>"; };
 		5AFEEE68245303AC007C45B8 /* MockBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBoardView.swift; sourceTree = "<group>"; };
 		5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
 		5AFEEE6C24532395007C45B8 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				5AFEEE68245303AC007C45B8 /* MockBoardView.swift */,
+				5A62FA9A2453F5060097D64D /* MockFileIO.swift */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
+				5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */,
 				5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */,
 				5AFEEE6F2453B980007C45B8 /* BoardTests.swift in Sources */,
 			);
