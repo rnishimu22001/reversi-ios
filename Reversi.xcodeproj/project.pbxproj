@@ -10,6 +10,7 @@
 		5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE68245303AC007C45B8 /* MockBoardView.swift */; };
 		5AFEEE6B24530AB0007C45B8 /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6A24530AB0007C45B8 /* Path.swift */; };
 		5AFEEE6D24532395007C45B8 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6C24532395007C45B8 /* Board.swift */; };
+		5AFEEE6F2453B980007C45B8 /* BoardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6E2453B980007C45B8 /* BoardTests.swift */; };
 		D636B39F23D35043007F370F /* DiskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636B39E23D35043007F370F /* DiskView.swift */; };
 		D642BDB423A9FE4500396732 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D642BDB323A9FE4500396732 /* AppDelegate.swift */; };
 		D642BDB623A9FE4500396732 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D642BDB523A9FE4500396732 /* SceneDelegate.swift */; };
@@ -37,6 +38,7 @@
 		5AFEEE68245303AC007C45B8 /* MockBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBoardView.swift; sourceTree = "<group>"; };
 		5AFEEE6A24530AB0007C45B8 /* Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
 		5AFEEE6C24532395007C45B8 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
+		5AFEEE6E2453B980007C45B8 /* BoardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardTests.swift; sourceTree = "<group>"; };
 		D636B39E23D35043007F370F /* DiskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskView.swift; sourceTree = "<group>"; };
 		D642BDB023A9FE4500396732 /* Reversi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Reversi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D642BDB323A9FE4500396732 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 			children = (
 				5AFEEE6524530373007C45B8 /* Mock */,
 				D642BDCA23A9FE4700396732 /* ReversiViewControllerTests.swift */,
+				5AFEEE6E2453B980007C45B8 /* BoardTests.swift */,
 				D642BDCC23A9FE4700396732 /* Info.plist */,
 			);
 			path = ReversiTests;
@@ -263,6 +266,7 @@
 			files = (
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
 				5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */,
+				5AFEEE6F2453B980007C45B8 /* BoardTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
