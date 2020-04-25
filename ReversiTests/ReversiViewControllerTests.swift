@@ -3,23 +3,15 @@ import XCTest
 
 class ReversiViewControllerTests: XCTestCase {
     
-    var dummyDisks: [Path: Disk] {
+    var dummyDisks: [Coordinates: Disk] {
         return [
-            Path(x: 0, y: 0): Disk.dark,
-            Path(x: 1, y: BoardView().height - 1): Disk.light,
-            Path(x: BoardView().width - 1, y: 2): Disk.light,
+            Coordinates(x: 0, y: 0): Disk.dark,
+            Coordinates(x: 1, y: BoardView().height - 1): Disk.light,
+            Coordinates(x: BoardView().width - 1, y: 2): Disk.light,
             // 範囲外のデータ
-            Path(x: 1, y: BoardView().height): Disk.light,
-            Path(x: BoardView().width, y: 1): Disk.light,
+            Coordinates(x: 1, y: BoardView().height): Disk.light,
+            Coordinates(x: BoardView().width, y: 1): Disk.light,
         ]
-    }
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
     func testCountDisks() {
@@ -28,12 +20,12 @@ class ReversiViewControllerTests: XCTestCase {
         let mockBord = MockBoardView(frame: .zero)
         target.boardView = mockBord
         let dummyDisks = [
-            Path(x: 0, y: 0): Disk.dark,
-            Path(x: 1, y: BoardView().height - 1): Disk.light,
-            Path(x: BoardView().width - 1, y: 2): Disk.light,
+            Coordinates(x: 0, y: 0): Disk.dark,
+            Coordinates(x: 1, y: BoardView().height - 1): Disk.light,
+            Coordinates(x: BoardView().width - 1, y: 2): Disk.light,
             // 範囲外のデータ
-            Path(x: 1, y: BoardView().height): Disk.light,
-            Path(x: BoardView().width, y: 1): Disk.light,
+            Coordinates(x: 1, y: BoardView().height): Disk.light,
+            Coordinates(x: BoardView().width, y: 1): Disk.light,
         ]
         mockBord.dummyDisks = dummyDisks
         
@@ -58,8 +50,8 @@ class ReversiViewControllerTests: XCTestCase {
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
             mockBord.dummyDisks = [
-                Path(x: 0, y: 0): .light,
-                Path(x: 1, y: 1): .dark,
+                Coordinates(x: 0, y: 0): .light,
+                Coordinates(x: 1, y: 1): .dark,
             ]
             XCTAssertNil(target.sideWithMoreDisks())
         }
@@ -69,9 +61,9 @@ class ReversiViewControllerTests: XCTestCase {
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
             mockBord.dummyDisks = [
-                Path(x: 0, y: 0): .light,
-                Path(x: 1, y: 0): .light,
-                Path(x: 1, y: 1): .dark,
+                Coordinates(x: 0, y: 0): .light,
+                Coordinates(x: 1, y: 0): .light,
+                Coordinates(x: 1, y: 1): .dark,
             ]
             XCTAssertEqual(target.sideWithMoreDisks(), .light)
         }
@@ -82,9 +74,9 @@ class ReversiViewControllerTests: XCTestCase {
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
             mockBord.dummyDisks = [
-                Path(x: 0, y: 0): .light,
-                Path(x: 1, y: 0): .dark,
-                Path(x: 1, y: 1): .dark,
+                Coordinates(x: 0, y: 0): .light,
+                Coordinates(x: 1, y: 0): .dark,
+                Coordinates(x: 1, y: 1): .dark,
             ]
             XCTAssertEqual(target.sideWithMoreDisks(), .dark)
         }
@@ -96,7 +88,7 @@ class ReversiViewControllerTests: XCTestCase {
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
-            let path = Path(x: 0, y: 0)
+            let path = Coordinates(x: 0, y: 0)
             mockBord.dummyDisks = [path: .light]
             XCTAssertFalse(target.canPlaceDisk(.dark, atX: path.x, y: path.y))
         }
@@ -107,8 +99,8 @@ class ReversiViewControllerTests: XCTestCase {
                 let mockBord = MockBoardView(frame: .zero)
                 target.boardView = mockBord
                 mockBord.dummyDisks = [
-                    Path(x: 1, y: 1): .light,
-                    Path(x: 2, y: 2): .dark
+                    Coordinates(x: 1, y: 1): .light,
+                    Coordinates(x: 2, y: 2): .dark
                 ]
                 XCTAssertTrue(target.canPlaceDisk(.dark, atX: 0, y: 0))
             }
@@ -118,8 +110,8 @@ class ReversiViewControllerTests: XCTestCase {
                 let mockBord = MockBoardView(frame: .zero)
                 target.boardView = mockBord
                 mockBord.dummyDisks = [
-                    Path(x: 1, y: 1): .dark,
-                    Path(x: 2, y: 2): .dark
+                    Coordinates(x: 1, y: 1): .dark,
+                    Coordinates(x: 2, y: 2): .dark
                 ]
                 XCTAssertFalse(target.canPlaceDisk(.dark, atX: 0, y: 0))
             }
@@ -131,8 +123,8 @@ class ReversiViewControllerTests: XCTestCase {
                 let mockBord = MockBoardView(frame: .zero)
                 target.boardView = mockBord
                 mockBord.dummyDisks = [
-                    Path(x: 1, y: 1): .dark,
-                    Path(x: 2, y: 2): .light
+                    Coordinates(x: 1, y: 1): .dark,
+                    Coordinates(x: 2, y: 2): .light
                 ]
                 XCTAssertTrue(target.canPlaceDisk(.light, atX: 0, y: 0))
             }
@@ -142,8 +134,8 @@ class ReversiViewControllerTests: XCTestCase {
                 let mockBord = MockBoardView(frame: .zero)
                 target.boardView = mockBord
                 mockBord.dummyDisks = [
-                    Path(x: 1, y: 1): .light,
-                    Path(x: 2, y: 2): .dark
+                    Coordinates(x: 1, y: 1): .light,
+                    Coordinates(x: 2, y: 2): .dark
                 ]
                 XCTAssertFalse(target.canPlaceDisk(.light, atX: 0, y: 0))
             }
@@ -156,11 +148,11 @@ class ReversiViewControllerTests: XCTestCase {
         let mockBord = MockBoardView(frame: .zero)
         target.boardView = mockBord
         mockBord.dummyDisks = [
-            Path(x: 1, y: 1): .light,
-            Path(x: 2, y: 2): .dark,
+            Coordinates(x: 1, y: 1): .light,
+            Coordinates(x: 2, y: 2): .dark,
             // 範囲外
-            Path(x: mockBord.width, y: mockBord.height): .dark,
-            Path(x: mockBord.width + 1, y: mockBord.height + 1): .light,
+            Coordinates(x: mockBord.width, y: mockBord.height): .dark,
+            Coordinates(x: mockBord.width + 1, y: mockBord.height + 1): .light,
         ]
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ $0.x == 3 && $0.y == 3 })), "範囲内")
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外 - 現在選択できるので後ほど座標を返さないように修正")

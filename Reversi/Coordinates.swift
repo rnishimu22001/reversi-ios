@@ -1,5 +1,5 @@
 //
-//  Path.swift
+//  Coordinates.swift
 //  Reversi
 //
 //  Created by rnishimu on 2020/04/24.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Path: Equatable, Hashable {
+struct Coordinates: Equatable, Hashable {
     let x: Int
     let y: Int
     
