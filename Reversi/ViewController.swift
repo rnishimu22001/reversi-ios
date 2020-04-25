@@ -26,6 +26,9 @@ final class ViewController: UIViewController {
     
     private var playerCancellers: [Disk: Canceller] = [:]
     
+    /// リファクタリング用、後ほど削除
+    var fileIO: FileIOAdapter = FileIO(fileName: "Game")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
