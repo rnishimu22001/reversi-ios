@@ -148,4 +148,14 @@ class ReversiViewControllerTests: XCTestCase {
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ $0.x == 3 && $0.y == 3 })), "範囲内")
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外 - 現在選択できるので後ほど座標を返さないように修正")
     }
+    
+    // MARK: - Save and Load
+    func testSaveGame() {
+        let path = TestFileHelper.path
+        print(path)
+    }
+    
+    func testLoadGame() {
+        
+    }
 }

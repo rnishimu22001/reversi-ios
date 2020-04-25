@@ -11,6 +11,8 @@
 		5AFEEE6B24530AB0007C45B8 /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */; };
 		5AFEEE6D24532395007C45B8 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6C24532395007C45B8 /* Board.swift */; };
 		5AFEEE6F2453B980007C45B8 /* BoardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6E2453B980007C45B8 /* BoardTests.swift */; };
+		5AFEEE752453CADA007C45B8 /* FileIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE742453CADA007C45B8 /* FileIO.swift */; };
+		5AFEEE772453CAE9007C45B8 /* FileIOAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE762453CAE9007C45B8 /* FileIOAdapter.swift */; };
 		D636B39F23D35043007F370F /* DiskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D636B39E23D35043007F370F /* DiskView.swift */; };
 		D642BDB423A9FE4500396732 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D642BDB323A9FE4500396732 /* AppDelegate.swift */; };
 		D642BDB623A9FE4500396732 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D642BDB523A9FE4500396732 /* SceneDelegate.swift */; };
@@ -39,6 +41,8 @@
 		5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
 		5AFEEE6C24532395007C45B8 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
 		5AFEEE6E2453B980007C45B8 /* BoardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardTests.swift; sourceTree = "<group>"; };
+		5AFEEE742453CADA007C45B8 /* FileIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileIO.swift; sourceTree = "<group>"; };
+		5AFEEE762453CAE9007C45B8 /* FileIOAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileIOAdapter.swift; sourceTree = "<group>"; };
 		D636B39E23D35043007F370F /* DiskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskView.swift; sourceTree = "<group>"; };
 		D642BDB023A9FE4500396732 /* Reversi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Reversi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D642BDB323A9FE4500396732 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,6 +86,22 @@
 			path = Mock;
 			sourceTree = "<group>";
 		};
+		5AFEEE722453C970007C45B8 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				5AFEEE742453CADA007C45B8 /* FileIO.swift */,
+			);
+			name = Infrastructure;
+			sourceTree = "<group>";
+		};
+		5AFEEE732453C9C6007C45B8 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				5AFEEE762453CAE9007C45B8 /* FileIOAdapter.swift */,
+			);
+			name = Repository;
+			sourceTree = "<group>";
+		};
 		D636B3A123D43203007F370F /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -123,6 +143,8 @@
 		D642BDB223A9FE4500396732 /* Reversi */ = {
 			isa = PBXGroup;
 			children = (
+				5AFEEE732453C9C6007C45B8 /* Repository */,
+				5AFEEE722453C970007C45B8 /* Infrastructure */,
 				D642BDB323A9FE4500396732 /* AppDelegate.swift */,
 				D642BDB523A9FE4500396732 /* SceneDelegate.swift */,
 				D642BDB723A9FE4500396732 /* ViewController.swift */,
@@ -252,11 +274,13 @@
 				D642BDD623AA0B3900396732 /* CellView.swift in Sources */,
 				5AFEEE6B24530AB0007C45B8 /* Coordinates.swift in Sources */,
 				D642BDD823AA0B5700396732 /* Disk.swift in Sources */,
+				5AFEEE772453CAE9007C45B8 /* FileIOAdapter.swift in Sources */,
 				D642BDB823A9FE4500396732 /* ViewController.swift in Sources */,
 				D642BDDC23AA137C00396732 /* BoardView.swift in Sources */,
 				D642BDB423A9FE4500396732 /* AppDelegate.swift in Sources */,
 				D642BDB623A9FE4500396732 /* SceneDelegate.swift in Sources */,
 				5AFEEE6D24532395007C45B8 /* Board.swift in Sources */,
+				5AFEEE752453CADA007C45B8 /* FileIO.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
