@@ -487,7 +487,7 @@ extension ViewController {
     
     /// ゲームの状態をファイルから読み込み、復元します。
     func loadGame() throws {
-        try restoreGameFromFile()
+        restoreGameFromFile()
         updateMessageViews()
         updateCountLabels()
     }
