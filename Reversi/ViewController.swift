@@ -14,7 +14,7 @@ final class ViewController: UIViewController {
     /// その際に `messageDiskSize` に保管された値を使います。
     private var messageDiskSize: CGFloat!
     
-    @IBOutlet private var playerControls: [UISegmentedControl]!
+    @IBOutlet var playerControls: [UISegmentedControl]!
     @IBOutlet private var countLabels: [UILabel]!
     @IBOutlet private var playerActivityIndicators: [UIActivityIndicatorView]!
     

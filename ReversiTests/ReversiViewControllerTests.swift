@@ -151,8 +151,55 @@ class ReversiViewControllerTests: XCTestCase {
     
     // MARK: - Save and Load
     func testSaveGame() {
-        let path = TestFileHelper.path
-        print(path)
+        // Given
+        let boardView = BoardView(frame: .zero)
+        /*
+         x00
+         --------
+         --------
+         --------
+         --xxx---
+         ---xo---
+         --------
+         --------
+         --------
+         */
+        boardView.setDisk(.dark, atX: 3, y: 4, animated: false)
+        boardView.setDisk(.dark, atX: 4, y: 4, animated: false)
+        boardView.setDisk(.dark, atX: 5, y: 4, animated: false)
+        boardView.setDisk(.dark, atX: 4, y: 5, animated: false)
+        boardView.setDisk(.light, atX: 5, y: 5, animated: false)
+        let target = ViewController()
+        target.boardView = boardView
+        var controls: [UISegmentedControl] = []
+        Disk.sides.enumerated().forEach {
+            let control = UISegmentedControl(items: nil)
+            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
+            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
+            control.selectedSegmentIndex = $0.offset
+            controls.append(control)
+        }
+        target.playerControls = controls
+        let path = target.path
+        let fileIO = FileIO(path: path)
+        // When
+        do {
+            try target.saveGame()
+        } catch {
+            fatalError()
+        }
+        XCTAssertEqual(try! fileIO.read(), """
+x01
+--------
+--------
+--------
+--xxx---
+---xo---
+--------
+--------
+--------
+""")
+        
     }
     
     func testLoadGame() {
