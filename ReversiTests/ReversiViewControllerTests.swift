@@ -3,16 +3,7 @@ import XCTest
 
 class ReversiViewControllerTests: XCTestCase {
     
-    var dummyDisks: [Coordinates: Disk] {
-        return [
-            Coordinates(x: 0, y: 0): Disk.dark,
-            Coordinates(x: 1, y: BoardView().height - 1): Disk.light,
-            Coordinates(x: BoardView().width - 1, y: 2): Disk.light,
-            // 範囲外のデータ
-            Coordinates(x: 1, y: BoardView().height): Disk.light,
-            Coordinates(x: BoardView().width, y: 1): Disk.light,
-        ]
-    }
+    // MARK: - Reversi logics
     
     func testCountDisks() {
         // Given
