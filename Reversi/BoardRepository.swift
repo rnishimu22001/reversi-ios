@@ -7,11 +7,18 @@
 //
 
 struct BoardRepository {
+    
+    let fileIO: FileIOAdapter
+    
+    init(fileIO: FileIOAdapter = FileIO(fileName: "Game")) {
+        self.fileIO = fileIO
+    }
+    
     func saveGame() {
         
     }
     
-    func loadGame() {
+    func loadGame() throws {
         
     }
 }
