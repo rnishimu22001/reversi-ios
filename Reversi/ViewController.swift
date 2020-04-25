@@ -404,7 +404,7 @@ extension ViewController: BoardViewDelegate {
 // MARK: Save and Load
 
 extension ViewController {
-    private var path: String {
+    var path: String {
         (NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first! as NSString).appendingPathComponent("Game")
     }
     
@@ -431,8 +431,7 @@ extension ViewController {
         }
     }
     
-    /// ゲームの状態をファイルから読み込み、復元します。
-    func loadGame() throws {
+    private func restoreGameFromFile() throws {
         let input = try String(contentsOfFile: path, encoding: .utf8)
         var lines: ArraySlice<Substring> = input.split(separator: "\n")[...]
         
@@ -484,7 +483,11 @@ extension ViewController {
                 throw FileIOError.read(path: path, cause: nil)
             }
         }
-
+    }
+    
+    /// ゲームの状態をファイルから読み込み、復元します。
+    func loadGame() throws {
+        restoreGameFromFile()
         updateMessageViews()
         updateCountLabels()
     }

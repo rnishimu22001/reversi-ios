@@ -151,8 +151,9 @@ class ReversiViewControllerTests: XCTestCase {
     
     // MARK: - Save and Load
     func testSaveGame() {
-        let path = TestFileHelper.path
-        print(path)
+        let target = ViewController()
+        let fileIO = FileIO(path: target.path)
+        
     }
     
     func testLoadGame() {
