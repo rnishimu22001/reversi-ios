@@ -13,7 +13,7 @@ protocol GameRepository {
 
 struct GameRepositoryImplementation: GameRepository {
     
-    let fileIO: FileIOAdapter
+    private let fileIO: FileIOAdapter
     
     init(fileIO: FileIOAdapter = FileIO(fileName: "Game")) {
         self.fileIO = fileIO
