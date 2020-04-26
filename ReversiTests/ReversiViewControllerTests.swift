@@ -328,5 +328,92 @@ class ReversiViewControllerTests: XCTestCase {
                 }
             }
         }
+        XCTContext.runActivity(named: "盤面が空") { _ in
+            // Given
+            let boardView = BoardView(frame: .zero)
+            let target = ViewController()
+            target.boardView = boardView
+            target.playerControls = controls
+            let mockIO = MockFileIO()
+            target.fileIO = mockIO
+            // 最後の行に開業が含まれるので空白行が必要
+            // x軸の幅が9あり、定義より一つだけ多い
+            mockIO.saved = ""
+            // When
+            do {
+                try target.restoreBoardView()
+                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
+            } catch(let error) {
+                // Then
+                guard case ViewController.FileIOError.read = error else {
+                    XCTFail("読み込みエラーが発生する想定")
+                    return
+                }
+            }
+        }
+        XCTContext.runActivity(named: "disk simbolが不正") { _ in
+            // Given
+            let boardView = BoardView(frame: .zero)
+            let target = ViewController()
+            target.boardView = boardView
+            target.playerControls = controls
+            let mockIO = MockFileIO()
+            target.fileIO = mockIO
+            mockIO.saved = """
+                        y01
+                        --------
+                        --------
+                        --------
+                        --xxx---
+                        ---xo---
+                        --------
+                        --------
+                        --------
+
+                        """
+            // When
+            do {
+                try target.restoreBoardView()
+                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
+            } catch(let error) {
+                // Then
+                guard case ViewController.FileIOError.read = error else {
+                    XCTFail("読み込みエラーが発生する想定")
+                    return
+                }
+            }
+        }
+        XCTContext.runActivity(named: "player simbolが不正") { _ in
+            // Given
+            let boardView = BoardView(frame: .zero)
+            let target = ViewController()
+            target.boardView = boardView
+            target.playerControls = controls
+            let mockIO = MockFileIO()
+            target.fileIO = mockIO
+            mockIO.saved = """
+                        x09
+                        --------
+                        --------
+                        --------
+                        --xxx---
+                        ---xo---
+                        --------
+                        --------
+                        --------
+
+                        """
+            // When
+            do {
+                try target.restoreBoardView()
+                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
+            } catch(let error) {
+                // Then
+                guard case ViewController.FileIOError.read = error else {
+                    XCTFail("読み込みエラーが発生する想定")
+                    return
+                }
+            }
+        }
     }
 }
