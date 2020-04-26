@@ -150,6 +150,17 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     // MARK: - Save and Load
+    
+    var controls: [UISegmentedControl] {
+        Disk.sides.enumerated().map {
+            let control = UISegmentedControl(items: nil)
+            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
+            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
+            control.selectedSegmentIndex = $0.offset
+            return control
+        }
+    }
+    
     func testSaveGame() {
         // Given
         let boardView = BoardView(frame: .zero)
@@ -171,14 +182,7 @@ class ReversiViewControllerTests: XCTestCase {
         boardView.setDisk(.light, atX: 4, y: 4, animated: false)
         let target = ViewController()
         target.boardView = boardView
-        var controls: [UISegmentedControl] = []
-        Disk.sides.enumerated().forEach {
-            let control = UISegmentedControl(items: nil)
-            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
-            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
-            control.selectedSegmentIndex = $0.offset
-            controls.append(control)
-        }
+        let controls = self.controls
         target.playerControls = controls
         let mockIO = MockFileIO()
         target.fileIO = mockIO
@@ -205,54 +209,124 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     func testLoadGame() {
-        // Given
-        let boardView = BoardView(frame: .zero)
-        let target = ViewController()
-        target.boardView = boardView
-        var controls: [UISegmentedControl] = []
-        Disk.sides.forEach { _ in
-            let control = UISegmentedControl(items: nil)
-            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
-            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
-            controls.append(control)
-        }
-        target.playerControls = controls
-        let mockIO = MockFileIO()
-        target.fileIO = mockIO
-        // 最後の行に開業が含まれるので空白行が必要
-        mockIO.saved = """
-                    x01
-                    --------
-                    --------
-                    --------
-                    --xxx---
-                    ---xo---
-                    --------
-                    --------
-                    --------
+        XCTContext.runActivity(named: "正常データ") { _ in
+            
+            // Given
+            let boardView = BoardView(frame: .zero)
+            let target = ViewController()
+            target.boardView = boardView
+            let controls = self.controls
+            controls.forEach {
+                $0.selectedSegmentIndex = 0
+                XCTAssertEqual($0.selectedSegmentIndex, 0, "テストデータから1に切り替わることをテストするためにここで0をセットする")
+            }
+            target.playerControls = controls
+            let mockIO = MockFileIO()
+            target.fileIO = mockIO
+            // 最後の行に開業が含まれるので空白行が必要
+            mockIO.saved = """
+                        x01
+                        --------
+                        --------
+                        --------
+                        --xxx---
+                        ---xo---
+                        --------
+                        --------
+                        --------
 
-                    """
-        // When
-        do {
-            try target.restoreBoardView()
-        } catch {
-            fatalError()
+                        """
+            // When
+            do {
+                try target.restoreBoardView()
+            } catch {
+                fatalError()
+            }
+            // Then
+            (1...(boardView.height * boardView.width)).forEach {
+                let x = $0 / boardView.height
+                let y = $0 % boardView.height
+                switch (x, y) {
+                case (2, 3), (3, 3), (4, 3), (3, 4):
+                    XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark, "x: \(x),y: \(y)")
+                case (4, 4):
+                    XCTAssertEqual(boardView.diskAt(x: x, y: y), .light, "x: \(x),y: \(y)")
+                default:
+                    XCTAssertNil(boardView.diskAt(x: x, y: y))
+                }
+            }
+            XCTAssertEqual(target.turn, .dark, "x01なのでdarkの手番")
+            XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
+            XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
         }
-        // Then
-        (1...(boardView.height * boardView.width)).forEach {
-            let x = $0 / boardView.height
-            let y = $0 % boardView.height
-            switch (x, y) {
-            case (2, 3), (3, 3), (4, 3), (3, 4):
-                XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark, "x: \(x),y: \(y)")
-            case (4, 4):
-                XCTAssertEqual(boardView.diskAt(x: x, y: y), .light, "x: \(x),y: \(y)")
-            default:
-                XCTAssertNil(boardView.diskAt(x: x, y: y))
+        XCTContext.runActivity(named: "y軸の盤面が異常データ") { _ in
+            // Given
+            let boardView = BoardView(frame: .zero)
+            let target = ViewController()
+            target.boardView = boardView
+            target.playerControls = controls
+            let mockIO = MockFileIO()
+            target.fileIO = mockIO
+            // 最後の行に開業が含まれるので空白行が必要
+            // y軸の段が9個あり、定義より一行だけ多い
+            mockIO.saved = """
+                        x01
+                        --------
+                        --------
+                        --------
+                        --xxx---
+                        ---xo---
+                        --------
+                        --------
+                        --------
+                        --------
+
+                        """
+            // When
+            do {
+                try target.restoreBoardView()
+                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
+            } catch(let error) {
+                // Then
+                guard case ViewController.FileIOError.read = error else {
+                    XCTFail("読み込みエラーが発生する想定")
+                    return
+                }
             }
         }
-        XCTAssertEqual(target.turn, .dark, "x01なのでdarkの手番")
-        XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
-        XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
+        XCTContext.runActivity(named: "x軸の盤面が異常データ") { _ in
+            // Given
+            let boardView = BoardView(frame: .zero)
+            let target = ViewController()
+            target.boardView = boardView
+            target.playerControls = controls
+            let mockIO = MockFileIO()
+            target.fileIO = mockIO
+            // 最後の行に開業が含まれるので空白行が必要
+            // x軸の幅が9あり、定義より一つだけ多い
+            mockIO.saved = """
+                        x01
+                        ---------
+                        ---------
+                        ---------
+                        --xxx----
+                        ---xo----
+                        ---------
+                        ---------
+                        ---------
+
+                        """
+            // When
+            do {
+                try target.restoreBoardView()
+                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
+            } catch(let error) {
+                // Then
+                guard case ViewController.FileIOError.read = error else {
+                    XCTFail("読み込みエラーが発生する想定")
+                    return
+                }
+            }
+        }
     }
 }
