@@ -6,6 +6,10 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
+enum BoardError: Error {
+    case outOfRange(coordinates: Coordinates, range: (x: Range<Int>, y: Range<Int>))
+}
+
 struct Board {
     /// 盤の幅（ `8` ）を表します。
     public let width: Int = 8
@@ -22,5 +26,21 @@ struct Board {
     init() {
         xRange = 0 ..< width
         yRange = 0 ..< height
+    }
+    
+    private(set) var disks: [Coordinates: Disk] = [:]
+    
+    func disk(atX x: Int, y: Int) -> Disk? {
+        return disks[Coordinates(x: x, y: y)]
+    }
+    
+    mutating func set(disk: Disk?, atX x: Int, y: Int) throws {
+        let coordinates = Coordinates(x: x, y: y)
+        guard
+            yRange.contains(coordinates.x),
+            xRange.contains(coordinates.y) else {
+                throw BoardError.outOfRange(coordinates: coordinates, range: (x: xRange, y: yRange))
+        }
+        disks[coordinates] = disk
     }
 }

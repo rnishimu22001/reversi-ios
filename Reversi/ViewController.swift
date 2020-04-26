@@ -27,7 +27,7 @@ final class ViewController: UIViewController {
     private var playerCancellers: [Disk: Canceller] = [:]
     
     /// リファクタリング用、後ほど削除
-    var fileIO: FileIOAdapter = FileIO(fileName: "Game")
+    var gameRepository: GameRepository = GameRepositoryImplementation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -413,79 +413,46 @@ extension ViewController {
     
     /// ゲームの状態をファイルに書き出し、保存します。
     func saveGame() throws {
-        var output: String = ""
-        output += turn.symbol
+        var game = Game(turn: turn, board: Board(), darkPlayer: .manual, lightPlayer: .manual)
         for side in Disk.sides {
-            output += playerControls[side.index].selectedSegmentIndex.description
+            guard let player = Player(rawValue: playerControls[side.index].selectedSegmentIndex) else {
+                throw FileIOError.read(path: path, cause: nil)
+            }
+            switch side {
+            case .light:
+                game.lightPlayer = player
+            case .dark:
+                game.darkPlayer = player
+            }
         }
-        output += "\n"
         
         for y in boardView.yRange {
             for x in boardView.xRange {
-                output += boardView.diskAt(x: x, y: y).symbol
+                let disk = boardView.diskAt(x: x, y: y)
+                try game.board.set(disk: disk, atX: x, y: y)
             }
-            output += "\n"
         }
         
-        do {
-            try fileIO.write(output)
-        } catch let error {
-            throw FileIOError.read(path: path, cause: error)
-        }
+        try gameRepository.save(game: game)
     }
     
     /// ゲームの状態をファイルから読み込み、復元します。
     func restoreBoardView() throws {
-        let input = try fileIO.read()
-        var lines: ArraySlice<Substring> = input.split(separator: "\n")[...]
-        
-        guard var line = lines.popFirst() else {
-            throw FileIOError.read(path: path, cause: nil)
-        }
-        
-        do { // turn
-            guard
-                let diskSymbol = line.popFirst(),
-                let disk = Optional<Disk>(symbol: diskSymbol.description)
-            else {
-                throw FileIOError.read(path: path, cause: nil)
-            }
-            turn = disk
-        }
+        let game = try gameRepository.restore()
+
+        turn = game.turn
 
         // players
         for side in Disk.sides {
-            guard
-                let playerSymbol = line.popFirst(),
-                let playerNumber = Int(playerSymbol.description),
-                let player = Player(rawValue: playerNumber)
-            else {
-                throw FileIOError.read(path: path, cause: nil)
+            switch side {
+            case .dark:
+                playerControls[side.index].selectedSegmentIndex = game.darkPlayer.rawValue
+            case .light:
+                playerControls[side.index].selectedSegmentIndex = game.lightPlayer.rawValue
             }
-            playerControls[side.index].selectedSegmentIndex = player.rawValue
         }
-
-        do { // board
-            guard lines.count == boardView.height else {
-                throw FileIOError.read(path: path, cause: nil)
-            }
-            
-            var y = 0
-            while let line = lines.popFirst() {
-                guard line.count == boardView.width else {
-                    throw FileIOError.read(path: path, cause: nil)
-                }
-                var x = 0
-                for character in line {
-                    let disk = Disk?(symbol: "\(character)").flatMap { $0 }
-                    boardView.setDisk(disk, atX: x, y: y, animated: false)
-                    x += 1
-                }
-                y += 1
-            }
-            guard y == boardView.height else {
-                throw FileIOError.read(path: path, cause: nil)
-            }
+        game.board.disks.forEach {
+            boardView.setDisk($0.value, atX: $0.key.x, y: $0.key.y, animated: false)
         }
     }
     
@@ -493,20 +460,6 @@ extension ViewController {
         try restoreBoardView()
         updateMessageViews()
         updateCountLabels()
-    }
-    
-    enum FileIOError: Error {
-        case write(path: String, cause: Error?)
-        case read(path: String, cause: Error?)
-    }
-}
-
-// MARK: Additional types
-
-extension ViewController {
-    enum Player: Int {
-        case manual = 0
-        case computer = 1
     }
 }
 
@@ -531,49 +484,3 @@ struct DiskPlacementError: Error {
     let y: Int
 }
 
-// MARK: File-private extensions
-
-extension Disk {
-    init(index: Int) {
-        for side in Disk.sides {
-            if index == side.index {
-                self = side
-                return
-            }
-        }
-        preconditionFailure("Illegal index: \(index)")
-    }
-    
-    var index: Int {
-        switch self {
-        case .dark: return 0
-        case .light: return 1
-        }
-    }
-}
-
-extension Optional where Wrapped == Disk {
-    fileprivate init?<S: StringProtocol>(symbol: S) {
-        switch symbol {
-        case "x":
-            self = .some(.dark)
-        case "o":
-            self = .some(.light)
-        case "-":
-            self = .none
-        default:
-            return nil
-        }
-    }
-    
-    fileprivate var symbol: String {
-        switch self {
-        case .some(.dark):
-            return "x"
-        case .some(.light):
-            return "o"
-        case .none:
-            return "-"
-        }
-    }
-}

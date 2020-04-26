@@ -9,6 +9,7 @@
 @testable import Reversi
 
 final class MockFileIO: FileIOAdapter {
+    var path: String = "TestPath"
     
     var written: String?
     func write(_ data: String) throws {

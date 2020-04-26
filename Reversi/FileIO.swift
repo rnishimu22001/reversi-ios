@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum FileIOError: Error {
+    case write(path: String, cause: Error?)
+    case read(path: String, cause: Error?)
+}
+
 struct FileIO: FileIOAdapter {
     
     let path: String

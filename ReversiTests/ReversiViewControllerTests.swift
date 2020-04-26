@@ -185,7 +185,7 @@ class ReversiViewControllerTests: XCTestCase {
         let controls = self.controls
         target.playerControls = controls
         let mockIO = MockFileIO()
-        target.fileIO = mockIO
+        target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
         // When
         do {
             try target.saveGame()
@@ -222,7 +222,7 @@ class ReversiViewControllerTests: XCTestCase {
             }
             target.playerControls = controls
             let mockIO = MockFileIO()
-            target.fileIO = mockIO
+            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
             // 最後の行に開業が含まれるので空白行が必要
             mockIO.saved = """
                         x01
@@ -266,7 +266,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.boardView = boardView
             target.playerControls = controls
             let mockIO = MockFileIO()
-            target.fileIO = mockIO
+            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
             // 最後の行に開業が含まれるので空白行が必要
             // y軸の段が9個あり、定義より一行だけ多い
             mockIO.saved = """
@@ -288,7 +288,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
             } catch(let error) {
                 // Then
-                guard case ViewController.FileIOError.read = error else {
+                guard case FileIOError.read = error else {
                     XCTFail("読み込みエラーが発生する想定")
                     return
                 }
@@ -301,7 +301,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.boardView = boardView
             target.playerControls = controls
             let mockIO = MockFileIO()
-            target.fileIO = mockIO
+            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
             // 最後の行に開業が含まれるので空白行が必要
             // x軸の幅が9あり、定義より一つだけ多い
             mockIO.saved = """
@@ -322,7 +322,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
             } catch(let error) {
                 // Then
-                guard case ViewController.FileIOError.read = error else {
+                guard case FileIOError.read = error else {
                     XCTFail("読み込みエラーが発生する想定")
                     return
                 }
@@ -335,7 +335,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.boardView = boardView
             target.playerControls = controls
             let mockIO = MockFileIO()
-            target.fileIO = mockIO
+            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
             // 最後の行に開業が含まれるので空白行が必要
             // x軸の幅が9あり、定義より一つだけ多い
             mockIO.saved = ""
@@ -345,7 +345,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
             } catch(let error) {
                 // Then
-                guard case ViewController.FileIOError.read = error else {
+                guard case FileIOError.read = error else {
                     XCTFail("読み込みエラーが発生する想定")
                     return
                 }
@@ -358,7 +358,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.boardView = boardView
             target.playerControls = controls
             let mockIO = MockFileIO()
-            target.fileIO = mockIO
+            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
             mockIO.saved = """
                         y01
                         --------
@@ -377,7 +377,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
             } catch(let error) {
                 // Then
-                guard case ViewController.FileIOError.read = error else {
+                guard case FileIOError.read = error else {
                     XCTFail("読み込みエラーが発生する想定")
                     return
                 }
@@ -390,7 +390,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.boardView = boardView
             target.playerControls = controls
             let mockIO = MockFileIO()
-            target.fileIO = mockIO
+            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
             mockIO.saved = """
                         x09
                         --------
@@ -409,7 +409,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
             } catch(let error) {
                 // Then
-                guard case ViewController.FileIOError.read = error else {
+                guard case FileIOError.read = error else {
                     XCTFail("読み込みエラーが発生する想定")
                     return
                 }
