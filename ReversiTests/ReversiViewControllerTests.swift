@@ -251,6 +251,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTAssertNil(boardView.diskAt(x: x, y: y))
             }
         }
+        XCTAssertEqual(target.turn, .dark, "x01なのでdarkの手番")
         XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
         XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
     }
