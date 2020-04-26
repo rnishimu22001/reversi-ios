@@ -472,14 +472,14 @@ extension ViewController {
             
             var y = 0
             while let line = lines.popFirst() {
+                guard line.count == boardView.width else {
+                    throw FileIOError.read(path: path, cause: nil)
+                }
                 var x = 0
                 for character in line {
                     let disk = Disk?(symbol: "\(character)").flatMap { $0 }
                     boardView.setDisk(disk, atX: x, y: y, animated: false)
                     x += 1
-                }
-                guard x == boardView.width else {
-                    throw FileIOError.read(path: path, cause: nil)
                 }
                 y += 1
             }
