@@ -435,7 +435,7 @@ extension ViewController {
     }
     
     /// ゲームの状態をファイルから読み込み、復元します。
-    func loadGame() throws {
+    func restoreBordView() throws {
         let input = try String(contentsOfFile: path, encoding: .utf8)
         var lines: ArraySlice<Substring> = input.split(separator: "\n")[...]
         
@@ -487,7 +487,10 @@ extension ViewController {
                 throw FileIOError.read(path: path, cause: nil)
             }
         }
-
+    }
+    
+    func loadGame() throws {
+        try restoreBordView()
         updateMessageViews()
         updateCountLabels()
     }
