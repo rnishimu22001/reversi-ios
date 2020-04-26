@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A602ECD2455D3A200F3D882 /* ReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */; };
 		5A62FA962453E5DF0097D64D /* GameRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA952453E5DF0097D64D /* GameRepository.swift */; };
 		5A62FA992453E9D80097D64D /* dummyGame in Resources */ = {isa = PBXBuildFile; fileRef = 5A62FA982453E9D80097D64D /* dummyGame */; };
 		5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA9A2453F5060097D64D /* MockFileIO.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecifications.swift; sourceTree = "<group>"; };
 		5A62FA952453E5DF0097D64D /* GameRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameRepository.swift; sourceTree = "<group>"; };
 		5A62FA982453E9D80097D64D /* dummyGame */ = {isa = PBXFileReference; lastKnownFileType = text; path = dummyGame; sourceTree = "<group>"; };
 		5A62FA9A2453F5060097D64D /* MockFileIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockFileIO.swift; sourceTree = "<group>"; };
@@ -92,6 +94,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A602ECB2455D36E00F3D882 /* Specifications */ = {
+			isa = PBXGroup;
+			children = (
+				5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */,
+			);
+			name = Specifications;
+			sourceTree = "<group>";
+		};
 		5A62FA972453E83E0097D64D /* DummyData */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +179,7 @@
 		D642BDB223A9FE4500396732 /* Reversi */ = {
 			isa = PBXGroup;
 			children = (
+				5A602ECB2455D36E00F3D882 /* Specifications */,
 				5AFEEE732453C9C6007C45B8 /* Repository */,
 				5AFEEE722453C970007C45B8 /* Infrastructure */,
 				D642BDB323A9FE4500396732 /* AppDelegate.swift */,
@@ -312,6 +323,7 @@
 				D642BDDC23AA137C00396732 /* BoardView.swift in Sources */,
 				D642BDB423A9FE4500396732 /* AppDelegate.swift in Sources */,
 				D642BDB623A9FE4500396732 /* SceneDelegate.swift in Sources */,
+				5A602ECD2455D3A200F3D882 /* ReversiSpecifications.swift in Sources */,
 				5AFEEE6D24532395007C45B8 /* Board.swift in Sources */,
 				5AFEEE752453CADA007C45B8 /* FileIO.swift in Sources */,
 			);
