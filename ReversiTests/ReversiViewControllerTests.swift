@@ -190,21 +190,65 @@ class ReversiViewControllerTests: XCTestCase {
         }
         // 最後の行に開業が含まれるので空白行が必要
         XCTAssertEqual(mockIO.written!, """
-x01
---------
---------
---------
---xxx---
----xo---
---------
---------
---------
+                                        x01
+                                        --------
+                                        --------
+                                        --------
+                                        --xxx---
+                                        ---xo---
+                                        --------
+                                        --------
+                                        --------
 
-""")
+                                        """)
         
     }
     
     func testLoadGame() {
-        
+        // Given
+        let boardView = BoardView(frame: .zero)
+        let target = ViewController()
+        target.boardView = boardView
+        var controls: [UISegmentedControl] = []
+        Disk.sides.forEach { _ in
+            let control = UISegmentedControl(items: nil)
+            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
+            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
+            controls.append(control)
+        }
+        target.playerControls = controls
+        let mockIO = MockFileIO()
+        target.fileIO = mockIO
+        // 最後の行に開業が含まれるので空白行が必要
+        mockIO.saved = """
+                    x01
+                    --------
+                    --------
+                    --------
+                    --xxx---
+                    ---xo---
+                    --------
+                    --------
+                    --------
+
+                    """
+        // When
+        do {
+            try target.loadGame()
+        } catch {
+            fatalError()
+        }
+        (1...(boardView.height * boardView.width)).forEach {
+            let x = $0 / boardView.height
+            let y = $0 % boardView.height
+            switch (x, y) {
+            case (2, 2), (3, 3), (4, 3), (3, 4):
+                XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark)
+            case (4, 4):
+                XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark)
+            default:
+                XCTAssertNil(boardView.diskAt(x: x, y: y))
+            }
+        }
     }
 }
