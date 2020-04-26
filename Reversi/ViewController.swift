@@ -50,6 +50,21 @@ final class ViewController: UIViewController {
         viewHasAppeared = true
         waitForPlayer()
     }
+    
+    var board: Board {
+        var board = Board()
+        for y in boardView.yRange {
+            for x in boardView.xRange {
+                let disk = boardView.diskAt(x: x, y: y)
+                do {
+                    try board.set(disk: disk, atX: x, y: y)
+                } catch {
+                    fatalError("boardViewとboardの縦横のマスの数が異なっています")
+                }
+            }
+        }
+        return board
+    }
 }
 
 // MARK: Reversi logics
@@ -59,30 +74,14 @@ extension ViewController {
     /// - Parameter side: 数えるディスクの色です。
     /// - Returns: `side` で指定された色のディスクの、盤上の枚数です。
     func countDisks(of side: Disk) -> Int {
-        var count = 0
-        
-        for y in boardView.yRange {
-            for x in boardView.xRange {
-                if boardView.diskAt(x: x, y: y) == side {
-                    count +=  1
-                }
-            }
-        }
-        
-        return count
+        board.countDisks(of: side)
     }
     
     /// 盤上に置かれたディスクの枚数が多い方の色を返します。
     /// 引き分けの場合は `nil` が返されます。
     /// - Returns: 盤上に置かれたディスクの枚数が多い方の色です。引き分けの場合は `nil` を返します。
     func sideWithMoreDisks() -> Disk? {
-        let darkCount = countDisks(of: .dark)
-        let lightCount = countDisks(of: .light)
-        if darkCount == lightCount {
-            return nil
-        } else {
-            return darkCount > lightCount ? .dark : .light
-        }
+        board.sideWithMoreDisks()
     }
     
     private func flippedDiskCoordinatesByPlacingDisk(_ disk: Disk, atX x: Int, y: Int) -> [(Int, Int)] {
@@ -426,12 +425,7 @@ extension ViewController {
             }
         }
         
-        for y in boardView.yRange {
-            for x in boardView.xRange {
-                let disk = boardView.diskAt(x: x, y: y)
-                try game.board.set(disk: disk, atX: x, y: y)
-            }
-        }
+        game.board = self.board
         
         try gameRepository.save(game: game)
     }

@@ -43,4 +43,18 @@ struct Board {
         }
         disks[coordinates] = disk
     }
+    
+    func countDisks(of side: Disk) -> Int {
+        disks.filter({ $0.value == side }).count
+    }
+    
+    func sideWithMoreDisks() -> Disk? {
+        let darkCount = countDisks(of: .dark)
+        let lightCount = countDisks(of: .light)
+        if darkCount == lightCount {
+            return nil
+        } else {
+            return darkCount > lightCount ? .dark : .light
+        }
+    }
 }
