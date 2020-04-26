@@ -234,7 +234,7 @@ class ReversiViewControllerTests: XCTestCase {
                     """
         // When
         do {
-            try target.loadGame()
+            try target.restoreBoardView()
         } catch {
             fatalError()
         }
@@ -242,10 +242,10 @@ class ReversiViewControllerTests: XCTestCase {
             let x = $0 / boardView.height
             let y = $0 % boardView.height
             switch (x, y) {
-            case (2, 2), (3, 3), (4, 3), (3, 4):
-                XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark)
+            case (2, 3), (3, 3), (4, 3), (3, 4):
+                XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark, "x: \(x),y: \(y)")
             case (4, 4):
-                XCTAssertEqual(boardView.diskAt(x: x, y: y), .dark)
+                XCTAssertEqual(boardView.diskAt(x: x, y: y), .light, "x: \(x),y: \(y)")
             default:
                 XCTAssertNil(boardView.diskAt(x: x, y: y))
             }
