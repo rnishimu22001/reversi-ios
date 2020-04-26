@@ -13,6 +13,7 @@
 		5A62FA9D2453F6370097D64D /* FileIOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA9C2453F6370097D64D /* FileIOTests.swift */; };
 		5A62FA9F245565DA0097D64D /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA9E245565DA0097D64D /* Game.swift */; };
 		5A62FAA1245567DE0097D64D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FAA0245567DE0097D64D /* Player.swift */; };
+		5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FAA22455751A0097D64D /* GameRepositoryTests.swift */; };
 		5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE68245303AC007C45B8 /* MockBoardView.swift */; };
 		5AFEEE6B24530AB0007C45B8 /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */; };
 		5AFEEE6D24532395007C45B8 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6C24532395007C45B8 /* Board.swift */; };
@@ -49,6 +50,7 @@
 		5A62FA9C2453F6370097D64D /* FileIOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileIOTests.swift; sourceTree = "<group>"; };
 		5A62FA9E245565DA0097D64D /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		5A62FAA0245567DE0097D64D /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		5A62FAA22455751A0097D64D /* GameRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRepositoryTests.swift; sourceTree = "<group>"; };
 		5AFEEE68245303AC007C45B8 /* MockBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBoardView.swift; sourceTree = "<group>"; };
 		5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
 		5AFEEE6C24532395007C45B8 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 				5AFEEE6E2453B980007C45B8 /* BoardTests.swift */,
 				D642BDCC23A9FE4700396732 /* Info.plist */,
 				5A62FA9C2453F6370097D64D /* FileIOTests.swift */,
+				5A62FAA22455751A0097D64D /* GameRepositoryTests.swift */,
 			);
 			path = ReversiTests;
 			sourceTree = "<group>";
@@ -319,6 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
+				5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */,
 				5A62FA9D2453F6370097D64D /* FileIOTests.swift in Sources */,
 				5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */,
 				5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */,
