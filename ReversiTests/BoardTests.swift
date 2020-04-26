@@ -52,6 +52,7 @@ final class BoardTests: XCTestCase {
             // When
             do {
                 try target.set(disk: .dark, atX: coordinates.x, y: coordinates.y)
+                XCTFail("座標がボードの範囲外のため失敗する")
             } catch (let error) {
                 guard case BoardError.outOfRange = error else {
                     XCTFail("範囲外のエラーではない")
