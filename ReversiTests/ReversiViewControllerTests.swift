@@ -238,6 +238,7 @@ class ReversiViewControllerTests: XCTestCase {
         } catch {
             fatalError()
         }
+        // Then
         (1...(boardView.height * boardView.width)).forEach {
             let x = $0 / boardView.height
             let y = $0 % boardView.height
@@ -250,7 +251,7 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTAssertNil(boardView.diskAt(x: x, y: y))
             }
         }
-        XCTAssertEqual(controls[0].selectedSegmentIndex, 0)
-        XCTAssertEqual(controls[1].selectedSegmentIndex, 1)
+        XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
+        XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
     }
 }
