@@ -141,12 +141,12 @@ class ReversiViewControllerTests: XCTestCase {
         mockBord.dummyDisks = [
             Coordinates(x: 1, y: 1): .light,
             Coordinates(x: 2, y: 2): .dark,
-            // 範囲外
+            // 範囲外、盤外に置かれたコマ
             Coordinates(x: mockBord.width, y: mockBord.height): .dark,
             Coordinates(x: mockBord.width + 1, y: mockBord.height + 1): .light,
         ]
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ $0.x == 3 && $0.y == 3 })), "範囲内")
-        XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外 - 現在選択できるので後ほど座標を返さないように修正")
+        XCTAssertFalse(target.validMoves(for: .light).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外")
     }
     
     // MARK: - Save and Load
