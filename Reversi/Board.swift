@@ -34,11 +34,13 @@ struct Board {
         return disks[Coordinates(x: x, y: y)]
     }
     
+    func isValidInRange(coordinates: Coordinates) -> Bool {
+        return yRange.contains(coordinates.x) && xRange.contains(coordinates.y)
+    }
+    
     mutating func set(disk: Disk?, atX x: Int, y: Int) throws {
         let coordinates = Coordinates(x: x, y: y)
-        guard
-            yRange.contains(coordinates.x),
-            xRange.contains(coordinates.y) else {
+        guard isValidInRange(coordinates: coordinates) else {
                 throw BoardError.outOfRange(coordinates: coordinates, range: (x: xRange, y: yRange))
         }
         disks[coordinates] = disk
