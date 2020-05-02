@@ -22,7 +22,7 @@ struct GameRepositoryImplementation: GameRepository {
     func save(game: Game) throws {
         var output: String = ""
         output += game.turn.symbol
-        for side in Disk.sides {
+        for side in Disk.allCases {
             switch side {
             case .dark:
                 output += game.darkPlayer.rawValue.description
@@ -66,7 +66,7 @@ struct GameRepositoryImplementation: GameRepository {
         }
 
         // players
-        for side in Disk.sides {
+        for side in Disk.allCases {
             guard
                 let playerSymbol = line.popFirst(),
                 let playerNumber = Int(playerSymbol.description),
@@ -112,7 +112,7 @@ struct GameRepositoryImplementation: GameRepository {
 
 extension Disk {
     init(index: Int) {
-        for side in Disk.sides {
+        for side in Disk.allCases {
             if index == side.index {
                 self = side
                 return

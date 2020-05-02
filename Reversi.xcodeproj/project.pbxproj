@@ -3,12 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5A3AD51F245D704400C7815B /* Quick in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3AD51E245D704400C7815B /* Quick */; };
-		5A3AD522245D706700C7815B /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3AD521245D706700C7815B /* Nimble */; };
+		5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD523245D70BC00C7815B /* DiskTests.swift */; };
 		5A602ECD2455D3A200F3D882 /* ReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */; };
 		5A62FA962453E5DF0097D64D /* GameRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA952453E5DF0097D64D /* GameRepository.swift */; };
 		5A62FA992453E9D80097D64D /* dummyGame in Resources */ = {isa = PBXBuildFile; fileRef = 5A62FA982453E9D80097D64D /* dummyGame */; };
@@ -47,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5A3AD523245D70BC00C7815B /* DiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTests.swift; sourceTree = "<group>"; };
 		5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecifications.swift; sourceTree = "<group>"; };
 		5A62FA952453E5DF0097D64D /* GameRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameRepository.swift; sourceTree = "<group>"; };
 		5A62FA982453E9D80097D64D /* dummyGame */ = {isa = PBXFileReference; lastKnownFileType = text; path = dummyGame; sourceTree = "<group>"; };
@@ -90,8 +90,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A3AD51F245D704400C7815B /* Quick in Frameworks */,
-				5A3AD522245D706700C7815B /* Nimble in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +207,7 @@
 				D642BDCC23A9FE4700396732 /* Info.plist */,
 				5A62FA9C2453F6370097D64D /* FileIOTests.swift */,
 				5A62FAA22455751A0097D64D /* GameRepositoryTests.swift */,
+				5A3AD523245D70BC00C7815B /* DiskTests.swift */,
 			);
 			path = ReversiTests;
 			sourceTree = "<group>";
@@ -250,8 +249,6 @@
 			);
 			name = ReversiTests;
 			packageProductDependencies = (
-				5A3AD51E245D704400C7815B /* Quick */,
-				5A3AD521245D706700C7815B /* Nimble */,
 			);
 			productName = ReversiTests;
 			productReference = D642BDC623A9FE4700396732 /* ReversiTests.xctest */;
@@ -286,8 +283,6 @@
 			);
 			mainGroup = D642BDA723A9FE4500396732;
 			packageReferences = (
-				5A3AD51D245D704400C7815B /* XCRemoteSwiftPackageReference "Quick" */,
-				5A3AD520245D706700C7815B /* XCRemoteSwiftPackageReference "Nimble" */,
 			);
 			productRefGroup = D642BDB123A9FE4500396732 /* Products */;
 			projectDirPath = "";
@@ -347,6 +342,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */,
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
 				5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */,
 				5A62FA9D2453F6370097D64D /* FileIOTests.swift in Sources */,
@@ -603,38 +599,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		5A3AD51D245D704400C7815B /* XCRemoteSwiftPackageReference "Quick" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Quick/Quick";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.0;
-			};
-		};
-		5A3AD520245D706700C7815B /* XCRemoteSwiftPackageReference "Nimble" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Quick/Nimble";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.7;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		5A3AD51E245D704400C7815B /* Quick */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5A3AD51D245D704400C7815B /* XCRemoteSwiftPackageReference "Quick" */;
-			productName = Quick;
-		};
-		5A3AD521245D706700C7815B /* Nimble */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5A3AD520245D706700C7815B /* XCRemoteSwiftPackageReference "Nimble" */;
-			productName = Nimble;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D642BDA823A9FE4500396732 /* Project object */;
 }

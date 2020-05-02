@@ -272,7 +272,7 @@ extension ViewController {
 extension ViewController {
     /// 各プレイヤーの獲得したディスクの枚数を表示します。
     func updateCountLabels() {
-        for side in Disk.sides {
+        for side in Disk.allCases {
             countLabels[side.index].text = "\(countDisks(of: side))"
         }
     }
@@ -316,7 +316,7 @@ extension ViewController {
             self.animationCanceller?.cancel()
             self.animationCanceller = nil
             
-            for side in Disk.sides {
+            for side in Disk.allCases {
                 self.playerCancellers[side]?.cancel()
                 self.playerCancellers.removeValue(forKey: side)
             }
@@ -369,7 +369,7 @@ extension ViewController {
     /// ゲームの状態をファイルに書き出し、保存します。
     func saveGame() throws {
         var game = Game(turn: turn, board: Board(), darkPlayer: .manual, lightPlayer: .manual)
-        for side in Disk.sides {
+        for side in Disk.allCases {
             guard let player = Player(rawValue: playerControls[side.index].selectedSegmentIndex) else {
                 throw FileIOError.read(path: path, cause: nil)
             }
@@ -393,7 +393,7 @@ extension ViewController {
         turn = game.turn
 
         // players
-        for side in Disk.sides {
+        for side in Disk.allCases {
             switch side {
             case .dark:
                 playerControls[side.index].selectedSegmentIndex = game.darkPlayer.rawValue

@@ -152,7 +152,7 @@ class ReversiViewControllerTests: XCTestCase {
     // MARK: - Save and Load
     
     var controls: [UISegmentedControl] {
-        Disk.sides.enumerated().map {
+        Disk.allCases.enumerated().map {
             let control = UISegmentedControl(items: nil)
             control.insertSegment(withTitle: "Manual", at: 0, animated: false)
             control.insertSegment(withTitle: "Computer", at: 1, animated: false)
