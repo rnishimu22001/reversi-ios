@@ -96,23 +96,15 @@ extension ViewController {
     /// - Parameter y: セルの行です。
     /// - Returns: 指定されたセルに `disk` を置ける場合は `true` を、置けない場合は `false` を返します。
     func canPlaceDisk(_ disk: Disk, atX x: Int, y: Int) -> Bool {
-        !flippedDiskCoordinatesByPlacingDisk(disk, atX: x, y: y).isEmpty
+        ReversiSpecifications().canPlaceDisk(disk, on: board, at: Coordinates(x: x, y: y))
     }
     
     /// `side` で指定された色のディスクを置ける盤上のセルの座標をすべて返します。
     /// - Returns: `side` で指定された色のディスクを置ける盤上のすべてのセルの座標の配列です。
     func validMoves(for side: Disk) -> [(x: Int, y: Int)] {
-        var coordinates: [(Int, Int)] = []
-        
-        for y in boardView.yRange {
-            for x in boardView.xRange {
-                if canPlaceDisk(side, atX: x, y: y) {
-                    coordinates.append((x, y))
-                }
-            }
+        ReversiSpecifications().validMoves(for: side, on: board).map {
+            return (x: $0.x, y: $0.y)
         }
-        
-        return coordinates
     }
 
     /// `x`, `y` で指定されたセルに `disk` を置きます。
