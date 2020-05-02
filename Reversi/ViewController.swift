@@ -28,6 +28,7 @@ final class ViewController: UIViewController {
     
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
+    let specifications = ReversiSpecifications()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,7 +86,7 @@ extension ViewController {
     }
     
     private func flippedDiskCoordinatesByPlacingDisk(_ disk: Disk, atX x: Int, y: Int) -> [(Int, Int)] {
-        return ReversiSpecifications()
+        return specifications
             .flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: Coordinates(x: x, y: y))
             .map { ($0.x, $0.y) }
     }
@@ -96,13 +97,13 @@ extension ViewController {
     /// - Parameter y: セルの行です。
     /// - Returns: 指定されたセルに `disk` を置ける場合は `true` を、置けない場合は `false` を返します。
     func canPlaceDisk(_ disk: Disk, atX x: Int, y: Int) -> Bool {
-        ReversiSpecifications().canPlaceDisk(disk, on: board, at: Coordinates(x: x, y: y))
+        specifications.canPlaceDisk(disk, on: board, at: Coordinates(x: x, y: y))
     }
     
     /// `side` で指定された色のディスクを置ける盤上のセルの座標をすべて返します。
     /// - Returns: `side` で指定された色のディスクを置ける盤上のすべてのセルの座標の配列です。
     func validMoves(for side: Disk) -> [(x: Int, y: Int)] {
-        ReversiSpecifications().validMoves(for: side, on: board).map {
+        specifications.validMoves(for: side, on: board).map {
             return (x: $0.x, y: $0.y)
         }
     }
