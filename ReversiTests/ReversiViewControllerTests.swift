@@ -3,6 +3,28 @@ import XCTest
 
 class ReversiViewControllerTests: XCTestCase {
     
+    // MARK: Views
+    
+    func testUpdateCountLabels() {
+        let target = ViewController()
+        let firstLabel = UILabel(frame: .zero)
+        let lastLabel = UILabel(frame: .zero)
+        let mockBord = MockBoardView(frame: .zero)
+        target.countLabels = [firstLabel, lastLabel]
+        target.boardView = mockBord
+        let dummyDisks = [
+            Coordinates(x: 0, y: 0): Disk.dark,
+            Coordinates(x: 1, y: BoardView().height - 1): Disk.light,
+            Coordinates(x: BoardView().width - 1, y: 2): Disk.light,
+        ]
+        mockBord.dummyDisks = dummyDisks
+        // When
+        target.updateCountLabels()
+        // Then
+        XCTAssertEqual(firstLabel.text, "1", "darkのプレイヤーのカウントが更新されること")
+        XCTAssertEqual(lastLabel.text, "2", "lightのプレイヤーのカウントが更新されること")
+    }
+    
     // MARK: - Reversi logics
     
     func testCountDisks() {

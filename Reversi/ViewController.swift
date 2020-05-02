@@ -15,7 +15,7 @@ final class ViewController: UIViewController {
     private var messageDiskSize: CGFloat!
     
     @IBOutlet var playerControls: [UISegmentedControl]!
-    @IBOutlet private var countLabels: [UILabel]!
+    @IBOutlet var countLabels: [UILabel]!
     @IBOutlet private var playerActivityIndicators: [UIActivityIndicatorView]!
     
     /// どちらの色のプレイヤーのターンかを表します。ゲーム終了時は `nil` です。
