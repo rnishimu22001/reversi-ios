@@ -33,45 +33,6 @@ class ReversiViewControllerTests: XCTestCase {
                        target.countDisks(of: .light),
                        "範囲外のデータはカウントに含まれないこと")
     }
-
-    func testSideWithMoreDisks() {
-        XCTContext.runActivity(named: "引き分け") { _ in
-            // Given
-            let target = ViewController()
-            let mockBord = MockBoardView(frame: .zero)
-            target.boardView = mockBord
-            mockBord.dummyDisks = [
-                Coordinates(x: 0, y: 0): .light,
-                Coordinates(x: 1, y: 1): .dark,
-            ]
-            XCTAssertNil(target.sideWithMoreDisks())
-        }
-        XCTContext.runActivity(named: "lightが多い") { _ in
-            // Given
-            let target = ViewController()
-            let mockBord = MockBoardView(frame: .zero)
-            target.boardView = mockBord
-            mockBord.dummyDisks = [
-                Coordinates(x: 0, y: 0): .light,
-                Coordinates(x: 1, y: 0): .light,
-                Coordinates(x: 1, y: 1): .dark,
-            ]
-            XCTAssertEqual(target.sideWithMoreDisks(), .light)
-        }
-        
-        XCTContext.runActivity(named: "darkが多い") { _ in
-            // Given
-            let target = ViewController()
-            let mockBord = MockBoardView(frame: .zero)
-            target.boardView = mockBord
-            mockBord.dummyDisks = [
-                Coordinates(x: 0, y: 0): .light,
-                Coordinates(x: 1, y: 0): .dark,
-                Coordinates(x: 1, y: 1): .dark,
-            ]
-            XCTAssertEqual(target.sideWithMoreDisks(), .dark)
-        }
-    }
     
     func testCanPlaceDisk() {
         XCTContext.runActivity(named: "すでにDiskが置かれている") { _ in

@@ -16,6 +16,47 @@ final class BoardTests: XCTestCase {
         XCTAssertEqual(Board().yRange, BoardView().yRange)
     }
     
+    func testSideWithMoreDisks() {
+        XCTContext.runActivity(named: "引き分け") { _ in
+            // Given
+            var target = Board()
+            do {
+                try target.set(disk: .light, at: Coordinates(x: 0, y: 0))
+                try target.set(disk: .dark, at: Coordinates(x: 0, y: 1))
+            } catch {
+                fatalError()
+            }
+            // When Then
+            XCTAssertNil(target.sideWithMoreDisks())
+        }
+        XCTContext.runActivity(named: "lightが多い") { _ in
+            // Given
+            var target = Board()
+            do {
+                try target.set(disk: .light, at: Coordinates(x: 0, y: 0))
+                try target.set(disk: .light, at: Coordinates(x: 0, y: 1))
+                try target.set(disk: .dark, at: Coordinates(x: 1, y: 1))
+            } catch {
+                fatalError()
+            }
+            // When Then
+            XCTAssertEqual(target.sideWithMoreDisks(), .light)
+        }
+        
+        XCTContext.runActivity(named: "darkが多い") { _ in
+            // Given
+            var target = Board()
+            do {
+                try target.set(disk: .light, at: Coordinates(x: 0, y: 0))
+                try target.set(disk: .dark, at: Coordinates(x: 1, y: 0))
+                try target.set(disk: .dark, at: Coordinates(x: 1, y: 1))
+            } catch {
+                fatalError()
+            }
+            XCTAssertEqual(target.sideWithMoreDisks(), .dark)
+        }
+    }
+    
     func testCoordinates() {
         let width = 10
         let height = 10
