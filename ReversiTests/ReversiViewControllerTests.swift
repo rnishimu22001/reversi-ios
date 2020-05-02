@@ -164,17 +164,6 @@ class ReversiViewControllerTests: XCTestCase {
     func testSaveGame() {
         // Given
         let boardView = BoardView(frame: .zero)
-        /*
-         x00
-         --------
-         --------
-         --------
-         --xxx---
-         ---xo---
-         --------
-         --------
-         --------
-         */
         boardView.setDisk(.dark, atX: 2, y: 3, animated: false)
         boardView.setDisk(.dark, atX: 3, y: 3, animated: false)
         boardView.setDisk(.dark, atX: 4, y: 3, animated: false)
@@ -184,28 +173,23 @@ class ReversiViewControllerTests: XCTestCase {
         target.boardView = boardView
         let controls = self.controls
         target.playerControls = controls
-        let mockIO = MockFileIO()
-        target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
+        let repository = MockGameRepository()
+        target.gameRepository = repository
         // When
         do {
             try target.saveGame()
         } catch {
             fatalError()
         }
-        // 最後の行に開業が含まれるので空白行が必要
-        XCTAssertEqual(mockIO.written!, """
-                                        x01
-                                        --------
-                                        --------
-                                        --------
-                                        --xxx---
-                                        ---xo---
-                                        --------
-                                        --------
-                                        --------
-
-                                        """)
-        
+        // Then
+        XCTAssertEqual(repository.saved!.darkPlayer, .manual)
+        XCTAssertEqual(repository.saved!.lightPlayer, .computer)
+        XCTAssertEqual(repository.saved!.turn, .dark)
+        XCTAssertEqual(repository.saved!.board.disk(atX: 2, y: 3), .dark)
+        XCTAssertEqual(repository.saved!.board.disk(atX: 3, y: 3), .dark)
+        XCTAssertEqual(repository.saved!.board.disk(atX: 4, y: 3), .dark)
+        XCTAssertEqual(repository.saved!.board.disk(atX: 3, y: 4), .dark)
+        XCTAssertEqual(repository.saved!.board.disk(atX: 4, y: 4), .light)
     }
     
     func testLoadGame() {
@@ -221,21 +205,20 @@ class ReversiViewControllerTests: XCTestCase {
                 XCTAssertEqual($0.selectedSegmentIndex, 0, "テストデータから1に切り替わることをテストするためにここで0をセットする")
             }
             target.playerControls = controls
-            let mockIO = MockFileIO()
-            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
-            // 最後の行に開業が含まれるので空白行が必要
-            mockIO.saved = """
-                        x01
-                        --------
-                        --------
-                        --------
-                        --xxx---
-                        ---xo---
-                        --------
-                        --------
-                        --------
-
-                        """
+            let repository = MockGameRepository()
+            target.gameRepository = repository
+            var board = Board()
+            do {
+                try board.set(disk: .dark, at: Coordinates(x: 2, y: 3))
+                try board.set(disk: .dark, at: Coordinates(x: 3, y: 3))
+                try board.set(disk: .dark, at: Coordinates(x: 4, y: 3))
+                try board.set(disk: .dark, at: Coordinates(x: 3, y: 4))
+                try board.set(disk: .light, at: Coordinates(x: 4, y: 4))
+            } catch {
+                fatalError()
+            }
+            repository.restored = Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer)
+            
             // When
             do {
                 try target.restoreBoardView()
@@ -255,165 +238,9 @@ class ReversiViewControllerTests: XCTestCase {
                     XCTAssertNil(boardView.diskAt(x: x, y: y))
                 }
             }
-            XCTAssertEqual(target.turn, .dark, "x01なのでdarkの手番")
+            XCTAssertEqual(target.turn, .dark)
             XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
             XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
-        }
-        XCTContext.runActivity(named: "y軸の盤面が異常データ") { _ in
-            // Given
-            let boardView = BoardView(frame: .zero)
-            let target = ViewController()
-            target.boardView = boardView
-            target.playerControls = controls
-            let mockIO = MockFileIO()
-            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
-            // 最後の行に開業が含まれるので空白行が必要
-            // y軸の段が9個あり、定義より一行だけ多い
-            mockIO.saved = """
-                        x01
-                        --------
-                        --------
-                        --------
-                        --xxx---
-                        ---xo---
-                        --------
-                        --------
-                        --------
-                        --------
-
-                        """
-            // When
-            do {
-                try target.restoreBoardView()
-                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
-            } catch(let error) {
-                // Then
-                guard case FileIOError.read = error else {
-                    XCTFail("読み込みエラーが発生する想定")
-                    return
-                }
-            }
-        }
-        XCTContext.runActivity(named: "x軸の盤面が異常データ") { _ in
-            // Given
-            let boardView = BoardView(frame: .zero)
-            let target = ViewController()
-            target.boardView = boardView
-            target.playerControls = controls
-            let mockIO = MockFileIO()
-            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
-            // 最後の行に開業が含まれるので空白行が必要
-            // x軸の幅が9あり、定義より一つだけ多い
-            mockIO.saved = """
-                        x01
-                        ---------
-                        ---------
-                        ---------
-                        --xxx----
-                        ---xo----
-                        ---------
-                        ---------
-                        ---------
-
-                        """
-            // When
-            do {
-                try target.restoreBoardView()
-                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
-            } catch(let error) {
-                // Then
-                guard case FileIOError.read = error else {
-                    XCTFail("読み込みエラーが発生する想定")
-                    return
-                }
-            }
-        }
-        XCTContext.runActivity(named: "盤面が空") { _ in
-            // Given
-            let boardView = BoardView(frame: .zero)
-            let target = ViewController()
-            target.boardView = boardView
-            target.playerControls = controls
-            let mockIO = MockFileIO()
-            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
-            // 最後の行に開業が含まれるので空白行が必要
-            // x軸の幅が9あり、定義より一つだけ多い
-            mockIO.saved = ""
-            // When
-            do {
-                try target.restoreBoardView()
-                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
-            } catch(let error) {
-                // Then
-                guard case FileIOError.read = error else {
-                    XCTFail("読み込みエラーが発生する想定")
-                    return
-                }
-            }
-        }
-        XCTContext.runActivity(named: "disk simbolが不正") { _ in
-            // Given
-            let boardView = BoardView(frame: .zero)
-            let target = ViewController()
-            target.boardView = boardView
-            target.playerControls = controls
-            let mockIO = MockFileIO()
-            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
-            mockIO.saved = """
-                        y01
-                        --------
-                        --------
-                        --------
-                        --xxx---
-                        ---xo---
-                        --------
-                        --------
-                        --------
-
-                        """
-            // When
-            do {
-                try target.restoreBoardView()
-                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
-            } catch(let error) {
-                // Then
-                guard case FileIOError.read = error else {
-                    XCTFail("読み込みエラーが発生する想定")
-                    return
-                }
-            }
-        }
-        XCTContext.runActivity(named: "player simbolが不正") { _ in
-            // Given
-            let boardView = BoardView(frame: .zero)
-            let target = ViewController()
-            target.boardView = boardView
-            target.playerControls = controls
-            let mockIO = MockFileIO()
-            target.gameRepository = GameRepositoryImplementation(fileIO: mockIO)
-            mockIO.saved = """
-                        x09
-                        --------
-                        --------
-                        --------
-                        --xxx---
-                        ---xo---
-                        --------
-                        --------
-                        --------
-
-                        """
-            // When
-            do {
-                try target.restoreBoardView()
-                XCTFail("不正データのためrestoreにエラーが発生しなければ失敗")
-            } catch(let error) {
-                // Then
-                guard case FileIOError.read = error else {
-                    XCTFail("読み込みエラーが発生する想定")
-                    return
-                }
-            }
         }
     }
 }
