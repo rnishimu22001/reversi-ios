@@ -200,11 +200,11 @@
 		D642BDC923A9FE4700396732 /* ReversiTests */ = {
 			isa = PBXGroup;
 			children = (
+				D642BDCC23A9FE4700396732 /* Info.plist */,
 				5A62FA972453E83E0097D64D /* DummyData */,
 				5AFEEE6524530373007C45B8 /* Mock */,
 				D642BDCA23A9FE4700396732 /* ReversiViewControllerTests.swift */,
 				5AFEEE6E2453B980007C45B8 /* BoardTests.swift */,
-				D642BDCC23A9FE4700396732 /* Info.plist */,
 				5A62FA9C2453F6370097D64D /* FileIOTests.swift */,
 				5A62FAA22455751A0097D64D /* GameRepositoryTests.swift */,
 				5A3AD523245D70BC00C7815B /* DiskTests.swift */,

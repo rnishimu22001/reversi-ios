@@ -12,10 +12,10 @@ enum BoardError: Error {
 
 struct Board {
     /// 盤の幅（ `8` ）を表します。
-    public let width: Int = 8
+    public let width: Int
     
     /// 盤の高さ（ `8` ）を返します。
-    public let height: Int = 8
+    public let height: Int
     
     /// 盤のセルの `x` の範囲（ `0 ..< 8` ）を返します。
     public let xRange: Range<Int>
@@ -25,7 +25,9 @@ struct Board {
     
     public let coordinates: [Coordinates]
     
-    init() {
+    init(width: Int = 8, height: Int = 8) {
+        self.width = width
+        self.height = height
         xRange = 0 ..< width
         yRange = 0 ..< height
         var boardCoordinates: [Coordinates] = []

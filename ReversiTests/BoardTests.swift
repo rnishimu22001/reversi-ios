@@ -16,6 +16,19 @@ final class BoardTests: XCTestCase {
         XCTAssertEqual(Board().yRange, BoardView().yRange)
     }
     
+    func testCoordinates() {
+        let width = 10
+        let height = 10
+        var coordinates: [Coordinates] = []
+        (0..<width).forEach { x in
+            (0..<height).forEach { y in
+                coordinates.append(Coordinates(x: x, y: y))
+            }
+        }
+        XCTAssertEqual(Board(width: width, height: height).coordinates, coordinates)
+        
+    }
+    
     func testSet() {
         XCTContext.runActivity(named: "セット成功") { _ in
             // Given
@@ -33,7 +46,7 @@ final class BoardTests: XCTestCase {
         XCTContext.runActivity(named: "セット失敗 - y軸が範囲外") { _ in
             // Given
             var target = Board()
-            let coordinates = Coordinates(x: 0, y: 8)
+            let coordinates = Coordinates(x: 0, y: target.height)
             // When
             do {
                 try target.set(disk: .dark, atX: coordinates.x, y: coordinates.y)
@@ -48,7 +61,7 @@ final class BoardTests: XCTestCase {
         XCTContext.runActivity(named: "セット失敗 - x軸が範囲外") { _ in
             // Given
             var target = Board()
-            let coordinates = Coordinates(x: 8, y: 0)
+            let coordinates = Coordinates(x: target.width, y: 0)
             // When
             do {
                 try target.set(disk: .dark, atX: coordinates.x, y: coordinates.y)
