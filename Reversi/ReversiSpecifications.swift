@@ -28,11 +28,13 @@ struct ReversiSpecifications {
        
         let flipped = directions.compactMap { direction -> [Coordinates] in
             var scanning = coordinates
+            var canFlip: [Coordinates] = []
             var candidates: [Coordinates] = []
             flipping: while true {
                 scanning = Coordinates(x: scanning.x + direction.x, y: scanning.y + direction.y)
                 switch (disk, board.disks[scanning]) { // Uses tuples to make patterns exhaustive
                 case (.dark, .some(.dark)), (.light, .some(.light)):
+                    canFlip = candidates
                     break flipping
                 case (.dark, .some(.light)), (.light, .some(.dark)):
                     candidates.append(scanning)
@@ -40,7 +42,7 @@ struct ReversiSpecifications {
                     break flipping
                 }
             }
-            return candidates
+            return canFlip
         }.joined()
         
         return Array(flipped)

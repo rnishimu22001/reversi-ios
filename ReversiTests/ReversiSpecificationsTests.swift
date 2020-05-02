@@ -25,6 +25,8 @@ final class ReversiSpecificationsTests: XCTestCase {
             // When Then
             XCTAssertTrue(target.validMoves(for: .light, on: board).contains(where: ({ $0.x == 1 && $0.y == 3 })))
             XCTAssertTrue(target.validMoves(for: .dark, on: board).contains(where: ({ $0.x == 1 && $0.y == 0 })))
+            XCTAssertEqual(target.validMoves(for: .light, on: board).count, 1)
+            XCTAssertEqual(target.validMoves(for: .dark, on: board).count, 1)
         }
         XCTContext.runActivity(named: "横") { _ in
             // Given
@@ -39,6 +41,8 @@ final class ReversiSpecificationsTests: XCTestCase {
             // When Then
             XCTAssertTrue(target.validMoves(for: .light, on: board).contains(where: ({ $0.x == 3 && $0.y == 1 })))
             XCTAssertTrue(target.validMoves(for: .dark, on: board).contains(where: ({ $0.x == 0 && $0.y == 1 })))
+            XCTAssertEqual(target.validMoves(for: .light, on: board).count, 1)
+            XCTAssertEqual(target.validMoves(for: .dark, on: board).count, 1)
         }
         XCTContext.runActivity(named: "斜め") { _ in
             // Given
@@ -53,6 +57,8 @@ final class ReversiSpecificationsTests: XCTestCase {
             // When Then
             XCTAssertTrue(target.validMoves(for: .light, on: board).contains(where: ({ $0.x == 3 && $0.y == 3 })))
             XCTAssertTrue(target.validMoves(for: .dark, on: board).contains(where: ({ $0.x == 0 && $0.y == 0 })))
+            XCTAssertEqual(target.validMoves(for: .light, on: board).count, 1)
+            XCTAssertEqual(target.validMoves(for: .dark, on: board).count, 1)
         }
         XCTContext.runActivity(named: "複数方向ひっくり返せる場合") { _ in
             // Given
@@ -68,6 +74,8 @@ final class ReversiSpecificationsTests: XCTestCase {
             }
             // When Then
             XCTAssertTrue(target.validMoves(for: .light, on: board).contains(where: ({ $0.x == 3 && $0.y == 3 })))
+            XCTAssertEqual(target.validMoves(for: .light, on: board).count, 1)
+            XCTAssertEqual(target.validMoves(for: .dark, on: board).count, 2)
         }
         XCTContext.runActivity(named: "複数のディスクを挟んでひっくり返せる場合") { _ in
             // Given
@@ -82,6 +90,8 @@ final class ReversiSpecificationsTests: XCTestCase {
             }
             // When Then
             XCTAssertTrue(target.validMoves(for: .light, on: board).contains(where: ({ $0.x == 4 && $0.y == 4 })))
+            XCTAssertEqual(target.validMoves(for: .light, on: board).count, 1)
+            XCTAssertEqual(target.validMoves(for: .dark, on: board).count, 1)
         }
         XCTContext.runActivity(named: "盤外でひっくり返せない場合") { _ in
             // Given
@@ -94,7 +104,9 @@ final class ReversiSpecificationsTests: XCTestCase {
                 fatalError()
             }
             // When Then
+            print(target.validMoves(for: .dark, on: board))
             XCTAssertTrue(target.validMoves(for: .dark, on: board).isEmpty, "lightを挟んだ座標は盤外の座標になるためひっくり返せない")
+            XCTAssertEqual(target.validMoves(for: .light, on: board).count, 1)
         }
     }
     func testCanPlaceDisk() {
