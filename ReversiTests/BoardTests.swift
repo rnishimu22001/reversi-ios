@@ -29,6 +29,20 @@ final class BoardTests: XCTestCase {
         
     }
     
+    func testCountDisk() {
+        
+        var target = Board()
+        do {
+            try target.set(disk: .dark, atX: 1, y: 1)
+            try target.set(disk: .dark, atX: 2, y: 3)
+            try target.set(disk: .light, atX: 1, y: 5)
+        } catch {
+           fatalError()
+        }
+        XCTAssertEqual(target.countDisks(of: .dark), 2)
+        XCTAssertEqual(target.countDisks(of: .light), 1)
+    }
+    
     func testSet() {
         XCTContext.runActivity(named: "セット成功") { _ in
             // Given
