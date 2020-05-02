@@ -108,6 +108,8 @@ class ReversiViewControllerTests: XCTestCase {
         ]
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ $0.x == 3 && $0.y == 3 })), "範囲内")
         XCTAssertFalse(target.validMoves(for: .dark).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外")
+        XCTAssertEqual(target.validMoves(for: .light).count, 1)
+        XCTAssertEqual(target.validMoves(for: .dark).count, 1)
     }
     
     // MARK: - Save and Load
