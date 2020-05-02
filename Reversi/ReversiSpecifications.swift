@@ -45,4 +45,17 @@ struct ReversiSpecifications {
         
         return Array(flipped)
     }
+    
+    func canPlaceDisk(_ disk: Disk, on board: Board, at coordinates: Coordinates) -> Bool {
+        !flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: coordinates).isEmpty
+    }
+    
+    func validMoves(for side: Disk, on board: Board) -> [Coordinates] {
+        return board.coordinates.compactMap {
+            guard canPlaceDisk(side, on: board, at: $0) else {
+                return nil
+            }
+            return $0
+        }
+    }
 }
