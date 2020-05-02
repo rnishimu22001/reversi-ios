@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD523245D70BC00C7815B /* DiskTests.swift */; };
+		5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */; };
 		5A602ECD2455D3A200F3D882 /* ReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */; };
 		5A62FA962453E5DF0097D64D /* GameRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA952453E5DF0097D64D /* GameRepository.swift */; };
 		5A62FA992453E9D80097D64D /* dummyGame in Resources */ = {isa = PBXBuildFile; fileRef = 5A62FA982453E9D80097D64D /* dummyGame */; };
@@ -47,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		5A3AD523245D70BC00C7815B /* DiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTests.swift; sourceTree = "<group>"; };
+		5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecificationsTests.swift; sourceTree = "<group>"; };
 		5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecifications.swift; sourceTree = "<group>"; };
 		5A62FA952453E5DF0097D64D /* GameRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameRepository.swift; sourceTree = "<group>"; };
 		5A62FA982453E9D80097D64D /* dummyGame */ = {isa = PBXFileReference; lastKnownFileType = text; path = dummyGame; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 				5A62FA9C2453F6370097D64D /* FileIOTests.swift */,
 				5A62FAA22455751A0097D64D /* GameRepositoryTests.swift */,
 				5A3AD523245D70BC00C7815B /* DiskTests.swift */,
+				5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */,
 			);
 			path = ReversiTests;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
 				5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */,
 				5A62FA9D2453F6370097D64D /* FileIOTests.swift in Sources */,
+				5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */,
 				5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */,
 				5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */,
 				5AFEEE6F2453B980007C45B8 /* BoardTests.swift in Sources */,

@@ -50,7 +50,10 @@ struct Board {
     }
     
     mutating func set(disk: Disk?, atX x: Int, y: Int) throws {
-        let coordinates = Coordinates(x: x, y: y)
+        try set(disk: disk, at: Coordinates(x: x, y: y))
+    }
+    
+    mutating func set(disk: Disk?, at coordinates: Coordinates) throws {
         guard isValidInRange(coordinates: coordinates) else {
                 throw BoardError.outOfRange(coordinates: coordinates, range: (x: xRange, y: yRange))
         }
