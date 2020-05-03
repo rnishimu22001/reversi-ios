@@ -327,7 +327,10 @@ class ReversiViewControllerTests: XCTestCase {
             let completionExpectation = expectation(description: "plac diskのcompletionが実行されること")
             // When
             do {
-                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: { _ in completionExpectation.fulfill() })
+                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: { isFinished in
+                    completionExpectation.fulfill()
+                    XCTAssertTrue(isFinished)
+                })
             } catch {
                 XCTFail("成功する想定")
             }
@@ -370,6 +373,45 @@ class ReversiViewControllerTests: XCTestCase {
                 SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: true)
             ]
             XCTAssertEqual(willSetDiskArgs, mockBord.setDiskArgs, "cancel済みのためsetDiskが実行されない")
+        }
+        XCTContext.runActivity(named: "アニメーションが完了できなかった") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            target.playerControls = controls
+            target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
+            
+            let mockSpecifications = MockReversiSpecifications()
+            target.specifications = mockSpecifications
+            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [
+                Coordinates(x: 1, y: 1),
+                Coordinates(x: 2, y: 2)
+            ]
+            // completionをキャプチャーして実行させない
+            mockBord.shouldCaputreCompletion = true
+            let completionExpectation = expectation(description: "setDisk完了後にcompletionが実行される")
+            // When
+            do {
+                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: { isFinished in
+                    completionExpectation.fulfill()
+                    XCTAssertFalse(isFinished)
+                })
+            } catch {
+                XCTFail("成功する想定")
+            }
+            // アニメーションが失敗すること再現
+            mockBord.capturedCompletion?(false)
+            // Then
+            let willSetDiskArgs = [
+                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: true),
+                // アニメーションに失敗した場合はアニメーションなしで更新が入る
+                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: false),
+                SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: false),
+                SetDiskArg(disk: .dark, x: 2, y: 2, aniamted: false),
+            ]
+            XCTAssertEqual(willSetDiskArgs, mockBord.setDiskArgs, "アニメーション有りのsetのあとアニメーション無しのsetが入る")
+            wait(for: [completionExpectation], timeout: 0.01)
         }
     }
     
