@@ -14,6 +14,45 @@ class ReversiViewControllerTests: XCTestCase {
         }
     }
     
+    // MARK: Game Management
+    
+    func testNewGame() {
+        // Given
+        let mockRepository = MockGameRepository()
+        let target = ViewController()
+        let mockBoard = MockBoardView()
+        target.boardView = mockBoard
+        target.messageDiskView = DiskView(frame: .zero)
+        target.messageLabel = UILabel(frame: .zero)
+        target.playerControls = controls
+        target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
+        target.messageDiskView.layoutIfNeeded()
+        target.messageDiskView.layoutIfNeeded()
+        target.messageDiskSizeConstraint.isActive = true
+        target.messageLabel = UILabel(frame: .zero)
+        target.messageDiskSize = 5
+        target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
+        target.gameRepository = mockRepository
+        mockRepository.restored = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+        do {
+            try target.restoreBoardView()
+        } catch {
+            fatalError()
+        }
+        // Then
+        let resetExpectation = expectation(description: "Viewのリセットがされること")
+        mockBoard.resetCompletion = { resetExpectation.fulfill() }
+        // When
+        target.newGame()
+        // Then
+        XCTAssertEqual(target.turn, .dark)
+        target.playerControls.forEach {
+            XCTAssertEqual($0.selectedSegmentIndex, Player.manual.rawValue)
+        }
+        
+        wait(for: [resetExpectation], timeout: 0.01)
+    }
+    
     // MARK: Views
     
     func testUpdateCountLabels() {
