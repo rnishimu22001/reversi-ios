@@ -324,14 +324,52 @@ class ReversiViewControllerTests: XCTestCase {
                 Coordinates(x: 1, y: 1),
                 Coordinates(x: 2, y: 2)
             ]
+            let completionExpectation = expectation(description: "plac diskのcompletionが実行されること")
             // When
             do {
-                try target.placeDisk(.dark, atX: 0, y: 0, animated: true)
+                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: { _ in completionExpectation.fulfill() })
             } catch {
                 XCTFail("成功する想定")
             }
             // Then
-            XCTAssertEqual(mockBord.setDiskArgs, willSetDiskArgs)
+            XCTAssertEqual(mockBord.setDiskArgs, willSetDiskArgs, "指定された順番でディスクのセットが実行される")
+            XCTAssertNil(target.animationCanceller, "実行完了後にcancellerがnilに")
+            wait(for: [completionExpectation], timeout: 0.01)
+        }
+        XCTContext.runActivity(named: "placeDisk実行中にキャンセルされた") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            target.playerControls = controls
+            target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
+            
+            let mockSpecifications = MockReversiSpecifications()
+            target.specifications = mockSpecifications
+            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [
+                Coordinates(x: 1, y: 1),
+                Coordinates(x: 2, y: 2)
+            ]
+            // completionをキャプチャーして実行させない
+            mockBord.shouldCaputreCompletion = true
+            // When
+            do {
+                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: {_ in XCTFail("cancel済みのためcompletionが実行されない") })
+            } catch {
+                XCTFail("成功する想定")
+            }
+            // キャンセルされた後のcompletionの実行を再現
+            let canceler = Canceller(nil)
+            canceler.cancel()
+            target.animationCanceller = canceler
+            mockBord.capturedCompletion?(true)
+            // Then
+            // animationCancelerがクロージャー内でキャプチャされるので、初回の1回目でキャンセルされず合計2回セットが呼ばれる
+            let willSetDiskArgs = [
+                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: true),
+                SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: true)
+            ]
+            XCTAssertEqual(willSetDiskArgs, mockBord.setDiskArgs, "cancel済みのためsetDiskが実行されない")
         }
     }
     

@@ -21,7 +21,7 @@ final class ViewController: UIViewController {
     /// どちらの色のプレイヤーのターンかを表します。ゲーム終了時は `nil` です。
     private(set) var turn: Disk? = .dark
     
-    private var animationCanceller: Canceller?
+    var animationCanceller: Canceller?
     private var isAnimating: Bool { animationCanceller != nil }
     
     private var playerCancellers: [Disk: Canceller] = [:]
@@ -162,7 +162,7 @@ extension ViewController {
             completion(true)
             return
         }
-        
+        // アニメーション中にリセットされるとクラッシュする
         let animationCanceller = self.animationCanceller!
         boardView.setDisk(disk, atX: x, y: y, animated: true) { [weak self] isFinished in
             guard let self = self else { return }
