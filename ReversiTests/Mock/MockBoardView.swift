@@ -8,12 +8,23 @@
 
 @testable import Reversi
 
+struct SetDiskArg: Equatable {
+    let disk: Disk?
+    let x: Int
+    let y: Int
+    let aniamted: Bool
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.disk == rhs.disk && lhs.x == rhs.x && lhs.y == rhs.y && lhs.aniamted == rhs.aniamted
+    }
+}
+
 final class MockBoardView: BoardView {
     
-    var setDiskCompletion: (((disk: Disk?, x: Int, y: Int, animated: Bool)) -> Void)?
     var isSuccess: Bool = true
+    var setDiskArgs: [SetDiskArg] = []
     override func setDisk(_ disk: Disk?, atX x: Int, y: Int, animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        setDiskCompletion?((disk: disk, x: x, y: y, animated))
+        
+        setDiskArgs.append(SetDiskArg(disk: disk, x: x, y: y, aniamted: animated))
         completion?(isSuccess)
     }
     

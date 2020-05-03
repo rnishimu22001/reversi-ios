@@ -283,20 +283,56 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     func testPlaceDisk() {
-        // Given
-        let target = ViewController()
-        let mockBord = MockBoardView(frame: .zero)
-        target.boardView = mockBord
-        let setExpectation = expectation(description: "ディスクのセットがされること")
-        mockBord.setDiskCompletion = { arg in
-            setExpectation.fulfill()
-            XCTAssertTrue(arg.animated)
+        XCTContext.runActivity(named: "盤上にセット可能な箇所がない") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
             
+            let mockSpecifications = MockReversiSpecifications()
+            target.specifications = mockSpecifications
+            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
+            do {
+                try target.placeDisk(.dark, atX: 0, y: 0, animated: true)
+                XCTFail()
+            } catch(let error) {
+                if let placementError = error as? DiskPlacementError {
+                    XCTAssertEqual(placementError.x, 0)
+                    XCTAssertEqual(placementError.y, 0)
+                    XCTAssertEqual(placementError.disk, .dark)
+                } else {
+                    XCTFail("指定のエラーではない場合")
+                }
+            }
+            XCTAssertTrue(mockBord.setDiskArgs.isEmpty, "ディスクのセットが呼ばれないこと")
         }
-       
-        
-        try? target.placeDisk(.dark, atX: 0, y: 0, animated: true)
-        wait(for: [setExpectation], timeout: 0.01)
+        XCTContext.runActivity(named: "盤上にセット可能な箇所がある") { _ in
+            // Given
+            let target = ViewController()
+            let mockBord = MockBoardView(frame: .zero)
+            target.boardView = mockBord
+            target.playerControls = controls
+            target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
+            let willSetDiskArgs = [
+                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: true),
+                SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: true),
+                SetDiskArg(disk: .dark, x: 2, y: 2, aniamted: true)
+            ]
+            let mockSpecifications = MockReversiSpecifications()
+            target.specifications = mockSpecifications
+            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [
+                Coordinates(x: 1, y: 1),
+                Coordinates(x: 2, y: 2)
+            ]
+            // When
+            do {
+                try target.placeDisk(.dark, atX: 0, y: 0, animated: true)
+            } catch {
+                XCTFail("成功する想定")
+            }
+            // Then
+            XCTAssertEqual(mockBord.setDiskArgs, willSetDiskArgs)
+        }
     }
     
     // MARK: - Save and Load

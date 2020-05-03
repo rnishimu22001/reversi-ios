@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD523245D70BC00C7815B /* DiskTests.swift */; };
 		5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */; };
+		5A510685245E6E1D004673A0 /* MockReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */; };
 		5A602ECD2455D3A200F3D882 /* ReversiSpecificationsImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A602ECC2455D3A200F3D882 /* ReversiSpecificationsImplementation.swift */; };
 		5A62FA962453E5DF0097D64D /* GameRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A62FA952453E5DF0097D64D /* GameRepository.swift */; };
 		5A62FA992453E9D80097D64D /* dummyGame in Resources */ = {isa = PBXBuildFile; fileRef = 5A62FA982453E9D80097D64D /* dummyGame */; };
@@ -50,6 +51,7 @@
 /* Begin PBXFileReference section */
 		5A3AD523245D70BC00C7815B /* DiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTests.swift; sourceTree = "<group>"; };
 		5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecificationsTests.swift; sourceTree = "<group>"; };
+		5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockReversiSpecifications.swift; sourceTree = "<group>"; };
 		5A602ECC2455D3A200F3D882 /* ReversiSpecificationsImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecificationsImplementation.swift; sourceTree = "<group>"; };
 		5A62FA952453E5DF0097D64D /* GameRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameRepository.swift; sourceTree = "<group>"; };
 		5A62FA982453E9D80097D64D /* dummyGame */ = {isa = PBXFileReference; lastKnownFileType = text; path = dummyGame; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				5AFEEE68245303AC007C45B8 /* MockBoardView.swift */,
 				5A62FA9A2453F5060097D64D /* MockFileIO.swift */,
 				5AF36AFD245DA4BD00873292 /* MockGameRepository.swift */,
+				5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -350,6 +353,7 @@
 			files = (
 				5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */,
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
+				5A510685245E6E1D004673A0 /* MockReversiSpecifications.swift in Sources */,
 				5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */,
 				5A62FA9D2453F6370097D64D /* FileIOTests.swift in Sources */,
 				5AF36AFE245DA4BD00873292 /* MockGameRepository.swift in Sources */,
