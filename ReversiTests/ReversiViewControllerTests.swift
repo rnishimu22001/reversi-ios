@@ -2,6 +2,17 @@ import XCTest
 @testable import Reversi
 
 class ReversiViewControllerTests: XCTestCase {
+   
+    // MARK: Mock views
+    var controls: [UISegmentedControl] {
+        Disk.allCases.enumerated().map {
+            let control = UISegmentedControl(items: nil)
+            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
+            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
+            control.selectedSegmentIndex = $0.offset
+            return control
+        }
+    }
     
     // MARK: Views
     
@@ -23,6 +34,104 @@ class ReversiViewControllerTests: XCTestCase {
         // Then
         XCTAssertEqual(firstLabel.text, "1", "darkのプレイヤーのカウントが更新されること")
         XCTAssertEqual(lastLabel.text, "2", "lightのプレイヤーのカウントが更新されること")
+    }
+    
+    func testUpdateMessageView() {
+        let diskSize: CGFloat = 5
+        XCTContext.runActivity(named: "ゲーム中") { _ in
+            // Given
+            let mockRepository = MockGameRepository()
+            let target = ViewController()
+            target.boardView = BoardView(frame: .zero)
+            target.messageDiskView = DiskView(frame: .zero)
+            target.messageLabel = UILabel(frame: .zero)
+            target.playerControls = controls
+            target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
+            target.messageDiskView.layoutIfNeeded()
+            target.messageDiskView.layoutIfNeeded()
+            target.messageDiskSizeConstraint.isActive = true
+            target.messageLabel = UILabel(frame: .zero)
+            target.messageDiskSize = diskSize
+            target.gameRepository = mockRepository
+            mockRepository.restored = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+            do {
+                try target.restoreBoardView()
+            } catch {
+                fatalError()
+            }
+            // When
+            target.updateMessageViews()
+            // Then
+            XCTAssertEqual(target.messageDiskView.disk, .light)
+            XCTAssertEqual(target.messageLabel.text, "'s turn")
+            XCTAssertEqual(target.messageDiskSizeConstraint.constant, diskSize)
+        }
+        XCTContext.runActivity(named: "ゲーム終了") { _ in
+            XCTContext.runActivity(named: "一方の勝ち") { _ in
+                // Given
+                let mockRepository = MockGameRepository()
+                let target = ViewController()
+                target.boardView = BoardView(frame: .zero)
+                target.messageDiskView = DiskView(frame: .zero)
+                target.messageLabel = UILabel(frame: .zero)
+                target.playerControls = controls
+                target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
+                target.messageDiskView.layoutIfNeeded()
+                target.messageDiskView.layoutIfNeeded()
+                target.messageDiskSizeConstraint.isActive = true
+                target.messageLabel = UILabel(frame: .zero)
+                target.messageDiskSize = diskSize
+                target.gameRepository = mockRepository
+                var board = Board()
+                // dark側がディスクが多い状態
+                do {
+                    try board.set(disk: .dark, at: Coordinates(x: 0, y: 0))
+                } catch {
+                    fatalError()
+                }
+                // turnがnilでゲーム終了
+                mockRepository.restored = Game(turn: nil, board: board, darkPlayer: .computer, lightPlayer: .manual)
+                do {
+                    try target.restoreBoardView()
+                } catch {
+                    fatalError()
+                }
+                // When
+                target.updateMessageViews()
+                // Then
+                XCTAssertEqual(target.messageDiskView.disk, .dark)
+                XCTAssertEqual(target.messageLabel.text, " won")
+                XCTAssertEqual(target.messageDiskSizeConstraint.constant, diskSize)
+            }
+            XCTContext.runActivity(named: "引き分け") { _ in
+                let mockRepository = MockGameRepository()
+                let target = ViewController()
+                target.boardView = BoardView(frame: .zero)
+                target.messageDiskView = DiskView(frame: .zero)
+                target.messageLabel = UILabel(frame: .zero)
+                target.playerControls = controls
+                target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
+                target.messageDiskView.layoutIfNeeded()
+                target.messageDiskView.layoutIfNeeded()
+                target.messageDiskSizeConstraint.isActive = true
+                target.messageLabel = UILabel(frame: .zero)
+                target.messageDiskSize = diskSize
+                target.gameRepository = mockRepository
+                // turnがnilでゲーム終了
+                mockRepository.restored = Game(turn: nil, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+                do {
+                    try target.restoreBoardView()
+                } catch {
+                    fatalError()
+                }
+                // When
+                target.updateMessageViews()
+                // Then
+                XCTAssertEqual(target.messageDiskView.disk, .dark, "引き分けだがdisk viewがひょうじされたまま")
+                XCTAssertEqual(target.messageDiskSizeConstraint.constant, 0, "messageDiskSizeを0にしてdiskViewを隠す")
+                XCTAssertEqual(target.messageLabel.text, "Tied")
+            }
+        }
     }
     
     // MARK: - Reversi logics
@@ -135,16 +244,6 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     // MARK: - Save and Load
-    
-    var controls: [UISegmentedControl] {
-        Disk.allCases.enumerated().map {
-            let control = UISegmentedControl(items: nil)
-            control.insertSegment(withTitle: "Manual", at: 0, animated: false)
-            control.insertSegment(withTitle: "Computer", at: 1, animated: false)
-            control.selectedSegmentIndex = $0.offset
-            return control
-        }
-    }
     
     func testSaveGame() {
         // Given

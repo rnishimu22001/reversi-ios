@@ -3,20 +3,20 @@ import UIKit
 final class ViewController: UIViewController {
     @IBOutlet var boardView: BoardView!
     
-    @IBOutlet private var messageDiskView: DiskView!
-    @IBOutlet private var messageLabel: UILabel!
-    @IBOutlet private var messageDiskSizeConstraint: NSLayoutConstraint!
+    @IBOutlet var messageDiskView: DiskView!
+    @IBOutlet var messageLabel: UILabel!
+    @IBOutlet var messageDiskSizeConstraint: NSLayoutConstraint!
     /// Storyboard 上で設定されたサイズを保管します。
     /// 引き分けの際は `messageDiskView` の表示が必要ないため、
     /// `messageDiskSizeConstraint.constant` を `0` に設定します。
     /// その後、新しいゲームが開始されたときに `messageDiskSize` を
     /// 元のサイズで表示する必要があり、
     /// その際に `messageDiskSize` に保管された値を使います。
-    private var messageDiskSize: CGFloat!
+    var messageDiskSize: CGFloat!
     
     @IBOutlet var playerControls: [UISegmentedControl]!
     @IBOutlet var countLabels: [UILabel]!
-    @IBOutlet private var playerActivityIndicators: [UIActivityIndicatorView]!
+    @IBOutlet var playerActivityIndicators: [UIActivityIndicatorView]!
     
     /// どちらの色のプレイヤーのターンかを表します。ゲーム終了時は `nil` です。
     private(set) var turn: Disk? = .dark
