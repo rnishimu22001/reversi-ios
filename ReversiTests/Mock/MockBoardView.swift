@@ -20,12 +20,16 @@ struct SetDiskArg: Equatable {
 
 final class MockBoardView: BoardView {
     
-    var isSuccess: Bool = true
     var setDiskArgs: [SetDiskArg] = []
+    var capturedCompletion: ((Bool) -> Void)?
+    var shouldCaputreCompletion = false
     override func setDisk(_ disk: Disk?, atX x: Int, y: Int, animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        
         setDiskArgs.append(SetDiskArg(disk: disk, x: x, y: y, aniamted: animated))
-        completion?(isSuccess)
+        if shouldCaputreCompletion {
+            capturedCompletion = completion
+        } else {
+            completion?(true)
+        }
     }
     
     var resetCompletion: (() -> Void)?
