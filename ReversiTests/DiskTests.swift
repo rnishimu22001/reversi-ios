@@ -14,4 +14,9 @@ final class DiskTests: XCTestCase {
     func testSides() {
         XCTAssertEqual([.dark, .light], Disk.allCases)
     }
+    
+    func testFlipped() {
+        XCTAssertEqual(Disk.dark.flipped, .light)
+        XCTAssertEqual(Disk.light.flipped, .dark)
+    }
 }
