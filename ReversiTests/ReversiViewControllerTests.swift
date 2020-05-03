@@ -293,7 +293,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.specifications = mockSpecifications
             mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
             do {
-                try target.placeDisk(.dark, atX: 0, y: 0, animated: true)
+                try target.placeDisk(.dark, atX: 0, y: 0) { _ in XCTFail("completionが呼ばれない") }
                 XCTFail()
             } catch(let error) {
                 if let placementError = error as? DiskPlacementError {
@@ -327,7 +327,7 @@ class ReversiViewControllerTests: XCTestCase {
             let completionExpectation = expectation(description: "plac diskのcompletionが実行されること")
             // When
             do {
-                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: { isFinished in
+                try target.placeDisk(.dark, atX: 0, y: 0, completion: { isFinished in
                     completionExpectation.fulfill()
                     XCTAssertTrue(isFinished)
                 })
@@ -357,7 +357,7 @@ class ReversiViewControllerTests: XCTestCase {
             mockBord.shouldCaputreCompletion = true
             // When
             do {
-                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: {_ in XCTFail("cancel済みのためcompletionが実行されない") })
+                try target.placeDisk(.dark, atX: 0, y: 0, completion: {_ in XCTFail("cancel済みのためcompletionが実行されない") })
             } catch {
                 XCTFail("成功する想定")
             }
@@ -393,7 +393,7 @@ class ReversiViewControllerTests: XCTestCase {
             let completionExpectation = expectation(description: "setDisk完了後にcompletionが実行される")
             // When
             do {
-                try target.placeDisk(.dark, atX: 0, y: 0, animated: true, completion: { isFinished in
+                try target.placeDisk(.dark, atX: 0, y: 0, completion: { isFinished in
                     completionExpectation.fulfill()
                     XCTAssertFalse(isFinished)
                 })
