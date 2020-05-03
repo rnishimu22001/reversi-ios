@@ -6,7 +6,13 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
-struct ReversiSpecifications {
+protocol ReversiSpecifications {
+    func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates]
+    func canPlaceDisk(_ disk: Disk, on board: Board, at coordinates: Coordinates) -> Bool
+    func validMoves(for side: Disk, on board: Board) -> [Coordinates]
+}
+
+struct ReversiSpecificationsImplementation: ReversiSpecifications {
     
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {
         

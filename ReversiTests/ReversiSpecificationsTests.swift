@@ -14,7 +14,7 @@ final class ReversiSpecificationsTests: XCTestCase {
     func testValidMoves() {
         XCTContext.runActivity(named: "縦") { _ in
             // Given
-            let target = ReversiSpecifications()
+            let target = ReversiSpecificationsImplementation()
             var board = Board()
             do {
                 try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
@@ -30,7 +30,7 @@ final class ReversiSpecificationsTests: XCTestCase {
         }
         XCTContext.runActivity(named: "横") { _ in
             // Given
-            let target = ReversiSpecifications()
+            let target = ReversiSpecificationsImplementation()
             var board = Board()
             do {
                 try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
@@ -46,7 +46,7 @@ final class ReversiSpecificationsTests: XCTestCase {
         }
         XCTContext.runActivity(named: "斜め") { _ in
             // Given
-            let target = ReversiSpecifications()
+            let target = ReversiSpecificationsImplementation()
             var board = Board()
             do {
                 try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
@@ -62,7 +62,7 @@ final class ReversiSpecificationsTests: XCTestCase {
         }
         XCTContext.runActivity(named: "複数方向ひっくり返せる場合") { _ in
             // Given
-            let target = ReversiSpecifications()
+            let target = ReversiSpecificationsImplementation()
             var board = Board()
             do {
                 try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
@@ -79,7 +79,7 @@ final class ReversiSpecificationsTests: XCTestCase {
         }
         XCTContext.runActivity(named: "複数のディスクを挟んでひっくり返せる場合") { _ in
             // Given
-            let target = ReversiSpecifications()
+            let target = ReversiSpecificationsImplementation()
             var board = Board()
             do {
                 try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
@@ -95,7 +95,7 @@ final class ReversiSpecificationsTests: XCTestCase {
         }
         XCTContext.runActivity(named: "盤外でひっくり返せない場合") { _ in
             // Given
-            let target = ReversiSpecifications()
+            let target = ReversiSpecificationsImplementation()
             var board = Board()
             do {
                 try board.set(disk: .light, at: Coordinates(x: 0, y: 0))
@@ -112,7 +112,7 @@ final class ReversiSpecificationsTests: XCTestCase {
     func testCanPlaceDisk() {
         
         // Given
-        let target = ReversiSpecifications()
+        let target = ReversiSpecificationsImplementation()
         var board = Board()
         do {
             try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
