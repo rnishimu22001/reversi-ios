@@ -282,6 +282,23 @@ class ReversiViewControllerTests: XCTestCase {
         XCTAssertEqual(target.validMoves(for: .dark).count, 1)
     }
     
+    func testPlaceDisk() {
+        // Given
+        let target = ViewController()
+        let mockBord = MockBoardView(frame: .zero)
+        target.boardView = mockBord
+        let setExpectation = expectation(description: "ディスクのセットがされること")
+        mockBord.setDiskCompletion = { arg in
+            setExpectation.fulfill()
+            XCTAssertTrue(arg.animated)
+            
+        }
+       
+        
+        try? target.placeDisk(.dark, atX: 0, y: 0, animated: true)
+        wait(for: [setExpectation], timeout: 0.01)
+    }
+    
     // MARK: - Save and Load
     
     func testSaveGame() {
