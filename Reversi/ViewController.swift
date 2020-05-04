@@ -152,12 +152,15 @@ extension ViewController {
         }
         // アニメーション中にリセットされるとクラッシュする
         let animationCanceller = self.animationCanceller!
+        viewModel.set(disk: disk, at: Coordinates(x: x, y: y))
         boardView.setDisk(disk, atX: x, y: y, animated: true) { [weak self] isFinished in
             guard let self = self else { return }
             if animationCanceller.isCancelled { return }
             if isFinished {
                 self.animateSettingDisks(at: coordinates.dropFirst(), to: disk, completion: completion)
             } else {
+                // 更新に失敗した場合は残りの全てをアニメーションなしで更新
+                self.viewModel.set(disk: disk, at: coordinates.map { Coordinates(x: $0.0, y: $0.1) } )
                 for (x, y) in coordinates {
                     self.boardView.setDisk(disk, atX: x, y: y, animated: false)
                 }
@@ -172,6 +175,7 @@ extension ViewController {
 extension ViewController {
     /// ゲームの状態を初期化し、新しいゲームを開始します。
     func newGame() {
+        viewModel.reset()
         boardView.reset()
         turn = .dark
         
@@ -390,6 +394,7 @@ extension ViewController {
                 playerControls[side.index].selectedSegmentIndex = game.lightPlayer.rawValue
             }
         }
+        viewModel.restore(from: game.board)
         game.board.disks.forEach {
             boardView.setDisk($0.value, atX: $0.key.x, y: $0.key.y, animated: false)
         }

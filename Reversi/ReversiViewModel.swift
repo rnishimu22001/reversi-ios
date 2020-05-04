@@ -8,7 +8,11 @@
 
 protocol ReversiViewModel {
     var board: Board { get }
-    mutating func set(disk: Disk, x: Int, y: Int)
+    mutating func set(disk: Disk, at coodinates: Coordinates)
+    mutating func set(disk: Disk, at coodinates: [Coordinates])
+    
+    mutating func reset()
+    mutating func restore(from board: Board)
 }
 
 struct ReversiViewModelImplementation: ReversiViewModel {
@@ -22,16 +26,21 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         self.specifications = specifications
     }
     
-    mutating func set(disk: Disk, x: Int, y: Int) {
-        try? board.set(disk: disk, at: Coordinates(x: x, y: y))
+    mutating func set(disk: Disk, at coodinates: Coordinates) {
+        try? board.set(disk: disk, at: coodinates)
+    }
+    
+    mutating func set(disk: Disk, at coodinates: [Coordinates]) {
+        coodinates.forEach {
+            try? board.set(disk: disk, at: $0)
+        }
     }
     
     mutating func reset() {
         board = specifications.initalState(from: board)
     }
-   
-    /// あとでboardの引数を削る
-    mutating func restore(with board: Board) {
+    
+    mutating func restore(from board: Board) {
         self.board = board
     }
 }
