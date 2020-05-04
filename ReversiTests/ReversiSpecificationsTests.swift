@@ -13,7 +13,7 @@ final class ReversiSpecificationsTests: XCTestCase {
     
     func testInitalState() {
         let willDelete = Coordinates(x: 0, y: 0)
-        var board = Board()
+        var board = Board(width: 8, height: 8)
         do {
             try board.set(disk: .dark, at: willDelete)
         } catch {
