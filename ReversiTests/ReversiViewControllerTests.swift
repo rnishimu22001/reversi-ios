@@ -59,15 +59,19 @@ class ReversiViewControllerTests: XCTestCase {
         let target = ViewController()
         let firstLabel = UILabel(frame: .zero)
         let lastLabel = UILabel(frame: .zero)
-        let mockBord = MockBoardView(frame: .zero)
         target.countLabels = [firstLabel, lastLabel]
-        target.boardView = mockBord
-        let dummyDisks = [
-            Coordinates(x: 0, y: 0): Disk.dark,
-            Coordinates(x: 1, y: BoardView().height - 1): Disk.light,
-            Coordinates(x: BoardView().width - 1, y: 2): Disk.light,
-        ]
-        mockBord.dummyDisks = dummyDisks
+        var board = Board()
+        do {
+            try board.set(disk: .dark, at: Coordinates(x: 0, y: 0))
+            try board.set(disk: .light, at: Coordinates(x: 1, y: board.height - 1))
+            try board.set(disk: .light, at: Coordinates(x: board.width - 1, y: 2))
+        } catch {
+            fatalError()
+        }
+        
+        let mockViewModel = MockReversiViewModel()
+        mockViewModel.board = board
+        target.viewModel = mockViewModel
         // When
         target.updateCountLabels()
         // Then
@@ -181,27 +185,35 @@ class ReversiViewControllerTests: XCTestCase {
         let mockBord = MockBoardView(frame: .zero)
         target.boardView = mockBord
         let dummyDisks = [
-            Coordinates(x: 0, y: 0): Disk.dark,
-            Coordinates(x: 1, y: BoardView().height - 1): Disk.light,
-            Coordinates(x: BoardView().width - 1, y: 2): Disk.light,
+            
             // 範囲外のデータ
             Coordinates(x: 1, y: BoardView().height): Disk.light,
             Coordinates(x: BoardView().width, y: 1): Disk.light,
         ]
         mockBord.dummyDisks = dummyDisks
+        var board = Board()
+        do {
+            try board.set(disk: .dark, at: Coordinates(x: 0, y: 0))
+            try board.set(disk: .light, at: Coordinates(x: 1, y: board.height - 1))
+            try board.set(disk: .light, at: Coordinates(x: board.width - 1, y: 2))
+        } catch {
+            fatalError()
+        }
+        
+        let mockViewModel = MockReversiViewModel()
+        mockViewModel.board = board
+        target.viewModel = mockViewModel
         
         // When Then
-        XCTAssertEqual(dummyDisks.filter { $0.value == .dark }.count,
+        XCTAssertEqual(board.disks.filter { $0.value == .dark }.count,
                        target.countDisks(of: .dark),
                        "darkのみカウントされること")
         
-        XCTAssertEqual(dummyDisks
+        XCTAssertEqual(board.disks
             .filter { $0.value == .light }
-            .filter { BoardView().xRange.contains($0.key.x) }
-            .filter { BoardView().yRange.contains($0.key.y) }
             .count,
                        target.countDisks(of: .light),
-                       "範囲外のデータはカウントに含まれないこと")
+                       "lightのみカウントされること")
     }
     
     func testCanPlaceDisk() {
@@ -218,12 +230,17 @@ class ReversiViewControllerTests: XCTestCase {
             XCTContext.runActivity(named: "flipできない") { _ in
                 // Given
                 let target = ViewController()
-                let mockBord = MockBoardView(frame: .zero)
-                target.boardView = mockBord
-                mockBord.dummyDisks = [
-                    Coordinates(x: 1, y: 1): .light,
-                    Coordinates(x: 2, y: 2): .dark
-                ]
+                var board = Board()
+                do {
+                    try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
+                    try board.set(disk: .dark, at: Coordinates(x: 2, y: 2))
+                } catch {
+                    fatalError()
+                }
+                
+                let mockViewModel = MockReversiViewModel()
+                mockViewModel.board = board
+                target.viewModel = mockViewModel
                 XCTAssertTrue(target.canPlaceDisk(.dark, atX: 0, y: 0))
             }
             XCTContext.runActivity(named: "flipできる") { _ in
@@ -244,7 +261,7 @@ class ReversiViewControllerTests: XCTestCase {
                 let target = ViewController()
                 var board = Board()
                 do {
-                    try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
+                    try board.set(disk: .dark, at: Coordinates(x: 1, y: 1))
                     try board.set(disk: .light, at: Coordinates(x: 2, y: 2))
                 } catch {
                     fatalError()
@@ -258,12 +275,17 @@ class ReversiViewControllerTests: XCTestCase {
             XCTContext.runActivity(named: "flipできない") { _ in
                 // Given
                 let target = ViewController()
-                let mockBord = MockBoardView(frame: .zero)
-                target.boardView = mockBord
-                mockBord.dummyDisks = [
-                    Coordinates(x: 1, y: 1): .light,
-                    Coordinates(x: 2, y: 2): .dark
-                ]
+                var board = Board()
+                do {
+                    try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
+                    try board.set(disk: .dark, at: Coordinates(x: 2, y: 2))
+                } catch {
+                    fatalError()
+                }
+                
+                let mockViewModel = MockReversiViewModel()
+                mockViewModel.board = board
+                target.viewModel = mockViewModel
                 XCTAssertFalse(target.canPlaceDisk(.light, atX: 0, y: 0))
             }
         }
@@ -275,7 +297,7 @@ class ReversiViewControllerTests: XCTestCase {
         var board = Board()
         do {
             try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
-            try board.set(disk: .light, at: Coordinates(x: 2, y: 2))
+            try board.set(disk: .dark, at: Coordinates(x: 2, y: 2))
         } catch {
             fatalError()
         }
@@ -464,8 +486,23 @@ class ReversiViewControllerTests: XCTestCase {
         boardView.setDisk(.dark, atX: 4, y: 3, animated: false)
         boardView.setDisk(.dark, atX: 3, y: 4, animated: false)
         boardView.setDisk(.light, atX: 4, y: 4, animated: false)
+        
         let target = ViewController()
         target.boardView = boardView
+        var board = Board()
+        do {
+            try board.set(disk: .dark, at: Coordinates(x: 2, y: 3))
+            try board.set(disk: .dark, at: Coordinates(x: 3, y: 3))
+            try board.set(disk: .dark, at: Coordinates(x: 4, y: 3))
+            try board.set(disk: .dark, at: Coordinates(x: 3, y: 4))
+            try board.set(disk: .light, at: Coordinates(x: 4, y: 4))
+        } catch {
+            fatalError()
+        }
+        
+        let mockViewModel = MockReversiViewModel()
+        mockViewModel.board = board
+        target.viewModel = mockViewModel
         let controls = self.controls
         target.playerControls = controls
         let repository = MockGameRepository()
