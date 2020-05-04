@@ -2,6 +2,12 @@ import XCTest
 @testable import Reversi
 
 class ReversiViewControllerTests: XCTestCase {
+    
+    var observation: [NSKeyValueObservation] = []
+    
+    override func tearDown() {
+        observation = []
+    }
    
     // MARK: Mock views
     var controls: [UISegmentedControl] {
@@ -69,14 +75,27 @@ class ReversiViewControllerTests: XCTestCase {
             fatalError()
         }
         
-        let mockViewModel = MockReversiViewModel()
-        mockViewModel.board = board
+        let mockViewModel = ReversiViewModelImplementation(board: board)
         target.viewModel = mockViewModel
         // When
+        target.sink()
         target.updateCountLabels()
         // Then
-        XCTAssertEqual(firstLabel.text, "1", "darkのプレイヤーのカウントが更新されること")
-        XCTAssertEqual(lastLabel.text, "2", "lightのプレイヤーのカウントが更新されること")
+        let firstExpectation = expectation(description: "darkのプレイヤーのカウント更新")
+        observation.append(firstLabel.observe(\.text) { _, change in
+            DispatchQueue.main.async {
+                firstExpectation.fulfill()
+                XCTAssertEqual(firstLabel.text, "1", "darkのプレイヤーのカウントが更新されること")
+            }
+        })
+        let lastExpectation = expectation(description: "lightのプレイヤーのカウント更新")
+        observation.append(lastLabel.observe(\.text) { _, change in
+            DispatchQueue.main.async {
+                lastExpectation.fulfill()
+                XCTAssertEqual(lastLabel.text, "2", "lightのプレイヤーのカウントが更新されること")
+            }
+        })
+        wait(for: [firstExpectation, lastExpectation], timeout: 1)
     }
     
     func testUpdateMessageView() {

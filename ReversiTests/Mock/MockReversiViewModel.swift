@@ -16,6 +16,10 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    func updateDiskCount() {
+        
+    }
+    
     var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))

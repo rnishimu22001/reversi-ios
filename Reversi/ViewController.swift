@@ -1,4 +1,5 @@
 import UIKit
+import Combine
 
 final class ViewController: UIViewController {
     @IBOutlet var boardView: BoardView!
@@ -26,6 +27,8 @@ final class ViewController: UIViewController {
     
     private var playerCancellers: [Disk: Canceller] = [:]
     
+    private var cancellables: [AnyCancellable] = []
+    
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
     var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
@@ -42,6 +45,21 @@ final class ViewController: UIViewController {
         } catch _ {
             newGame()
         }
+        sink()
+    }
+    
+    func sink() {
+    
+        cancellables.append(viewModel.darkPlayerStatus.subscribe(on: DispatchQueue.main).sink { [weak self] data in
+            // プレイヤータイプのつなぎ込みもしておくこと
+            guard let self = self else { return }
+            self.countLabels[Disk.dark.index].text = data.diskCount.description
+        })
+        cancellables.append(viewModel.lightPlayerStatus.subscribe(on: DispatchQueue.main).sink { [weak self] data in
+            // プレイヤータイプのつなぎ込みもしておくこと
+            guard let self = self else { return }
+            self.countLabels[Disk.light.index].text = data.diskCount.description
+        })
     }
     
     private var viewHasAppeared: Bool = false
@@ -252,9 +270,7 @@ extension ViewController {
 extension ViewController {
     /// 各プレイヤーの獲得したディスクの枚数を表示します。
     func updateCountLabels() {
-        for side in Disk.allCases {
-            countLabels[side.index].text = "\(countDisks(of: side))"
-        }
+        viewModel.updateDiskCount()
     }
     
     /// 現在の状況に応じてメッセージを表示します。

@@ -14,6 +14,8 @@ protocol ReversiViewModel {
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     
+    mutating func updateDiskCount()
+    
     mutating func set(disk: Disk, at coodinates: Coordinates)
     mutating func set(disk: Disk, at coodinates: [Coordinates])
     
@@ -32,7 +34,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
         self.board = board
         self.specifications = specifications
-        updatePlayerStatusIfNeeded()
+        updateDiskCount()
     }
     
     mutating func nextTurn(status: GameStatus) {
@@ -41,22 +43,19 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {
         try? board.set(disk: disk, at: coodinates)
-        updatePlayerStatusIfNeeded()
     }
     
     mutating func set(disk: Disk, at coodinates: [Coordinates]) {
         coodinates.forEach {
             try? board.set(disk: disk, at: $0)
         }
-        updatePlayerStatusIfNeeded()
     }
     
     mutating func restore(from board: Board) {
         self.board = board
-        updatePlayerStatusIfNeeded()
     }
     
-    private mutating func updatePlayerStatusIfNeeded() {
+    mutating func updateDiskCount() {
         let dark = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType,
                                            diskCount: board.countDisks(of: .dark))
         if dark != darkPlayerStatus.value {

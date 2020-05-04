@@ -18,7 +18,7 @@ final class ReversiViewModelTests: XCTestCase {
         cancellables = []
     }
     
-    func testReset() {
+    func testUpdateCount() {
         var board = Board()
         
         try! board.set(disk: .dark, at: Coordinates(x: 2, y: 2))
@@ -42,6 +42,7 @@ final class ReversiViewModelTests: XCTestCase {
         })
         
         target.set(disk: .dark, at: Coordinates(x: 1, y: 1))
+        target.updateDiskCount()
         wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
     }
     
