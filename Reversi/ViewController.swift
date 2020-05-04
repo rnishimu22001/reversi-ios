@@ -29,7 +29,7 @@ final class ViewController: UIViewController {
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
     var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
-    lazy var viewModel: ReversiViewModel = ReversiViewModelImplementation(board: board)
+    var viewModel: ReversiViewModel = ReversiViewModelImplementation(board: Board())
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,20 +53,7 @@ final class ViewController: UIViewController {
         waitForPlayer()
     }
     
-    var board: Board {
-        var board = Board()
-        for y in boardView.yRange {
-            for x in boardView.xRange {
-                let disk = boardView.diskAt(x: x, y: y)
-                do {
-                    try board.set(disk: disk, atX: x, y: y)
-                } catch {
-                    fatalError("boardViewとboardの縦横のマスの数が異なっています")
-                }
-            }
-        }
-        return board
-    }
+    var board: Board { viewModel.board }
 }
 
 // MARK: Reversi logics
