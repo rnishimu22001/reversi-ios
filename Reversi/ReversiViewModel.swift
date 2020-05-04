@@ -17,21 +17,13 @@ protocol ReversiViewModel {
     mutating func set(disk: Disk, at coodinates: Coordinates)
     mutating func set(disk: Disk, at coodinates: [Coordinates])
     
-    mutating func reset()
     mutating func restore(from board: Board)
 }
 
 struct ReversiViewModelImplementation: ReversiViewModel {
   
     private(set) var specifications: ReversiSpecifications
-    private(set) var board: Board {
-        didSet {
-            darkPlayerStatus.send(PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType,
-                                                          diskCount: board.countDisks(of: .dark)))
-            lightPlayerStatus.send(PlayerStatusDisplayData(playerType: lightPlayerStatus.value.playerType,
-                                                          diskCount: board.countDisks(of: .light)))
-        }
-    }
+    private(set) var board: Board
     private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
@@ -40,6 +32,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
         self.board = board
         self.specifications = specifications
+        updatePlayerStatusIfNeeded()
     }
     
     mutating func nextTurn(status: GameStatus) {
@@ -48,19 +41,31 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {
         try? board.set(disk: disk, at: coodinates)
+        updatePlayerStatusIfNeeded()
     }
     
     mutating func set(disk: Disk, at coodinates: [Coordinates]) {
         coodinates.forEach {
             try? board.set(disk: disk, at: $0)
         }
-    }
-    
-    mutating func reset() {
-        board = specifications.initalState(from: board)
+        updatePlayerStatusIfNeeded()
     }
     
     mutating func restore(from board: Board) {
         self.board = board
+        updatePlayerStatusIfNeeded()
+    }
+    
+    private mutating func updatePlayerStatusIfNeeded() {
+        let dark = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType,
+                                           diskCount: board.countDisks(of: .dark))
+        if dark != darkPlayerStatus.value {
+            darkPlayerStatus.value = dark
+        }
+        let light = PlayerStatusDisplayData(playerType: lightPlayerStatus.value.playerType,
+                                            diskCount: board.countDisks(of: .light))
+        if light != lightPlayerStatus.value {
+            lightPlayerStatus.value = light
+        }
     }
 }

@@ -6,7 +6,11 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
-struct PlayerStatusDisplayData {
+struct PlayerStatusDisplayData: Equatable {
     let playerType: Player
     let diskCount: Int
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.playerType == rhs.playerType && lhs.diskCount == rhs.diskCount
+    }
 }

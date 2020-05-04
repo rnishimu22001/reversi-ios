@@ -162,7 +162,7 @@ extension ViewController {
 extension ViewController {
     /// ゲームの状態を初期化し、新しいゲームを開始します。
     func newGame() {
-        viewModel.reset()
+        viewModel.restore(from: specifications.initalState(from: board))
         boardView.reset()
         turn = .dark
         
