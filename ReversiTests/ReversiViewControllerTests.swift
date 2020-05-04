@@ -242,12 +242,17 @@ class ReversiViewControllerTests: XCTestCase {
             XCTContext.runActivity(named: "flipできる") { _ in
                 // Given
                 let target = ViewController()
-                let mockBord = MockBoardView(frame: .zero)
-                target.boardView = mockBord
-                mockBord.dummyDisks = [
-                    Coordinates(x: 1, y: 1): .dark,
-                    Coordinates(x: 2, y: 2): .light
-                ]
+                var board = Board()
+                do {
+                    try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
+                    try board.set(disk: .light, at: Coordinates(x: 2, y: 2))
+                } catch {
+                    fatalError()
+                }
+                
+                let mockViewModel = MockReversiViewModel()
+                mockViewModel.board = board
+                target.viewModel = mockViewModel
                 XCTAssertTrue(target.canPlaceDisk(.light, atX: 0, y: 0))
             }
             XCTContext.runActivity(named: "flipできない") { _ in
@@ -267,17 +272,18 @@ class ReversiViewControllerTests: XCTestCase {
     func testValidMoves() {
         // Given
         let target = ViewController()
-        let mockBord = MockBoardView(frame: .zero)
-        target.boardView = mockBord
-        mockBord.dummyDisks = [
-            Coordinates(x: 1, y: 1): .light,
-            Coordinates(x: 2, y: 2): .dark,
-            // 範囲外、盤外に置かれたコマ
-            Coordinates(x: mockBord.width, y: mockBord.height): .light,
-            Coordinates(x: mockBord.width + 1, y: mockBord.height + 1): .dark,
-        ]
+        var board = Board()
+        do {
+            try board.set(disk: .light, at: Coordinates(x: 1, y: 1))
+            try board.set(disk: .light, at: Coordinates(x: 2, y: 2))
+        } catch {
+            fatalError()
+        }
+        
+        let mockViewModel = MockReversiViewModel()
+        mockViewModel.board = board
+        target.viewModel = mockViewModel
         XCTAssertTrue(target.validMoves(for: .light).contains(where: ({ $0.x == 3 && $0.y == 3 })), "範囲内")
-        XCTAssertFalse(target.validMoves(for: .dark).contains(where: ({ ($0.x == mockBord.width - 1) && ($0.y == mockBord.height - 1) })), "範囲外")
         XCTAssertEqual(target.validMoves(for: .light).count, 1)
         XCTAssertEqual(target.validMoves(for: .dark).count, 1)
     }

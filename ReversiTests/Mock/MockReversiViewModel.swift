@@ -16,15 +16,7 @@ struct SetDiskArgForViewModel: SetDiskArg {
 
 final class MockReversiViewModel: ReversiViewModel {
 
-    var invokedBoardGetter = false
-    var invokedBoardGetterCount = 0
-    var stubbedBoard: Board = Board()
-
-    var board: Board {
-        invokedBoardGetter = true
-        invokedBoardGetterCount += 1
-        return stubbedBoard
-    }
+    var board: Board = Board()
 
     var invokedSetDiskDiskAtCoordinates = false
     var invokedSetDiskDiskAtCoordinatesCount = 0
