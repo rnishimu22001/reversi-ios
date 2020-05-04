@@ -6,6 +6,11 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
+enum GameStatus {
+    case ending(winner: Disk?)
+    case playing
+}
+
 struct Game {
     var turn: Disk?
     var board: Board

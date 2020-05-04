@@ -6,6 +6,8 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
+import Combine
+
 protocol ReversiViewModel {
     var board: Board { get }
     mutating func set(disk: Disk, at coodinates: Coordinates)
@@ -19,6 +21,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
   
     private(set) var specifications: ReversiSpecifications
     private(set) var board: Board
+    private(set) var message: CurrentValueSubject<MessageDisplayData?, Never> = .init(nil)
     
     init(board: Board,
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
