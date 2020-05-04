@@ -7,7 +7,7 @@
 //
 
 struct MessageDisplayData {
-    let turn: Disk?
+    let displayedDisk: Disk?
     let message: String
     
     init(status: GameStatus) {
@@ -18,9 +18,9 @@ struct MessageDisplayData {
             } else {
                 message = " won"
             }
-            self.turn = winner
+            self.displayedDisk = winner
         case .playing(let turn):
-            self.turn = turn
+            self.displayedDisk = turn
             message = "'s turn"
         }
     }
