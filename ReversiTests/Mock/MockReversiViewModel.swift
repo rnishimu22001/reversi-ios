@@ -8,11 +8,17 @@
 
 @testable import Reversi
 
+struct SetDiskArgForViewModel: SetDiskArg {
+    let disk: Disk?
+    let x: Int
+    let y: Int
+}
+
 final class MockReversiViewModel: ReversiViewModel {
 
     var invokedBoardGetter = false
     var invokedBoardGetterCount = 0
-    var stubbedBoard: Board!
+    var stubbedBoard: Board = Board()
 
     var board: Board {
         invokedBoardGetter = true
@@ -23,13 +29,13 @@ final class MockReversiViewModel: ReversiViewModel {
     var invokedSetDiskDiskAtCoordinates = false
     var invokedSetDiskDiskAtCoordinatesCount = 0
     var invokedSetDiskDiskAtCoordinatesParameters: (disk: Disk, coodinates: Coordinates)?
-    var invokedSetDiskDiskAtCoordinatesParametersList = [(disk: Disk, coodinates: Coordinates)]()
+    var invokedSetDiskDiskAtCoordinatesParametersList = [SetDiskArgForViewModel]()
 
     func set(disk: Disk, at coodinates: Coordinates) {
         invokedSetDiskDiskAtCoordinates = true
         invokedSetDiskDiskAtCoordinatesCount += 1
         invokedSetDiskDiskAtCoordinatesParameters = (disk, coodinates)
-        invokedSetDiskDiskAtCoordinatesParametersList.append((disk, coodinates))
+        invokedSetDiskDiskAtCoordinatesParametersList.append(SetDiskArgForViewModel(disk: disk, x: coodinates.x, y: coodinates.y))
     }
 
     var invokedSetDiskDiskAtMultiCoordinates = false

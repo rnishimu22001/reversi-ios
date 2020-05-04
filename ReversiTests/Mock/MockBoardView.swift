@@ -8,7 +8,19 @@
 
 @testable import Reversi
 
-struct SetDiskArg: Equatable {
+protocol SetDiskArg: Equatable {
+    var disk: Disk? { get }
+    var x: Int { get }
+    var y: Int { get }
+}
+
+extension SetDiskArg {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.disk == rhs.disk && lhs.x == rhs.x && lhs.y == rhs.y
+    }
+}
+
+struct SetDiskArgForMockView: SetDiskArg {
     let disk: Disk?
     let x: Int
     let y: Int
@@ -20,11 +32,11 @@ struct SetDiskArg: Equatable {
 
 final class MockBoardView: BoardView {
     
-    var setDiskArgs: [SetDiskArg] = []
+    var setDiskArgs: [SetDiskArgForMockView] = []
     var capturedCompletion: ((Bool) -> Void)?
     var shouldCaputreCompletion = false
     override func setDisk(_ disk: Disk?, atX x: Int, y: Int, animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        setDiskArgs.append(SetDiskArg(disk: disk, x: x, y: y, aniamted: animated))
+        setDiskArgs.append(SetDiskArgForMockView(disk: disk, x: x, y: y, aniamted: animated))
         if shouldCaputreCompletion {
             capturedCompletion = completion
         } else {

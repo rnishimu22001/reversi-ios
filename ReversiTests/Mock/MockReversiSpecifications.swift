@@ -9,6 +9,11 @@
 @testable import Reversi
 
 final class MockReversiSpecifications: ReversiSpecifications {
+    
+    var stubbedInitalState: Board?
+    func initalState(from board: Board) -> Board {
+        stubbedInitalState!
+    }
 
     var stubbedFlippedDiskCoordinatesByPlacingResult: [Coordinates]! = []
 

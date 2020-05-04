@@ -288,7 +288,8 @@ class ReversiViewControllerTests: XCTestCase {
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
-            
+            let mockViewModel = MockReversiViewModel()
+            target.viewModel = mockViewModel
             let mockSpecifications = MockReversiSpecifications()
             target.specifications = mockSpecifications
             mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
@@ -305,18 +306,21 @@ class ReversiViewControllerTests: XCTestCase {
                 }
             }
             XCTAssertTrue(mockBord.setDiskArgs.isEmpty, "ディスクのセットが呼ばれないこと")
+            XCTAssertTrue(mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.isEmpty, "ディスクのセットが呼ばれないこと")
         }
         XCTContext.runActivity(named: "盤上にセット可能な箇所がある") { _ in
             // Given
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
+            let mockViewModel = MockReversiViewModel()
+            target.viewModel = mockViewModel
             target.playerControls = controls
             target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
             let willSetDiskArgs = [
-                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: true),
-                SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: true),
-                SetDiskArg(disk: .dark, x: 2, y: 2, aniamted: true)
+                SetDiskArgForMockView(disk: .dark, x: 0, y: 0, aniamted: true),
+                SetDiskArgForMockView(disk: .dark, x: 1, y: 1, aniamted: true),
+                SetDiskArgForMockView(disk: .dark, x: 2, y: 2, aniamted: true)
             ]
             let mockSpecifications = MockReversiSpecifications()
             target.specifications = mockSpecifications
@@ -336,6 +340,12 @@ class ReversiViewControllerTests: XCTestCase {
             }
             // Then
             XCTAssertEqual(mockBord.setDiskArgs, willSetDiskArgs, "指定された順番でディスクのセットが実行される")
+            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.count, willSetDiskArgs.count)
+            mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.enumerated().forEach {
+                XCTAssertEqual(willSetDiskArgs[$0.offset].disk, $0.element.disk, "指定された順番でディスクのセットが実行される")
+                XCTAssertEqual(willSetDiskArgs[$0.offset].x, $0.element.x)
+                XCTAssertEqual(willSetDiskArgs[$0.offset].y, $0.element.y)
+            }
             XCTAssertNil(target.animationCanceller, "実行完了後にcancellerがnilに")
             wait(for: [completionExpectation], timeout: 0.01)
         }
@@ -344,6 +354,8 @@ class ReversiViewControllerTests: XCTestCase {
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
+            let mockViewModel = MockReversiViewModel()
+            target.viewModel = mockViewModel
             target.playerControls = controls
             target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
             
@@ -369,8 +381,8 @@ class ReversiViewControllerTests: XCTestCase {
             // Then
             // animationCancelerがクロージャー内でキャプチャされるので、初回の1回目でキャンセルされず合計2回セットが呼ばれる
             let willSetDiskArgs = [
-                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: true),
-                SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: true)
+                SetDiskArgForMockView(disk: .dark, x: 0, y: 0, aniamted: true),
+                SetDiskArgForMockView(disk: .dark, x: 1, y: 1, aniamted: true)
             ]
             XCTAssertEqual(willSetDiskArgs, mockBord.setDiskArgs, "cancel済みのためsetDiskが実行されない")
         }
@@ -379,6 +391,8 @@ class ReversiViewControllerTests: XCTestCase {
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
+            let mockViewModel = MockReversiViewModel()
+            target.viewModel = mockViewModel
             target.playerControls = controls
             target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
             
@@ -404,13 +418,32 @@ class ReversiViewControllerTests: XCTestCase {
             mockBord.capturedCompletion?(false)
             // Then
             let willSetDiskArgs = [
-                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: true),
+                SetDiskArgForMockView(disk: .dark, x: 0, y: 0, aniamted: true),
                 // アニメーションに失敗した場合はアニメーションなしで更新が入る
-                SetDiskArg(disk: .dark, x: 0, y: 0, aniamted: false),
-                SetDiskArg(disk: .dark, x: 1, y: 1, aniamted: false),
-                SetDiskArg(disk: .dark, x: 2, y: 2, aniamted: false),
+                SetDiskArgForMockView(disk: .dark, x: 0, y: 0, aniamted: false),
+                SetDiskArgForMockView(disk: .dark, x: 1, y: 1, aniamted: false),
+                SetDiskArgForMockView(disk: .dark, x: 2, y: 2, aniamted: false),
             ]
             XCTAssertEqual(willSetDiskArgs, mockBord.setDiskArgs, "アニメーション有りのsetのあとアニメーション無しのsetが入る")
+            let animated = willSetDiskArgs.filter { $0.aniamted == true }
+            let nonAnimated = willSetDiskArgs.filter { $0.aniamted == false }
+                
+            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.count,
+                           animated.count)
+            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtMultiCoordinatesParametersList.count, 1, "複数セットが呼ばれるのは一回だけ")
+            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtMultiCoordinatesParametersList.first!.coodinates.count,
+                           nonAnimated.filter { $0.aniamted == false }.count,
+                           "複数の座標が一度にセットされる")
+            mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.enumerated().forEach {
+                XCTAssertEqual(animated[$0.offset].disk, $0.element.disk, "指定された順番でディスクのセットが実行される")
+                XCTAssertEqual(animated[$0.offset].x, $0.element.x)
+                XCTAssertEqual(animated[$0.offset].y, $0.element.y)
+            }
+            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtMultiCoordinatesParametersList.first!.disk, .dark)
+            mockViewModel.invokedSetDiskDiskAtMultiCoordinatesParametersList.first!.coodinates.enumerated().forEach {
+                XCTAssertEqual(nonAnimated[$0.offset].x, $0.element.x, "指定された順番でディスクのセットが実行される")
+                XCTAssertEqual(nonAnimated[$0.offset].y, $0.element.y)
+            }
             wait(for: [completionExpectation], timeout: 0.01)
         }
     }
