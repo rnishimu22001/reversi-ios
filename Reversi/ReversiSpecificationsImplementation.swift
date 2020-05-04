@@ -7,12 +7,26 @@
 //
 
 protocol ReversiSpecifications {
+    func initalState(from board: Board) -> Board
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates]
     func canPlaceDisk(_ disk: Disk, on board: Board, at coordinates: Coordinates) -> Bool
     func validMoves(for side: Disk, on board: Board) -> [Coordinates]
 }
 
 struct ReversiSpecificationsImplementation: ReversiSpecifications {
+    
+    func initalState(from board: Board) -> Board {
+        var board = board
+        do {
+            try board.set(disk: .light, atX: board.width / 2 - 1, y: board.height / 2 - 1)
+            try board.set(disk: .dark, atX: board.width / 2, y: board.height / 2 - 1)
+            try board.set(disk: .dark, atX: board.width / 2 - 1, y: board.height / 2)
+            try board.set(disk: .light, atX: board.width / 2, y: board.height / 2)
+        } catch {
+            fatalError("初期化に失敗しました")
+        }
+        return board
+    }
     
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {
         

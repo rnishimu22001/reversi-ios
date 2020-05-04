@@ -29,6 +29,7 @@ final class ViewController: UIViewController {
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
     var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
+    lazy var viewModel: ReversiViewModel = ReversiViewModelImplementation(board: board)
     
     override func viewDidLoad() {
         super.viewDidLoad()
