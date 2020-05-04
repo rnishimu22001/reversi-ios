@@ -11,6 +11,24 @@ import XCTest
 
 final class ReversiSpecificationsTests: XCTestCase {
     
+    func testInitalState() {
+        let willDelete = Coordinates(x: 0, y: 0)
+        var board = Board()
+        do {
+            try board.set(disk: .dark, at: willDelete)
+        } catch {
+            fatalError()
+        }
+        // When
+        let newBoard = ReversiSpecificationsImplementation().initalState(from: board)
+        // Then
+        XCTAssertEqual(.dark, newBoard.disks[Coordinates(x: 3, y: 4)], "diskが初期位置にセットされていること")
+        XCTAssertEqual(.dark, newBoard.disks[Coordinates(x: 4, y: 3)], "diskが初期位置にセットされていること")
+        XCTAssertEqual(.light, newBoard.disks[Coordinates(x: 3, y: 3)], "diskが初期位置にセットされていること")
+        XCTAssertEqual(.light, newBoard.disks[Coordinates(x: 4, y: 4)], "diskが初期位置にセットされていること")
+        XCTAssertNil(newBoard.disks[willDelete], "diskが消えていること")
+    }
+    
     func testValidMoves() {
         XCTContext.runActivity(named: "縦") { _ in
             // Given
