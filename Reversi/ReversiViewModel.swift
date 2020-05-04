@@ -10,6 +10,10 @@ import Combine
 
 protocol ReversiViewModel {
     var board: Board { get }
+    var message: CurrentValueSubject<MessageDisplayData, Never> { get }
+    var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
+    var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
+    
     mutating func set(disk: Disk, at coodinates: Coordinates)
     mutating func set(disk: Disk, at coodinates: [Coordinates])
     
@@ -20,13 +24,26 @@ protocol ReversiViewModel {
 struct ReversiViewModelImplementation: ReversiViewModel {
   
     private(set) var specifications: ReversiSpecifications
-    private(set) var board: Board
-    private(set) var message: CurrentValueSubject<MessageDisplayData?, Never> = .init(nil)
+    private(set) var board: Board {
+        didSet {
+            darkPlayerStatus.send(PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType,
+                                                          diskCount: board.countDisks(of: .dark)))
+            lightPlayerStatus.send(PlayerStatusDisplayData(playerType: lightPlayerStatus.value.playerType,
+                                                          diskCount: board.countDisks(of: .light)))
+        }
+    }
+    private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
+    private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
+    private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     
     init(board: Board,
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
         self.board = board
         self.specifications = specifications
+    }
+    
+    mutating func nextTurn(status: GameStatus) {
+        message.send(MessageDisplayData(status: status))
     }
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {

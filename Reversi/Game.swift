@@ -8,7 +8,7 @@
 
 enum GameStatus {
     case ending(winner: Disk?)
-    case playing
+    case playing(turn: Disk)
 }
 
 struct Game {
