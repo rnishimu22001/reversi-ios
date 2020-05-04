@@ -6,6 +6,7 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
+import Combine
 @testable import Reversi
 
 struct SetDiskArgForViewModel: SetDiskArg {
@@ -15,6 +16,12 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
+    
+    var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
+    
+    var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
+    
 
     var board: Board = Board()
 

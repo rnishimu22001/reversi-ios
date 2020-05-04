@@ -23,6 +23,7 @@
 		5AD702BF24600CD500F17A4C /* MockReversiViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD702BE24600CD500F17A4C /* MockReversiViewModel.swift */; };
 		5AF143822460287B005EBF3B /* MessageDisplayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF143812460287B005EBF3B /* MessageDisplayData.swift */; };
 		5AF1438424602B86005EBF3B /* PlyaerStatusDisplayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF1438324602B86005EBF3B /* PlyaerStatusDisplayData.swift */; };
+		5AF14386246033CE005EBF3B /* MessageDisplayDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF14385246033CE005EBF3B /* MessageDisplayDataTests.swift */; };
 		5AF36AFE245DA4BD00873292 /* MockGameRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF36AFD245DA4BD00873292 /* MockGameRepository.swift */; };
 		5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE68245303AC007C45B8 /* MockBoardView.swift */; };
 		5AFEEE6B24530AB0007C45B8 /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */; };
@@ -70,6 +71,7 @@
 		5AD702BE24600CD500F17A4C /* MockReversiViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockReversiViewModel.swift; sourceTree = "<group>"; };
 		5AF143812460287B005EBF3B /* MessageDisplayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDisplayData.swift; sourceTree = "<group>"; };
 		5AF1438324602B86005EBF3B /* PlyaerStatusDisplayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlyaerStatusDisplayData.swift; sourceTree = "<group>"; };
+		5AF14385246033CE005EBF3B /* MessageDisplayDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDisplayDataTests.swift; sourceTree = "<group>"; };
 		5AF36AFD245DA4BD00873292 /* MockGameRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGameRepository.swift; sourceTree = "<group>"; };
 		5AFEEE68245303AC007C45B8 /* MockBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBoardView.swift; sourceTree = "<group>"; };
 		5AFEEE6A24530AB0007C45B8 /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
@@ -248,6 +250,7 @@
 				5A3AD523245D70BC00C7815B /* DiskTests.swift */,
 				5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */,
 				5AD702BC24600BD700F17A4C /* ReversiViewModelTests.swift */,
+				5AF14385246033CE005EBF3B /* MessageDisplayDataTests.swift */,
 			);
 			path = ReversiTests;
 			sourceTree = "<group>";
@@ -393,6 +396,7 @@
 				5AD702BD24600BD700F17A4C /* ReversiViewModelTests.swift in Sources */,
 				5AF36AFE245DA4BD00873292 /* MockGameRepository.swift in Sources */,
 				5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */,
+				5AF14386246033CE005EBF3B /* MessageDisplayDataTests.swift in Sources */,
 				5AD702BF24600CD500F17A4C /* MockReversiViewModel.swift in Sources */,
 				5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */,
 				5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */,
