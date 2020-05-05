@@ -10,7 +10,16 @@ protocol ReversiSpecifications {
     func initalState(from board: Board) -> Board
     func isEndOfGame(on board: Board) -> Bool
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates]
+    /// `x`, `y` で指定されたセルに、 `disk` が置けるかを調べます。
+    /// ディスクを置くためには、少なくとも 1 枚のディスクをひっくり返せる必要があります。
+    /// - Parameter disk: 置くdisk
+    /// - Parameter board: 判定対象の盤面
+    /// - Parameter coordinates: セルの座標
+    /// - Returns: 指定されたセルに `disk` を置ける場合は `true` を、置けない場合は `false` を返します。
     func canPlaceDisk(_ disk: Disk, on board: Board, at coordinates: Coordinates) -> Bool
+    /// `side` で指定された色のディスクを置ける盤上のセルの座標をすべて返します。
+    ///  - Parameter board: 判定対象の盤面
+    /// - Returns: `side` で指定された色のディスクを置ける盤上のすべてのセルの座標の配列です。
     func validMoves(for side: Disk, on board: Board) -> [Coordinates]
 }
 
