@@ -227,43 +227,6 @@ class ReversiViewControllerTests: XCTestCase {
     
     // MARK: - Reversi logics
     
-    func testCountDisks() {
-        // Given
-        let target = ViewController()
-        let mockBord = MockBoardView(frame: .zero)
-        target.boardView = mockBord
-        let dummyDisks = [
-            
-            // 範囲外のデータ
-            Coordinates(x: 1, y: BoardView().height): Disk.light,
-            Coordinates(x: BoardView().width, y: 1): Disk.light,
-        ]
-        mockBord.dummyDisks = dummyDisks
-        var board = Board()
-        do {
-            try board.set(disk: .dark, at: Coordinates(x: 0, y: 0))
-            try board.set(disk: .light, at: Coordinates(x: 1, y: board.height - 1))
-            try board.set(disk: .light, at: Coordinates(x: board.width - 1, y: 2))
-        } catch {
-            fatalError()
-        }
-        
-        let mockViewModel = MockReversiViewModel()
-        mockViewModel.board = board
-        target.viewModel = mockViewModel
-        
-        // When Then
-        XCTAssertEqual(board.disks.filter { $0.value == .dark }.count,
-                       target.countDisks(of: .dark),
-                       "darkのみカウントされること")
-        
-        XCTAssertEqual(board.disks
-            .filter { $0.value == .light }
-            .count,
-                       target.countDisks(of: .light),
-                       "lightのみカウントされること")
-    }
-    
     func testCanPlaceDisk() {
         XCTContext.runActivity(named: "すでにDiskが置かれている") { _ in
             // Given
