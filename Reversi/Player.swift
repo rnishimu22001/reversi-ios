@@ -10,3 +10,12 @@ enum Player: Int {
     case manual = 0
     case computer = 1
 }
+
+extension Player {
+    var changed: Player {
+        switch self {
+        case .computer: return .manual
+        case .manual: return .computer
+        }
+    }
+}

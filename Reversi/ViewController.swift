@@ -312,7 +312,7 @@ extension ViewController {
     /// プレイヤーのモードが変更された場合に呼ばれるハンドラーです。
     @IBAction func changePlayerControlSegment(_ sender: UISegmentedControl) {
         let side: Disk = Disk(index: playerControls.firstIndex(of: sender)!)
-        
+        viewModel.changePlayer(on: side)
         try? saveGame()
         
         if let canceller = playerCancellers[side] {

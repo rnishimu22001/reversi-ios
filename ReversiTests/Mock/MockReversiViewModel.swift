@@ -16,6 +16,10 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    func changePlayer(on side: Disk) {
+        
+    }
+    
     var turn: Disk?
     
     func nextTurn() {

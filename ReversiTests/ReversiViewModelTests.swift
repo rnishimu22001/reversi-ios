@@ -131,6 +131,65 @@ final class ReversiViewModelTests: XCTestCase {
         wait(for: [messageExpectation], timeout: 0.1)
     }
     
+    func testChangePlayer() {
+        XCTContext.runActivity(named: "darkの切り替え") { _ in
+            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
+            darkPlayerExpectation.expectedFulfillmentCount = 2
+            var darkCount = 1
+            cancellables.append(target.darkPlayerStatus.sink {
+                darkPlayerExpectation.fulfill()
+                switch darkCount {
+                case 1:
+                    XCTAssertEqual($0.playerType, .manual)
+                case 2:
+                    XCTAssertEqual($0.playerType, .computer)
+                default:
+                    XCTFail("3回以上は呼ばれない")
+                }
+                XCTAssertEqual($0.diskCount, 0)
+                darkCount += 1
+            })
+            let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時にのみ呼ばれる")
+            cancellables.append(target.lightPlayerStatus.sink {
+                lightPlayerExpectation.fulfill()
+                XCTAssertEqual($0.diskCount, 0)
+                XCTAssertEqual($0.playerType, .computer)
+            })
+            
+            target.changePlayer(on: .dark)
+            wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
+        }
+        XCTContext.runActivity(named: "lightの切り替え") { _ in
+            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる")
+            let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
+            lightPlayerExpectation.expectedFulfillmentCount = 2
+            cancellables.append(target.darkPlayerStatus.sink {
+                darkPlayerExpectation.fulfill()
+                XCTAssertEqual($0.diskCount, 0)
+                XCTAssertEqual($0.playerType, .manual)
+            })
+            var lightCount = 1
+            cancellables.append(target.lightPlayerStatus.sink {
+                lightPlayerExpectation.fulfill()
+                switch lightCount {
+                case 1:
+                    XCTAssertEqual($0.playerType, .computer)
+                case 2:
+                    XCTAssertEqual($0.playerType, .manual)
+                default:
+                    XCTFail("3回以上は呼ばれない")
+                }
+                XCTAssertEqual($0.diskCount, 0)
+                
+                lightCount += 1
+            })
+            target.changePlayer(on: .light)
+            wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
+        }
+    }
+    
     func testRestore() {
         // Given
         let mockSpecifications = MockReversiSpecifications()

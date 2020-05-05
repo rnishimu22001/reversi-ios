@@ -16,6 +16,7 @@ protocol ReversiViewModel {
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     
     mutating func nextTurn()
+    mutating func changePlayer(on side: Disk)
     
     mutating func set(disk: Disk, at coodinates: Coordinates)
     mutating func set(disk: Disk, at coodinates: [Coordinates])
@@ -59,6 +60,17 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     mutating func nextTurn() {
         turn?.flip()
         updateMessage()
+    }
+    
+    mutating func changePlayer(on side: Disk) {
+        switch side {
+        case .dark:
+            darkPlayerStatus.value = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType.changed,
+                                                             diskCount: darkPlayerStatus.value.diskCount)
+        case .light:
+            lightPlayerStatus.value = PlayerStatusDisplayData(playerType: lightPlayerStatus.value.playerType.changed,
+                                                              diskCount: lightPlayerStatus.value.diskCount)
+        }
     }
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {
