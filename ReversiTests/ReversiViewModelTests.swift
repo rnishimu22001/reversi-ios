@@ -198,8 +198,8 @@ final class ReversiViewModelTests: XCTestCase {
         mockSpecifications.isEndOfGame = false
         
         // Then
-        let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる。ここのテストは今は失敗する")
-        darkPlayerExpectation.expectedFulfillmentCount = 1
+        let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とrestore時に呼ばれる。")
+        darkPlayerExpectation.expectedFulfillmentCount = 2
         cancellables.append(target.darkPlayerStatus.sink {
             darkPlayerExpectation.fulfill()
             XCTAssertEqual($0.diskCount, 2)
@@ -273,8 +273,8 @@ final class ReversiViewModelTests: XCTestCase {
         mockSpecifications.isEndOfGame = false
         
         // Then
-        let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる。ここのテストは今は失敗する")
-        darkPlayerExpectation.expectedFulfillmentCount = 1
+        let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とreset時に呼ばれる。")
+        darkPlayerExpectation.expectedFulfillmentCount = 2
         cancellables.append(target.darkPlayerStatus.sink {
             darkPlayerExpectation.fulfill()
             XCTAssertEqual($0.diskCount, 2)
