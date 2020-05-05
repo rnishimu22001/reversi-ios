@@ -66,6 +66,7 @@ class ReversiViewControllerTests: XCTestCase {
         let target = ViewController()
         let firstLabel = MockUILabel(frame: .zero)
         let lastLabel = MockUILabel(frame: .zero)
+        target.playerControls = controls
         target.countLabels = [firstLabel, lastLabel]
         target.messageDiskView = DiskView(frame: .zero)
         target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
@@ -542,6 +543,14 @@ class ReversiViewControllerTests: XCTestCase {
             let boardView = BoardView(frame: .zero)
             let target = ViewController()
             target.boardView = boardView
+            target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
+            target.messageLabel = .init(frame: .zero)
+            target.messageDiskView = DiskView(frame: .zero)
+            target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
+            target.messageDiskView.layoutIfNeeded()
+            target.messageDiskView.layoutIfNeeded()
+            target.messageDiskSizeConstraint.isActive = true
+            target.messageDiskSize = 5
             let controls = self.controls
             controls.forEach {
                 $0.selectedSegmentIndex = 0
@@ -561,8 +570,21 @@ class ReversiViewControllerTests: XCTestCase {
                 fatalError()
             }
             repository.restored = Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer)
-            
+            // Then
+            let darkExpectation = expectation(description: "darkのプレイヤーの切り替えスイッチが書き変わること")
+            observation.append(controls[Disk.dark.index].observe(\.selectedSegmentIndex, changeHandler: { _, _ in
+                XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
+                XCTAssertEqual(controls[Disk.dark.index].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
+                darkExpectation.fulfill()
+            }))
+            let lightExpectation = expectation(description: "lightのプレイヤーの切り替えスイッチが書き変わること")
+            observation.append(controls[Disk.light.index].observe(\.selectedSegmentIndex, changeHandler: { _, _ in
+                XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
+                XCTAssertEqual(controls[Disk.light.index].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
+                lightExpectation.fulfill()
+            }))
             // When
+            target.sink()
             do {
                 try target.restoreBoardView()
             } catch {
@@ -582,8 +604,7 @@ class ReversiViewControllerTests: XCTestCase {
                 }
             }
             XCTAssertEqual(target.turn, .dark)
-            XCTAssertEqual(controls[0].selectedSegmentIndex, 0, "x01なので初手のプレイヤーは0")
-            XCTAssertEqual(controls[1].selectedSegmentIndex, 1, "x01なので後手のプレイヤーは1")
+            wait(for: [lightExpectation, darkExpectation], timeout: 0.1)
         }
     }
 }
