@@ -9,7 +9,7 @@
 @testable import Reversi
 
 final class MockReversiSpecifications: ReversiSpecifications {
-    var initalBoard: Board!
+    var initalBoard: Board = ReversiSpecificationsImplementation().initalState(from: Board())
     func initalState(from board: Board) -> Board {
         initalBoard
     }
