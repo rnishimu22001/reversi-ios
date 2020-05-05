@@ -18,6 +18,52 @@ final class ReversiViewModelTests: XCTestCase {
         cancellables = []
     }
     
+    func testUpdateMessage() {
+        XCTContext.runActivity(named: "ゲーム中") { _ in
+            let mockSpecifications = MockReversiSpecifications()
+            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            mockSpecifications.isEndOfGame = false
+            let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
+            messageExpectation.expectedFulfillmentCount = 2
+            cancellables.append(target.message.sink {
+                messageExpectation.fulfill()
+                let status = MessageDisplayData(status: .playing(turn: .dark))
+                XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                XCTAssertEqual($0.message, status.message)
+            })
+            target.updateMessage()
+            wait(for: [messageExpectation], timeout: 0.1)
+        }
+        XCTContext.runActivity(named: "ゲーム終了") { _ in
+            let mockSpecifications = MockReversiSpecifications()
+            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            mockSpecifications.isEndOfGame = true
+            let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
+            messageExpectation.expectedFulfillmentCount = 2
+            var count = 1
+            cancellables.append(target.message.sink {
+                messageExpectation.fulfill()
+                switch count {
+                case 1:
+                    let status = MessageDisplayData(status: .playing(turn: .dark))
+                    XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                    XCTAssertEqual($0.message, status.message)
+                case 2:
+                    let status = MessageDisplayData(status: .ending(winner: nil))
+                    XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                    XCTAssertEqual($0.message, status.message)
+                default:
+                    XCTFail("2回以上呼ばれない想定です")
+                }
+                count += 1
+            })
+            target.updateMessage()
+            wait(for: [messageExpectation], timeout: 0.1)
+        }
+    }
+    
     func testUpdateCount() {
         var board = Board()
         
