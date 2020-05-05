@@ -63,8 +63,8 @@ class ReversiViewControllerTests: XCTestCase {
     
     func testUpdateCountLabels() {
         let target = ViewController()
-        let firstLabel = UILabel(frame: .zero)
-        let lastLabel = UILabel(frame: .zero)
+        let firstLabel = MockUILabel(frame: .zero)
+        let lastLabel = MockUILabel(frame: .zero)
         target.countLabels = [firstLabel, lastLabel]
         var board = Board()
         do {
@@ -83,17 +83,15 @@ class ReversiViewControllerTests: XCTestCase {
         // Then
         let firstExpectation = expectation(description: "darkのプレイヤーのカウント更新")
         observation.append(firstLabel.observe(\.text) { _, change in
-            DispatchQueue.main.async {
-                firstExpectation.fulfill()
-                XCTAssertEqual(firstLabel.text, "1", "darkのプレイヤーのカウントが更新されること")
-            }
+            XCTAssertEqual(firstLabel.textArgs.first, "1", "darkのプレイヤーのカウントが更新されること")
+            XCTAssertEqual(firstLabel.textArgs.count, 1, "購読時の1回のみの更新")
+            firstExpectation.fulfill()
         })
         let lastExpectation = expectation(description: "lightのプレイヤーのカウント更新")
         observation.append(lastLabel.observe(\.text) { _, change in
-            DispatchQueue.main.async {
-                lastExpectation.fulfill()
-                XCTAssertEqual(lastLabel.text, "2", "lightのプレイヤーのカウントが更新されること")
-            }
+            XCTAssertEqual(lastLabel.textArgs.first, "2", "lightのプレイヤーのカウントが更新されること")
+            XCTAssertEqual(lastLabel.textArgs.count, 1, "購読時の1回のみの更新")
+            lastExpectation.fulfill()
         })
         wait(for: [firstExpectation, lastExpectation], timeout: 1)
     }
