@@ -32,7 +32,7 @@ final class ViewController: UIViewController {
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
     var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
-    var viewModel: ReversiViewModel = ReversiViewModelImplementation(board: Board())
+    var viewModel: ReversiViewModel = ReversiViewModelImplementation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,7 +183,7 @@ extension ViewController {
 extension ViewController {
     /// ゲームの状態を初期化し、新しいゲームを開始します。
     func newGame() {
-        viewModel.restore(from: specifications.initalState(from: board))
+        viewModel.restore(from: Game(turn: .dark, board: specifications.initalState(from: board), darkPlayer: .manual, lightPlayer: .manual))
         boardView.reset()
         turn = .dark
         
@@ -277,7 +277,7 @@ extension ViewController {
     }
     
     func updateMessageViews() {
-        
+        viewModel.updateMessage()
     }
     
     /// DisplayDataをもとにメッセージを表示します。
@@ -397,7 +397,7 @@ extension ViewController {
                 playerControls[side.index].selectedSegmentIndex = game.lightPlayer.rawValue
             }
         }
-        viewModel.restore(from: game.board)
+        viewModel.restore(from: game)
         game.board.disks.forEach {
             boardView.setDisk($0.value, atX: $0.key.x, y: $0.key.y, animated: false)
         }

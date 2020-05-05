@@ -26,7 +26,7 @@ final class ReversiViewModelTests: XCTestCase {
         try! board.set(disk: .dark, at: Coordinates(x: 2, y: 4))
         try! board.set(disk: .light, at: Coordinates(x: 1, y: 4))
         
-        var target = ReversiViewModelImplementation(board: board)
+        var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer))
         let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
         darkPlayerExpectation.expectedFulfillmentCount = 2
         let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時にのみ呼ばれる")
@@ -34,11 +34,13 @@ final class ReversiViewModelTests: XCTestCase {
         cancellables.append(target.darkPlayerStatus.sink {
             darkPlayerExpectation.fulfill()
             XCTAssertEqual($0.diskCount, darkCount)
+            XCTAssertEqual($0.playerType, .manual)
             darkCount += 1
         })
         cancellables.append(target.lightPlayerStatus.sink {
             lightPlayerExpectation.fulfill()
             XCTAssertEqual($0.diskCount, 1)
+            XCTAssertEqual($0.playerType, .computer)
         })
         
         target.set(disk: .dark, at: Coordinates(x: 1, y: 1))

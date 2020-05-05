@@ -9,6 +9,9 @@
 import Combine
 
 protocol ReversiViewModel {
+   
+    var turn: Disk? { get }
+    
     var board: Board { get }
     var message: CurrentValueSubject<MessageDisplayData, Never> { get }
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
@@ -17,30 +20,41 @@ protocol ReversiViewModel {
     mutating func updateDiskCount()
     mutating func updateMessage()
     
+    mutating func nextTurn()
+    
     mutating func set(disk: Disk, at coodinates: Coordinates)
     mutating func set(disk: Disk, at coodinates: [Coordinates])
     
-    mutating func restore(from board: Board)
+    mutating func restore(from game: Game)
 }
 
 struct ReversiViewModelImplementation: ReversiViewModel {
-  
+    
     private(set) var specifications: ReversiSpecifications
-    private(set) var board: Board
-    private(set) var turn: Disk? = .dark
+   
+    // MARK: 通知用
     private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
+  
+    // MARK: ゲームの状態
+    private(set) var board: Board
+    private(set) var turn: Disk?
     
-    init(board: Board,
+    init(game: Game? = nil,
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
-        self.board = board
+        self.board = Board()
         self.specifications = specifications
+        if let game = game {
+            restore(from: game)
+        } else {
+            reset()
+        }
         updateDiskCount()
     }
     
-    mutating func nextTurn(status: GameStatus) {
-        message.send(MessageDisplayData(status: status))
+    mutating func nextTurn() {
+        turn?.flip()
     }
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {
@@ -53,8 +67,18 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         }
     }
     
-    mutating func restore(from board: Board) {
-        self.board = board
+    mutating func restore(from game: Game) {
+        board = game.board
+        turn = game.turn
+        darkPlayerStatus.value = PlayerStatusDisplayData(playerType: game.darkPlayer, diskCount: board.countDisks(of: .dark))
+        lightPlayerStatus.value = PlayerStatusDisplayData(playerType: game.lightPlayer, diskCount: board.countDisks(of: .light))
+    }
+    
+    mutating func reset() {
+        board = specifications.initalState(from: Board())
+        turn = .dark
+        darkPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .dark))
+        lightPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .light))
     }
     
     mutating func updateDiskCount() {
@@ -71,6 +95,13 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     }
     
     mutating func updateMessage() {
-        
+        if specifications.isEndOfGame(on: board) {
+            message.value = MessageDisplayData(status: .ending(winner: board.sideWithMoreDisks()))
+        } else {
+            guard let turn = turn else {
+                fatalError("ゲーム中の手番が設定されていません")
+            }
+            message.value = MessageDisplayData(status: .playing(turn: turn))
+        }
     }
 }

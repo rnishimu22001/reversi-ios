@@ -9,9 +9,19 @@
 @testable import Reversi
 
 final class MockReversiSpecifications: ReversiSpecifications {
+    var initalBoard: Board!
+    func initalState(from board: Board) -> Board {
+        initalBoard
+    }
+   
+    var isEndOfGame = false
+    func isEndOfGame(on board: Board) -> Bool {
+        isEndOfGame
+    }
+    
     
     var stubbedInitalState: Board?
-    func initalState(from board: Board) -> Board {
+    func boardOfInitalState(from board: Board) -> Board {
         stubbedInitalState!
     }
 

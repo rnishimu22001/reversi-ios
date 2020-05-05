@@ -67,7 +67,13 @@ class ReversiViewControllerTests: XCTestCase {
         let firstLabel = MockUILabel(frame: .zero)
         let lastLabel = MockUILabel(frame: .zero)
         target.countLabels = [firstLabel, lastLabel]
-        
+        target.messageDiskView = DiskView(frame: .zero)
+        target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
+        target.messageDiskView.layoutIfNeeded()
+        target.messageDiskView.layoutIfNeeded()
+        target.messageDiskSizeConstraint.isActive = true
+        target.messageDiskSize = 5
+        target.messageLabel = UILabel(frame: .zero)
         let mockViewModel = MockReversiViewModel()
         mockViewModel.darkPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: 1)
         mockViewModel.lightPlayerStatus.value = PlayerStatusDisplayData(playerType: .computer, diskCount: 2)
@@ -96,10 +102,10 @@ class ReversiViewControllerTests: XCTestCase {
             // Given
             let mockRepository = MockGameRepository()
             let target = ViewController()
+            target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
             target.boardView = BoardView(frame: .zero)
-            target.messageDiskView = DiskView(frame: .zero)
-            target.messageLabel = UILabel(frame: .zero)
             target.playerControls = controls
+            target.messageDiskView = DiskView(frame: .zero)
             target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
             target.messageDiskView.layoutIfNeeded()
             target.messageDiskView.layoutIfNeeded()
@@ -107,24 +113,39 @@ class ReversiViewControllerTests: XCTestCase {
             target.messageLabel = UILabel(frame: .zero)
             target.messageDiskSize = diskSize
             target.gameRepository = mockRepository
-            mockRepository.restored = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+            var board = Board()
+            do {
+                try board.set(disk: .dark, at: .init(x: 1, y: 1))
+                try board.set(disk: .light, at: .init(x: 2, y: 2))
+            } catch {
+                fatalError()
+            }
+            mockRepository.restored = Game(turn: .light, board: board, darkPlayer: .computer, lightPlayer: .manual)
+            // Then
+            let messageExpectation = expectation(description: "messageLabelが更新されること")
+            observation.append(target.messageLabel.observe(\.text) { _, change in
+                XCTAssertEqual(target.messageDiskView.disk, .light)
+                XCTAssertEqual(target.messageLabel.text, "'s turn")
+                XCTAssertEqual(target.messageDiskSizeConstraint.constant, diskSize)
+                messageExpectation.fulfill()
+            })
+            // When
+            target.sink()
             do {
                 try target.restoreBoardView()
             } catch {
                 fatalError()
             }
-            // When
             target.updateMessageViews()
-            // Then
-            XCTAssertEqual(target.messageDiskView.disk, .light)
-            XCTAssertEqual(target.messageLabel.text, "'s turn")
-            XCTAssertEqual(target.messageDiskSizeConstraint.constant, diskSize)
+            wait(for: [messageExpectation], timeout: 0.1)
+            
         }
         XCTContext.runActivity(named: "ゲーム終了") { _ in
             XCTContext.runActivity(named: "一方の勝ち") { _ in
                 // Given
                 let mockRepository = MockGameRepository()
                 let target = ViewController()
+                target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
                 target.boardView = BoardView(frame: .zero)
                 target.messageDiskView = DiskView(frame: .zero)
                 target.messageLabel = UILabel(frame: .zero)
@@ -145,21 +166,30 @@ class ReversiViewControllerTests: XCTestCase {
                 }
                 // turnがnilでゲーム終了
                 mockRepository.restored = Game(turn: nil, board: board, darkPlayer: .computer, lightPlayer: .manual)
+                target.sink()
                 do {
                     try target.restoreBoardView()
                 } catch {
                     fatalError()
                 }
-                // When
-                target.updateMessageViews()
                 // Then
-                XCTAssertEqual(target.messageDiskView.disk, .dark)
-                XCTAssertEqual(target.messageLabel.text, " won")
-                XCTAssertEqual(target.messageDiskSizeConstraint.constant, diskSize)
+                let messageExpectation = expectation(description: "messageLabelが更新されること")
+                observation.append(target.messageLabel.observe(\.text) { _, change in
+                    XCTAssertEqual(target.messageDiskView.disk, .dark)
+                    XCTAssertEqual(target.messageLabel.text, " won")
+                    XCTAssertEqual(target.messageDiskSizeConstraint.constant, diskSize)
+                    
+                    messageExpectation.fulfill()
+                })
+                
+                target.updateMessageViews()
+                wait(for: [messageExpectation], timeout: 0.01)
+                
             }
             XCTContext.runActivity(named: "引き分け") { _ in
                 let mockRepository = MockGameRepository()
                 let target = ViewController()
+                target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
                 target.boardView = BoardView(frame: .zero)
                 target.messageDiskView = DiskView(frame: .zero)
                 target.messageLabel = UILabel(frame: .zero)
@@ -173,17 +203,24 @@ class ReversiViewControllerTests: XCTestCase {
                 target.gameRepository = mockRepository
                 // turnがnilでゲーム終了
                 mockRepository.restored = Game(turn: nil, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+                target.sink()
                 do {
                     try target.restoreBoardView()
                 } catch {
                     fatalError()
                 }
+                // Then
+                let messageExpectation = expectation(description: "messageLabelが更新されること")
+                observation.append(target.messageLabel.observe(\.text) { _, change in
+                    XCTAssertEqual(target.messageDiskView.disk, .dark, "引き分けはdisk viewはdiskが切り替わらない")
+                    XCTAssertEqual(target.messageDiskSizeConstraint.constant, 0, "messageDiskSizeを0にしてdiskViewを隠す")
+                    XCTAssertEqual(target.messageLabel.text, "Tied")
+                    messageExpectation.fulfill()
+                })
                 // When
                 target.updateMessageViews()
                 // Then
-                XCTAssertEqual(target.messageDiskView.disk, .dark, "引き分けだがdisk viewがひょうじされたまま")
-                XCTAssertEqual(target.messageDiskSizeConstraint.constant, 0, "messageDiskSizeを0にしてdiskViewを隠す")
-                XCTAssertEqual(target.messageLabel.text, "Tied")
+                wait(for: [messageExpectation], timeout: 0.01)
             }
         }
     }

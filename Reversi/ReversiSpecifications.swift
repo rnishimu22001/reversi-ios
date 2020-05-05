@@ -8,6 +8,7 @@
 
 protocol ReversiSpecifications {
     func initalState(from board: Board) -> Board
+    func isEndOfGame(on board: Board) -> Bool
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates]
     func canPlaceDisk(_ disk: Disk, on board: Board, at coordinates: Coordinates) -> Bool
     func validMoves(for side: Disk, on board: Board) -> [Coordinates]
