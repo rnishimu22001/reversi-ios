@@ -86,8 +86,6 @@ class ReversiViewControllerTests: XCTestCase {
         })
         // When
         target.sink()
-        target.updateCountLabels()
-        
         wait(for: [firstExpectation, lastExpectation], timeout: 1)
     }
     
