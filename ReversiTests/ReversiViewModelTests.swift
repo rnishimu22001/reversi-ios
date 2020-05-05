@@ -206,6 +206,7 @@ final class ReversiViewModelTests: XCTestCase {
             XCTAssertEqual($0.playerType, .manual)
         })
         let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
+        lightPlayerExpectation.expectedFulfillmentCount = 2
         var lightCount = 1
         cancellables.append(target.lightPlayerStatus.sink {
             lightPlayerExpectation.fulfill()
@@ -281,6 +282,7 @@ final class ReversiViewModelTests: XCTestCase {
             XCTAssertEqual($0.playerType, .manual)
         })
         let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
+        lightPlayerExpectation.expectedFulfillmentCount = 2
         var lightCount = 1
         cancellables.append(target.lightPlayerStatus.sink {
             lightPlayerExpectation.fulfill()

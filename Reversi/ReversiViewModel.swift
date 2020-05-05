@@ -88,6 +88,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         turn = game.turn
         darkPlayerStatus.value = PlayerStatusDisplayData(playerType: game.darkPlayer, diskCount: board.countDisks(of: .dark))
         lightPlayerStatus.value = PlayerStatusDisplayData(playerType: game.lightPlayer, diskCount: board.countDisks(of: .light))
+        updateMessage()
     }
     
     mutating func reset() {
@@ -95,6 +96,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         turn = .dark
         darkPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .dark))
         lightPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .light))
+        updateMessage()
     }
    
     /// 各プレイヤーの獲得したディスクの枚数を更新します。
