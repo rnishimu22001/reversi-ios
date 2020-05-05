@@ -87,13 +87,6 @@ extension ViewController {
         board.countDisks(of: side)
     }
     
-    /// 盤上に置かれたディスクの枚数が多い方の色を返します。
-    /// 引き分けの場合は `nil` が返されます。
-    /// - Returns: 盤上に置かれたディスクの枚数が多い方の色です。引き分けの場合は `nil` を返します。
-    func sideWithMoreDisks() -> Disk? {
-        board.sideWithMoreDisks()
-    }
-    
     private func flippedDiskCoordinatesByPlacingDisk(_ disk: Disk, atX x: Int, y: Int) -> [(Int, Int)] {
         return specifications
             .flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: Coordinates(x: x, y: y))

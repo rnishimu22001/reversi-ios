@@ -63,7 +63,10 @@ struct Board {
     func countDisks(of side: Disk) -> Int {
         disks.filter({ $0.value == side }).count
     }
-    
+   
+    /// 盤上に置かれたディスクの枚数が多い方の色を返します。
+    /// 引き分けの場合は `nil` が返されます。
+    /// - Returns: 盤上に置かれたディスクの枚数が多い方の色です。引き分けの場合は `nil` を返します。
     func sideWithMoreDisks() -> Disk? {
         let darkCount = countDisks(of: .dark)
         let lightCount = countDisks(of: .light)
