@@ -204,6 +204,7 @@ extension ViewController {
         guard var turn = self.turn else { return }
 
         turn.flip()
+        viewModel.nextTurn()
         
         if validMoves(for: turn).isEmpty {
             if validMoves(for: turn.flipped).isEmpty {

@@ -56,6 +56,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     
     mutating func nextTurn() {
         turn?.flip()
+        updateMessage()
     }
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {
