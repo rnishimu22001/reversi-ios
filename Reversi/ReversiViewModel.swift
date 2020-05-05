@@ -10,15 +10,10 @@ import Combine
 
 protocol ReversiViewModel {
    
-    var turn: Disk? { get }
-    
-    var board: Board { get }
+    // MARK: 通知用
     var message: CurrentValueSubject<MessageDisplayData, Never> { get }
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
-    
-    mutating func updateDiskCount()
-    mutating func updateMessage()
     
     mutating func nextTurn()
     
@@ -26,13 +21,20 @@ protocol ReversiViewModel {
     mutating func set(disk: Disk, at coodinates: [Coordinates])
     
     mutating func restore(from game: Game)
+    mutating func reset()
+    
+    // MARK: のちに削除
+    var turn: Disk? { get }
+    var board: Board { get }
+    
+    mutating func updateDiskCount()
+    mutating func updateMessage()
 }
 
 struct ReversiViewModelImplementation: ReversiViewModel {
     
     private(set) var specifications: ReversiSpecifications
    
-    // MARK: 通知用
     private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
@@ -82,7 +84,8 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         darkPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .dark))
         lightPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .light))
     }
-    
+   
+    /// 各プレイヤーの獲得したディスクの枚数を更新します。
     mutating func updateDiskCount() {
         let dark = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType,
                                            diskCount: board.countDisks(of: .dark))
@@ -95,7 +98,8 @@ struct ReversiViewModelImplementation: ReversiViewModel {
             lightPlayerStatus.value = light
         }
     }
-    
+   
+    /// 現在のターン、勝敗の決着などに関する情報を更新します。
     mutating func updateMessage() {
         if specifications.isEndOfGame(on: board) {
             message.value = MessageDisplayData(status: .ending(winner: board.sideWithMoreDisks()))

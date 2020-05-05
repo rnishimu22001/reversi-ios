@@ -132,7 +132,7 @@ extension ViewController {
 
             completion?(isFinished)
             try? self.saveGame()
-            self.updateCountLabels()
+            self.viewModel.updateDiskCount()
         }
     }
     
@@ -181,7 +181,7 @@ extension ViewController {
         }
 
         updateMessageViews()
-        updateCountLabels()
+        viewModel.updateDiskCount()
         
         try? saveGame()
     }
@@ -261,10 +261,6 @@ extension ViewController {
 // MARK: Views
 
 extension ViewController {
-    /// 各プレイヤーの獲得したディスクの枚数を表示します。
-    func updateCountLabels() {
-        viewModel.updateDiskCount()
-    }
     
     func updateMessageViews() {
         viewModel.updateMessage()
@@ -386,7 +382,7 @@ extension ViewController {
     func loadGame() throws {
         try restoreBoardView()
         updateMessageViews()
-        updateCountLabels()
+        viewModel.updateDiskCount()
     }
 }
 
