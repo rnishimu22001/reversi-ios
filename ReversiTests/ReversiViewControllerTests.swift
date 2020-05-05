@@ -133,7 +133,7 @@ class ReversiViewControllerTests: XCTestCase {
             // When
             target.sink()
             do {
-                try target.restoreBoardView()
+                try target.loadGame()
             } catch {
                 fatalError()
             }
@@ -169,7 +169,7 @@ class ReversiViewControllerTests: XCTestCase {
                 mockRepository.restored = Game(turn: nil, board: board, darkPlayer: .computer, lightPlayer: .manual)
                 target.sink()
                 do {
-                    try target.restoreBoardView()
+                    try target.loadGame()
                 } catch {
                     fatalError()
                 }
@@ -206,7 +206,7 @@ class ReversiViewControllerTests: XCTestCase {
                 mockRepository.restored = Game(turn: nil, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
                 target.sink()
                 do {
-                    try target.restoreBoardView()
+                    try target.loadGame()
                 } catch {
                     fatalError()
                 }
@@ -586,7 +586,7 @@ class ReversiViewControllerTests: XCTestCase {
             // When
             target.sink()
             do {
-                try target.restoreBoardView()
+                try target.loadGame()
             } catch {
                 fatalError()
             }

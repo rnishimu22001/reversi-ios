@@ -370,19 +370,17 @@ extension ViewController {
     
     /// ゲームの状態をファイルから読み込み、復元します。
     func restoreBoardView() throws {
-        let game = try gameRepository.restore()
-
-        turn = game.turn
-        viewModel.restore(from: game)
-        game.board.disks.forEach {
+        board.disks.forEach {
             boardView.setDisk($0.value, atX: $0.key.x, y: $0.key.y, animated: false)
         }
     }
     
     func loadGame() throws {
+        let game = try gameRepository.restore()
+        
+        turn = game.turn
+        viewModel.restore(from: game)
         try restoreBoardView()
-        updateMessageViews()
-        viewModel.updateDiskCount()
     }
 }
 
