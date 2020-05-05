@@ -16,6 +16,10 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    func updateMessage() {
+        
+    }
+    
     func updateDiskCount() {
         
     }

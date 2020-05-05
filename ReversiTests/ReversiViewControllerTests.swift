@@ -62,6 +62,7 @@ class ReversiViewControllerTests: XCTestCase {
     // MARK: Views
     
     func testUpdateCountLabels() {
+        // Given
         let target = ViewController()
         let firstLabel = MockUILabel(frame: .zero)
         let lastLabel = MockUILabel(frame: .zero)

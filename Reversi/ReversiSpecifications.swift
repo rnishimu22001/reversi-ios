@@ -28,6 +28,12 @@ struct ReversiSpecificationsImplementation: ReversiSpecifications {
         return newBoard
     }
     
+    func isEndOfGame(on board: Board) -> Bool {
+        Disk.allCases.reduce(true) { (previous, disk) in
+            previous && self.validMoves(for: disk, on: board).isEmpty
+        }
+    }
+    
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {
         
         let directions = [

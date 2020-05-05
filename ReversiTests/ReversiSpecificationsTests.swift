@@ -11,6 +11,42 @@ import XCTest
 
 final class ReversiSpecificationsTests: XCTestCase {
     
+    func testIsEndOfGame() {
+        XCTContext.runActivity(named: "もうDiskをおけない場合") { _ in
+            var board = Board()
+            let target = ReversiSpecificationsImplementation()
+            do {
+                try board.set(disk: .dark, at: .init(x: 0, y: 0))
+                try board.set(disk: .light, at: .init(x: 5, y: 5))
+            } catch {
+                fatalError()
+            }
+            XCTAssertTrue(target.isEndOfGame(on: board))
+        }
+        XCTContext.runActivity(named: "片方だけDiskが置ける場合") { _ in
+            var board = Board()
+            let target = ReversiSpecificationsImplementation()
+            do {
+                try board.set(disk: .dark, at: .init(x: 0, y: 0))
+                try board.set(disk: .light, at: .init(x: 1, y: 1))
+            } catch {
+                fatalError()
+            }
+            XCTAssertFalse(target.isEndOfGame(on: board))
+        }
+        XCTContext.runActivity(named: "両方Diskが置ける場合") { _ in
+            var board = Board()
+            let target = ReversiSpecificationsImplementation()
+            do {
+                try board.set(disk: .dark, at: .init(x: 4, y: 4))
+                try board.set(disk: .light, at: .init(x: 5, y: 5))
+            } catch {
+                fatalError()
+            }
+            XCTAssertFalse(target.isEndOfGame(on: board))
+        }
+    }
+    
     func testInitalState() {
         let willDelete = Coordinates(x: 0, y: 0)
         var board = Board(width: 8, height: 8)

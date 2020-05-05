@@ -60,6 +60,9 @@ final class ViewController: UIViewController {
             guard let self = self else { return }
             self.countLabels[Disk.light.index].text = data.diskCount.description
         })
+        cancellables.append(viewModel.message.subscribe(on: DispatchQueue.main).sink { [weak self] data in
+            self?.updateMessageViews(with: data)
+        })
     }
     
     private var viewHasAppeared: Bool = false
@@ -273,23 +276,20 @@ extension ViewController {
         viewModel.updateDiskCount()
     }
     
-    /// 現在の状況に応じてメッセージを表示します。
     func updateMessageViews() {
-        switch turn {
-        case .some(let side):
+        
+    }
+    
+    /// DisplayDataをもとにメッセージを表示します。
+    func updateMessageViews(with displayData: MessageDisplayData) {
+        switch displayData.displayedDisk {
+        case .some(let turn):
             messageDiskSizeConstraint.constant = messageDiskSize
-            messageDiskView.disk = side
-            messageLabel.text = "'s turn"
+            messageDiskView.disk = turn
         case .none:
-            if let winner = self.sideWithMoreDisks() {
-                messageDiskSizeConstraint.constant = messageDiskSize
-                messageDiskView.disk = winner
-                messageLabel.text = " won"
-            } else {
-                messageDiskSizeConstraint.constant = 0
-                messageLabel.text = "Tied"
-            }
+            messageDiskSizeConstraint.constant = 0
         }
+        messageLabel.text = displayData.message
     }
 }
 

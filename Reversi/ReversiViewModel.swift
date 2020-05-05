@@ -15,6 +15,7 @@ protocol ReversiViewModel {
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     
     mutating func updateDiskCount()
+    mutating func updateMessage()
     
     mutating func set(disk: Disk, at coodinates: Coordinates)
     mutating func set(disk: Disk, at coodinates: [Coordinates])
@@ -26,6 +27,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
   
     private(set) var specifications: ReversiSpecifications
     private(set) var board: Board
+    private(set) var turn: Disk? = .dark
     private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
@@ -66,5 +68,9 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         if light != lightPlayerStatus.value {
             lightPlayerStatus.value = light
         }
+    }
+    
+    mutating func updateMessage() {
+        
     }
 }
