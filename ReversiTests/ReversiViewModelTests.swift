@@ -115,7 +115,10 @@ final class ReversiViewModelTests: XCTestCase {
         try! board.set(disk: .dark, at: dummyCoordinatesFirst)
         try! board.set(disk: .light, at: .init(x: 6, y: 6))
         try! board.set(disk: .light, at: .init(x: 1, y: 5))
-        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer))
+        let mockSpecifications = MockReversiSpecifications()
+        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
+                                                    specifications: mockSpecifications)
+        mockSpecifications.isEndOfGame = false
         
         // Then
         let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる。ここのテストは今は失敗する")
