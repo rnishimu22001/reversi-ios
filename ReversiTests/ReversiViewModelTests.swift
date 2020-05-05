@@ -21,14 +21,14 @@ final class ReversiViewModelTests: XCTestCase {
     func testUpdateMessage() {
         XCTContext.runActivity(named: "ゲーム中") { _ in
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             mockSpecifications.isEndOfGame = false
             let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
             messageExpectation.expectedFulfillmentCount = 2
             cancellables.append(target.message.sink {
                 messageExpectation.fulfill()
-                let status = MessageDisplayData(status: .playing(turn: .dark))
+                let status = MessageDisplayData(status: .playing(turn: .light))
                 XCTAssertEqual($0.displayedDisk, status.displayedDisk)
                 XCTAssertEqual($0.message, status.message)
             })

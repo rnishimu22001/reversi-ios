@@ -51,6 +51,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
             reset()
         }
         updateDiskCount()
+        updateMessage()
     }
     
     mutating func nextTurn() {
