@@ -183,7 +183,7 @@ class ReversiViewControllerTests: XCTestCase {
                 })
                 
                 target.updateMessageViews()
-                wait(for: [messageExpectation], timeout: 0.01)
+                wait(for: [messageExpectation], timeout: 0.1)
                 
             }
             XCTContext.runActivity(named: "引き分け") { _ in
