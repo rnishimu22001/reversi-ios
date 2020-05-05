@@ -40,6 +40,17 @@ class ReversiViewControllerTests: XCTestCase {
         target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
         target.gameRepository = mockRepository
         mockRepository.restored = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+        target.sink()
+        // Then
+        let controlExpectation = expectation(description: "controlが更新されること")
+        controlExpectation.expectedFulfillmentCount = 2
+        target.playerControls.forEach { label in
+            observation.append(label.observe(\.selectedSegmentIndex, changeHandler: { _, changed in
+                XCTAssertEqual(label.selectedSegmentIndex, Player.manual.rawValue)
+                controlExpectation.fulfill()
+            }))
+        }
+        // When
         do {
             try target.restoreBoardView()
         } catch {
@@ -52,11 +63,7 @@ class ReversiViewControllerTests: XCTestCase {
         target.newGame()
         // Then
         XCTAssertEqual(target.turn, .dark)
-        target.playerControls.forEach {
-            XCTAssertEqual($0.selectedSegmentIndex, Player.manual.rawValue)
-        }
-        
-        wait(for: [resetExpectation], timeout: 0.01)
+        wait(for: [resetExpectation, controlExpectation], timeout: 0.01)
     }
     
     // MARK: Views

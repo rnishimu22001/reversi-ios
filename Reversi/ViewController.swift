@@ -172,17 +172,9 @@ extension ViewController {
 extension ViewController {
     /// ゲームの状態を初期化し、新しいゲームを開始します。
     func newGame() {
-        viewModel.restore(from: Game(turn: .dark, board: specifications.initalState(from: board), darkPlayer: .manual, lightPlayer: .manual))
+        viewModel.reset()
         boardView.reset()
         turn = .dark
-        
-        for playerControl in playerControls {
-            playerControl.selectedSegmentIndex = Player.manual.rawValue
-        }
-
-        updateMessageViews()
-        viewModel.updateDiskCount()
-        
         try? saveGame()
     }
     
