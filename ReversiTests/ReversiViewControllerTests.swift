@@ -66,20 +66,11 @@ class ReversiViewControllerTests: XCTestCase {
         let firstLabel = MockUILabel(frame: .zero)
         let lastLabel = MockUILabel(frame: .zero)
         target.countLabels = [firstLabel, lastLabel]
-        var board = Board()
-        do {
-            try board.set(disk: .dark, at: Coordinates(x: 0, y: 0))
-            try board.set(disk: .light, at: Coordinates(x: 1, y: board.height - 1))
-            try board.set(disk: .light, at: Coordinates(x: board.width - 1, y: 2))
-        } catch {
-            fatalError()
-        }
         
-        let mockViewModel = ReversiViewModelImplementation(board: board)
+        let mockViewModel = MockReversiViewModel()
+        mockViewModel.darkPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: 1)
+        mockViewModel.lightPlayerStatus.value = PlayerStatusDisplayData(playerType: .computer, diskCount: 2)
         target.viewModel = mockViewModel
-        // When
-        target.sink()
-        target.updateCountLabels()
         // Then
         let firstExpectation = expectation(description: "darkのプレイヤーのカウント更新")
         observation.append(firstLabel.observe(\.text) { _, change in
@@ -93,6 +84,10 @@ class ReversiViewControllerTests: XCTestCase {
             XCTAssertEqual(lastLabel.textArgs.count, 1, "購読時の1回のみの更新")
             lastExpectation.fulfill()
         })
+        // When
+        target.sink()
+        target.updateCountLabels()
+        
         wait(for: [firstExpectation, lastExpectation], timeout: 1)
     }
     
