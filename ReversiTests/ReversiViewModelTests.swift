@@ -55,7 +55,7 @@ final class ReversiViewModelTests: XCTestCase {
                     XCTAssertEqual($0.displayedDisk, status.displayedDisk)
                     XCTAssertEqual($0.message, status.message)
                 default:
-                    XCTFail("2回以上呼ばれない想定です")
+                    XCTFail("3回以上呼ばれない想定です")
                 }
                 count += 1
             })
@@ -104,5 +104,68 @@ final class ReversiViewModelTests: XCTestCase {
     
     func testRestore() {
         
+    }
+    
+    func testReset() {
+        // Given
+        let dummyCoordinatesFirst = Coordinates(x: 1, y: 4)
+        let dummyCoordinatesLast = Coordinates(x: 2, y: 4)
+        var board = Board()
+        try! board.set(disk: .dark, at: dummyCoordinatesLast)
+        try! board.set(disk: .dark, at: dummyCoordinatesFirst)
+        try! board.set(disk: .light, at: .init(x: 6, y: 6))
+        try! board.set(disk: .light, at: .init(x: 1, y: 5))
+        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer))
+        
+        // Then
+        let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる。ここのテストは今は失敗する")
+        darkPlayerExpectation.expectedFulfillmentCount = 1
+        cancellables.append(target.darkPlayerStatus.sink {
+            darkPlayerExpectation.fulfill()
+            XCTAssertEqual($0.diskCount, 2)
+            XCTAssertEqual($0.playerType, .manual)
+        })
+        let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
+        var lightCount = 1
+        cancellables.append(target.lightPlayerStatus.sink {
+            lightPlayerExpectation.fulfill()
+            switch lightCount {
+            case 1:
+                XCTAssertEqual($0.diskCount, 2)
+                XCTAssertEqual($0.playerType, .computer)
+            case 2:
+                XCTAssertEqual($0.diskCount, 2)
+                XCTAssertEqual($0.playerType, .manual)
+            default:
+                XCTFail("3回以上は呼ばれない想定です")
+            }
+            lightCount += 1
+        })
+        let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
+        messageExpectation.expectedFulfillmentCount = 2
+        var messageCount = 1
+        cancellables.append(target.message.sink {
+            switch messageCount {
+            case 1:
+                let status = MessageDisplayData(status: .playing(turn: .light))
+                XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                XCTAssertEqual($0.message, status.message)
+            case 2:
+                let status = MessageDisplayData(status: .playing(turn: .dark))
+                XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                XCTAssertEqual($0.message, status.message)
+            default:
+                XCTFail("3回以上は呼ばれない想定です")
+            }
+            messageExpectation.fulfill()
+            messageCount += 1
+        })
+        // When
+        target.reset()
+        // Then
+        XCTAssertEqual(target.board.disks.count, 4, " 初期数に戻っていること")
+        XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, " 初期数に戻っていること")
+        XCTAssertFalse(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "以前のボード情報が削除されていること")
+        wait(for: [darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 0.1)
     }
 }
