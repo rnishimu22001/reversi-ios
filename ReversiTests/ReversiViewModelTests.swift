@@ -71,8 +71,9 @@ final class ReversiViewModelTests: XCTestCase {
         try! board.set(disk: .dark, at: Coordinates(x: 2, y: 3))
         try! board.set(disk: .dark, at: Coordinates(x: 2, y: 4))
         try! board.set(disk: .light, at: Coordinates(x: 1, y: 4))
-        
-        var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer))
+        let mockSpecifications = MockReversiSpecifications()
+        var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer),
+                                                    specifications: mockSpecifications)
         let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
         darkPlayerExpectation.expectedFulfillmentCount = 2
         let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時にのみ呼ばれる")
@@ -89,7 +90,7 @@ final class ReversiViewModelTests: XCTestCase {
             XCTAssertEqual($0.playerType, .computer)
         })
         
-        target.set(disk: .dark, at: Coordinates(x: 1, y: 1))
+        target.place(disk: .dark, at: Coordinates(x: 1, y: 1))
         target.updateDiskCount()
         wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
     }
@@ -99,14 +100,14 @@ final class ReversiViewModelTests: XCTestCase {
         let mockSpecifications = MockReversiSpecifications()
         var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                     specifications: mockSpecifications)
-        
+        let willSetCoordinates = Coordinates(x: 0, y: 0)
         // Then
         let boardExpectation = expectation(description: "ボードの情報が更新されること")
         cancellables.append(target.boardStatus.sink {
             boardExpectation.fulfill()
             switch $0 {
             case .withAnimation(let disks):
-                XCTAssertEqual(mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult,
+                XCTAssertEqual([willSetCoordinates] + mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult,
                                disks.map { $0.coordinates },
                                "指定された並び方で座標が並ぶこと")
             case .withoutAnimation:
@@ -116,7 +117,7 @@ final class ReversiViewModelTests: XCTestCase {
         })
         // When
         mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
-        target.set(disk: .dark, at: .init(x: 0, y: 0))
+        target.place(disk: .dark, at: willSetCoordinates)
         wait(for: [boardExpectation], timeout: 0.01)
     }
     

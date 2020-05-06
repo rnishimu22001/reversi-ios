@@ -114,6 +114,7 @@ extension ViewController {
         let cleanUp: () -> Void = { [weak self] in
             self?.animationCanceller = nil
         }
+        viewModel.place(disk: disk, at: Coordinates(x: x, y: y))
         animationCanceller = Canceller(cleanUp)
         animateSettingDisks(at: [(x, y)] + diskCoordinates, to: disk) { [weak self] isFinished in
             guard let self = self else { return }
@@ -140,7 +141,6 @@ extension ViewController {
         }
         // アニメーション中にリセットされるとクラッシュする
         let animationCanceller = self.animationCanceller!
-        viewModel.set(disk: disk, at: Coordinates(x: x, y: y))
         boardView.setDisk(disk, atX: x, y: y, animated: true) { [weak self] isFinished in
             guard let self = self else { return }
             if animationCanceller.isCancelled { return }
@@ -148,7 +148,6 @@ extension ViewController {
                 self.animateSettingDisks(at: coordinates.dropFirst(), to: disk, completion: completion)
             } else {
                 // 更新に失敗した場合は残りの全てをアニメーションなしで更新
-                self.viewModel.set(disk: disk, at: coordinates.map { Coordinates(x: $0.0, y: $0.1) } )
                 for (x, y) in coordinates {
                     self.boardView.setDisk(disk, atX: x, y: y, animated: false)
                 }

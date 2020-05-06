@@ -23,8 +23,7 @@ protocol ReversiViewModel {
     mutating func nextTurn()
     mutating func changePlayer(on side: Disk)
     
-    mutating func set(disk: Disk, at coodinates: Coordinates)
-    mutating func set(disk: Disk, at coodinates: [Coordinates])
+    mutating func place(disk: Disk, at coodinates: Coordinates)
     
     mutating func restore(from game: Game)
     mutating func reset()
@@ -79,15 +78,17 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         }
     }
     
-    mutating func set(disk: Disk, at coodinates: Coordinates) {
-        try? board.set(disk: disk, at: coodinates)
-        
-    }
-    
-    mutating func set(disk: Disk, at coodinates: [Coordinates]) {
-        coodinates.forEach {
+    mutating func place(disk: Disk, at coodinates: Coordinates) {
+        let willFlip = [coodinates] + specifications.flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: coodinates)
+        willFlip.forEach {
             try? board.set(disk: disk, at: $0)
         }
+        boardStatus
+            .send(.withAnimation(disks:
+                willFlip
+                    .map { SetDiskDisplayData(side: disk, coordinates: $0) }
+                )
+        )
     }
     
     mutating func restore(from game: Game) {
