@@ -105,8 +105,10 @@ final class ReversiViewModelTests: XCTestCase {
         cancellables.append(target.boardStatus.sink {
             boardExpectation.fulfill()
             switch $0 {
-            case .withAnimation(let coordinates):
-                XCTAssertEqual(mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult, coordinates, "指定された並び方で座標が並ぶこと")
+            case .withAnimation(let disks):
+                XCTAssertEqual(mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult,
+                               disks.map { $0.coordinates },
+                               "指定された並び方で座標が並ぶこと")
             case .withoutAnimation:
                 XCTFail("アニメーションを伴う更新の想定")
                 
@@ -116,10 +118,6 @@ final class ReversiViewModelTests: XCTestCase {
         mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
         target.set(disk: .dark, at: .init(x: 0, y: 0))
         wait(for: [boardExpectation], timeout: 0.01)
-    }
-    
-    func testSetMultiDisk() {
-        
     }
     
     func testNextTurn() {
@@ -274,8 +272,8 @@ final class ReversiViewModelTests: XCTestCase {
             switch $0 {
             case .withAnimation:
                 XCTFail("アニメーションをしない想定")
-            case .withoutAnimation(let coordinates):
-                XCTAssertEqual(board.disks.map { $0.key }, coordinates)
+            case .withoutAnimation(let disks):
+                XCTAssertEqual(board.disks.map { $0.key }, disks.map { $0.coordinates })
             }
         })
         // When
@@ -352,8 +350,8 @@ final class ReversiViewModelTests: XCTestCase {
             switch $0 {
             case .withAnimation:
                 XCTFail("アニメーションをしない想定")
-            case .withoutAnimation(let coordinates):
-                XCTAssertEqual(MockReversiSpecifications().initalBoard.disks.map { $0.key }, coordinates)
+            case .withoutAnimation(let disks):
+                XCTAssertEqual(MockReversiSpecifications().initalBoard.disks.map { $0.key }, disks.map { $0.coordinates })
             }
         })
         // When

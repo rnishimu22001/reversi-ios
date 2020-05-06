@@ -9,8 +9,8 @@
 import Combine
 
 enum BoardUpdate {
-    case withAnimation(coordinates: [Coordinates])
-    case withoutAnimation(coordinates: [Coordinates])
+    case withAnimation(disks: [DiskDisplayData])
+    case withoutAnimation(disks: [DiskDisplayData])
 }
 
 protocol ReversiViewModel {
@@ -81,6 +81,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     
     mutating func set(disk: Disk, at coodinates: Coordinates) {
         try? board.set(disk: disk, at: coodinates)
+        
     }
     
     mutating func set(disk: Disk, at coodinates: [Coordinates]) {

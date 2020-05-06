@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD523245D70BC00C7815B /* DiskTests.swift */; };
 		5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */; };
+		5A3B8B7A2462495B000F2DA5 /* DiskDisplayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3B8B792462495B000F2DA5 /* DiskDisplayData.swift */; };
 		5A510685245E6E1D004673A0 /* MockReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */; };
 		5A54732D2460E3150090F6C3 /* MockUILablel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A54732C2460E3150090F6C3 /* MockUILablel.swift */; };
 		5A602ECD2455D3A200F3D882 /* ReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */; };
@@ -58,6 +59,7 @@
 /* Begin PBXFileReference section */
 		5A3AD523245D70BC00C7815B /* DiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTests.swift; sourceTree = "<group>"; };
 		5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecificationsTests.swift; sourceTree = "<group>"; };
+		5A3B8B792462495B000F2DA5 /* DiskDisplayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskDisplayData.swift; sourceTree = "<group>"; };
 		5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockReversiSpecifications.swift; sourceTree = "<group>"; };
 		5A54732C2460E3150090F6C3 /* MockUILablel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUILablel.swift; sourceTree = "<group>"; };
 		5A602ECC2455D3A200F3D882 /* ReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecifications.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			children = (
 				5AF143812460287B005EBF3B /* MessageDisplayData.swift */,
 				5AF1438324602B86005EBF3B /* PlyaerStatusDisplayData.swift */,
+				5A3B8B792462495B000F2DA5 /* DiskDisplayData.swift */,
 			);
 			name = DisplayData;
 			sourceTree = "<group>";
@@ -374,6 +377,7 @@
 				5A62FAA1245567DE0097D64D /* Player.swift in Sources */,
 				5AFEEE6B24530AB0007C45B8 /* Coordinates.swift in Sources */,
 				D642BDD823AA0B5700396732 /* Disk.swift in Sources */,
+				5A3B8B7A2462495B000F2DA5 /* DiskDisplayData.swift in Sources */,
 				5AFEEE772453CAE9007C45B8 /* FileIOAdapter.swift in Sources */,
 				D642BDB823A9FE4500396732 /* ViewController.swift in Sources */,
 				D642BDDC23AA137C00396732 /* BoardView.swift in Sources */,
