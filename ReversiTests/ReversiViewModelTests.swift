@@ -284,7 +284,7 @@ final class ReversiViewModelTests: XCTestCase {
         XCTAssertEqual(target.board.disks.count, 5, "ボード情報が上書きされること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, "ボード情報が上書きされること")
         XCTAssertTrue(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "ボードの情報が上書きされていること")
-        wait(for: [darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 0.1)
+        wait(for: [darkPlayerExpectation, lightPlayerExpectation, messageExpectation, boardExpectation], timeout: 0.5)
     }
     
     func testReset() {
