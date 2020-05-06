@@ -60,10 +60,10 @@ final class BoardTests: XCTestCase {
     func testCoordinates() {
         let width = 10
         let height = 10
-        var coordinates: [Coordinates] = []
+        var coordinates: Set<Coordinates> = []
         (0..<width).forEach { x in
             (0..<height).forEach { y in
-                coordinates.append(Coordinates(x: x, y: y))
+                coordinates.insert(Coordinates(x: x, y: y))
             }
         }
         XCTAssertEqual(Board(width: width, height: height).coordinates, coordinates)

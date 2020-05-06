@@ -23,17 +23,17 @@ struct Board {
     /// 盤のセルの `y` の範囲（ `0 ..< 8` ）を返します。
     public let yRange: Range<Int>
     
-    public let coordinates: [Coordinates]
+    public let coordinates: Set<Coordinates>
     
     init(width: Int = 8, height: Int = 8) {
         self.width = width
         self.height = height
         xRange = 0 ..< width
         yRange = 0 ..< height
-        var boardCoordinates: [Coordinates] = []
+        var boardCoordinates: Set<Coordinates> = []
         for x in xRange {
             for y in yRange {
-                boardCoordinates.append(Coordinates(x: x, y: y))
+                boardCoordinates.insert(Coordinates(x: x, y: y))
             }
         }
         self.coordinates = boardCoordinates
