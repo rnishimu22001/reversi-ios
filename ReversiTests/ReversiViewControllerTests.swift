@@ -50,12 +50,6 @@ class ReversiViewControllerTests: XCTestCase {
                 controlExpectation.fulfill()
             }))
         }
-        // When
-        do {
-            try target.restoreBoardView()
-        } catch {
-            fatalError()
-        }
         // Then
         let resetExpectation = expectation(description: "Viewのリセットがされること")
         mockBoard.resetCompletion = { resetExpectation.fulfill() }
@@ -516,6 +510,8 @@ class ReversiViewControllerTests: XCTestCase {
             } catch {
                 fatalError()
             }
+            XCTAssertEqual(target.turn, .dark)
+            wait(for: [lightExpectation, darkExpectation], timeout: 0.1)
             // Then
             (1...(boardView.height * boardView.width)).forEach {
                 let x = $0 / boardView.height
@@ -529,8 +525,6 @@ class ReversiViewControllerTests: XCTestCase {
                     XCTAssertNil(boardView.diskAt(x: x, y: y))
                 }
             }
-            XCTAssertEqual(target.turn, .dark)
-            wait(for: [lightExpectation, darkExpectation], timeout: 0.1)
         }
     }
 }
