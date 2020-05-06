@@ -94,7 +94,7 @@ final class ReversiViewModelTests: XCTestCase {
         wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
     }
     
-    func testSetSingleDisk() {
+    func testSetDisk() {
         
     }
     
@@ -196,7 +196,14 @@ final class ReversiViewModelTests: XCTestCase {
         var target = ReversiViewModelImplementation(game: Game(turn: .light, board: ReversiSpecificationsImplementation().initalState(from: Board()), darkPlayer: .manual, lightPlayer: .computer),
                                                     specifications: mockSpecifications)
         mockSpecifications.isEndOfGame = false
-        
+        let dummyCoordinatesFirst = Coordinates(x: 1, y: 4)
+        let dummyCoordinatesLast = Coordinates(x: 2, y: 4)
+        var board = Board()
+        try! board.set(disk: .dark, at: dummyCoordinatesLast)
+        try! board.set(disk: .dark, at: dummyCoordinatesFirst)
+        try! board.set(disk: .light, at: .init(x: 6, y: 6))
+        try! board.set(disk: .light, at: .init(x: 1, y: 5))
+        try! board.set(disk: .light, at: .init(x: 1, y: 6))
         // Then
         let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とrestore時に呼ばれる。")
         darkPlayerExpectation.expectedFulfillmentCount = 2
@@ -241,15 +248,17 @@ final class ReversiViewModelTests: XCTestCase {
             messageExpectation.fulfill()
             messageCount += 1
         })
+        let boardExpectation = expectation(description: "ボードの情報が更新されること")
+        cancellables.append(target.boardStatus.sink {
+            boardExpectation.fulfill()
+            switch $0 {
+            case .withAnimation:
+                XCTFail("アニメーションをしない想定")
+            case .withoutAnimation(let coordinates):
+                XCTAssertEqual(board.disks.map { $0.key }, coordinates)
+            }
+        })
         // When
-        let dummyCoordinatesFirst = Coordinates(x: 1, y: 4)
-        let dummyCoordinatesLast = Coordinates(x: 2, y: 4)
-        var board = Board()
-        try! board.set(disk: .dark, at: dummyCoordinatesLast)
-        try! board.set(disk: .dark, at: dummyCoordinatesFirst)
-        try! board.set(disk: .light, at: .init(x: 6, y: 6))
-        try! board.set(disk: .light, at: .init(x: 1, y: 5))
-        try! board.set(disk: .light, at: .init(x: 1, y: 6))
         target.restore(from: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer))
             
         // Then
@@ -317,12 +326,22 @@ final class ReversiViewModelTests: XCTestCase {
             messageExpectation.fulfill()
             messageCount += 1
         })
+        let boardExpectation = expectation(description: "ボードの情報が更新されること")
+        cancellables.append(target.boardStatus.sink {
+            boardExpectation.fulfill()
+            switch $0 {
+            case .withAnimation:
+                XCTFail("アニメーションをしない想定")
+            case .withoutAnimation(let coordinates):
+                XCTAssertEqual(MockReversiSpecifications().initalBoard.disks.map { $0.key }, coordinates)
+            }
+        })
         // When
         target.reset()
         // Then
         XCTAssertEqual(target.board.disks.count, 4, " 初期数に戻っていること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, " 初期数に戻っていること")
         XCTAssertFalse(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "以前のボード情報が削除されていること")
-        wait(for: [darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 0.1)
+        wait(for: [boardExpectation, darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 0.1)
     }
 }

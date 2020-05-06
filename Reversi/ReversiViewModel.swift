@@ -8,6 +8,11 @@
 
 import Combine
 
+enum BoardUpdate {
+    case withAnimation(coordinates: [Coordinates])
+    case withoutAnimation(coordinates: [Coordinates])
+}
+
 protocol ReversiViewModel {
    
     // MARK: 通知用
@@ -39,7 +44,8 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
-  
+    private(set) var boardStatus: PassthroughSubject<BoardUpdate, Never> = .init()
+    
     // MARK: ゲームの状態
     private(set) var board: Board
     private(set) var turn: Disk?
