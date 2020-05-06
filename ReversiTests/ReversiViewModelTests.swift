@@ -95,7 +95,27 @@ final class ReversiViewModelTests: XCTestCase {
     }
     
     func testSetDisk() {
+        // Given
+        let mockSpecifications = MockReversiSpecifications()
+        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                    specifications: mockSpecifications)
         
+        // Then
+        let boardExpectation = expectation(description: "ボードの情報が更新されること")
+        cancellables.append(target.boardStatus.sink {
+            boardExpectation.fulfill()
+            switch $0 {
+            case .withAnimation(let coordinates):
+                XCTAssertEqual(mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult, coordinates, "指定された並び方で座標が並ぶこと")
+            case .withoutAnimation:
+                XCTFail("アニメーションを伴う更新の想定")
+                
+            }
+        })
+        // When
+        mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
+        target.set(disk: .dark, at: .init(x: 0, y: 0))
+        wait(for: [boardExpectation], timeout: 0.01)
     }
     
     func testSetMultiDisk() {
