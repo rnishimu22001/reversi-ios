@@ -9,8 +9,8 @@
 import Combine
 
 enum BoardUpdate {
-    case withAnimation(disks: [DiskDisplayData])
-    case withoutAnimation(disks: [DiskDisplayData])
+    case withAnimation(disks: [SetDiskDisplayData])
+    case withoutAnimation(disks: [SetDiskDisplayData])
 }
 
 protocol ReversiViewModel {
