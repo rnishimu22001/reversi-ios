@@ -27,7 +27,7 @@ final class ViewController: UIViewController {
     
     private var playerCancellers: [Disk: Canceller] = [:]
     
-    private var cancellables: [AnyCancellable] = []
+    private var cancellables: Set<AnyCancellable> = []
     
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
@@ -39,32 +39,56 @@ final class ViewController: UIViewController {
         
         boardView.delegate = self
         messageDiskSize = messageDiskSizeConstraint.constant
-        
+        sink()
         do {
             try loadGame()
         } catch _ {
             newGame()
         }
-        sink()
     }
     
     func sink() {
     
-        cancellables.append(viewModel.darkPlayerStatus.subscribe(on: DispatchQueue.main).sink { [weak self] data in
+        viewModel
+            .darkPlayerStatus
+            .subscribe(on: DispatchQueue.main)
+            .sink { [weak self] data in
             // プレイヤータイプのつなぎ込みもしておくこと
             guard let self = self else { return }
             self.playerControls[Disk.dark.index].selectedSegmentIndex = data.playerType.rawValue
             self.countLabels[Disk.dark.index].text = data.diskCount.description
-        })
-        cancellables.append(viewModel.lightPlayerStatus.subscribe(on: DispatchQueue.main).sink { [weak self] data in
+        
+        }
+        .store(in: &cancellables)
+        viewModel.lightPlayerStatus.subscribe(on: DispatchQueue.main).sink { [weak self] data in
             // プレイヤータイプのつなぎ込みもしておくこと
             guard let self = self else { return }
             self.playerControls[Disk.light.index].selectedSegmentIndex = data.playerType.rawValue
             self.countLabels[Disk.light.index].text = data.diskCount.description
-        })
-        cancellables.append(viewModel.message.subscribe(on: DispatchQueue.main).sink { [weak self] data in
-            self?.updateMessageViews(with: data)
-        })
+        }.store(in: &cancellables)
+        
+        viewModel
+            .message
+            .subscribe(on: DispatchQueue.main)
+            .sink { [weak self] data in self?.updateMessageViews(with: data) }
+            .store(in: &cancellables)
+        
+        viewModel
+            .boardStatus
+            .sink { [weak self] type in
+            // mainスケジューラでsubscribeした場合に即時イベント発行がきても受け取れない
+                DispatchQueue.main.async {
+                    switch type {
+                    case .withAnimation(let disks):
+                        break
+                    case .withoutAnimation(let disks):
+                        disks.forEach {
+                            self?.boardView.setDisk($0.side, at: $0.coordinates, animated: false)
+                        }
+                    }
+                }
+        }
+        .store(in: &cancellables)
     }
     
     private var viewHasAppeared: Bool = false
@@ -350,19 +374,11 @@ extension ViewController {
         try gameRepository.save(game: game)
     }
     
-    /// ゲームの状態をファイルから読み込み、復元します。
-    func restoreBoardView() throws {
-        board.disks.forEach {
-            boardView.setDisk($0.value, atX: $0.key.x, y: $0.key.y, animated: false)
-        }
-    }
-    
     func loadGame() throws {
         let game = try gameRepository.restore()
         
         turn = game.turn
         viewModel.restore(from: game)
-        try restoreBoardView()
     }
 }
 

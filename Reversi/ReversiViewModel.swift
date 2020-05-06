@@ -19,6 +19,7 @@ protocol ReversiViewModel {
     var message: CurrentValueSubject<MessageDisplayData, Never> { get }
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
+    var boardStatus: PassthroughSubject<BoardUpdate, Never> { get }
     
     mutating func nextTurn()
     mutating func changePlayer(on side: Disk)
