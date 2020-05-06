@@ -352,7 +352,11 @@ final class ReversiViewModelTests: XCTestCase {
             case .withAnimation:
                 XCTFail("アニメーションをしない想定")
             case .withoutAnimation(let disks):
-                XCTAssertEqual(MockReversiSpecifications().initalBoard.disks.map { $0.key }, disks.map { $0.coordinates })
+                let inital = MockReversiSpecifications().initalBoard.disks
+                XCTAssertEqual(inital.count, disks.count)
+                disks.forEach {
+                    XCTAssertEqual(inital[$0.coordinates], $0.side, "一気にデータをセットするため順序は関係ない")
+                }
             }
         })
         // When
