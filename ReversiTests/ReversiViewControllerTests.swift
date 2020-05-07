@@ -22,6 +22,20 @@ class ReversiViewControllerTests: XCTestCase {
     
     // MARK: Game Management
     
+    func testNextTurn() {
+        // Given
+        let target = ViewController()
+        // When
+        target.nextTurn()
+    }
+    
+    func testPlayTurnOfComputer() {
+        // Given
+        let target = ViewController()
+        // When
+        target.playTurnOfComputer()
+    }
+    
     func testNewGame() {
         // Given
         let mockRepository = MockGameRepository()
