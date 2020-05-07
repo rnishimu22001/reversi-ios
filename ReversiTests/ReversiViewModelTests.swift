@@ -99,8 +99,11 @@ final class ReversiViewModelTests: XCTestCase {
     func testSetDisk() {
         XCTContext.runActivity(named: "座標にdiskが配置できる場合") { _ in
             // Given
+            var board = Board()
+            try! board.set(disk: .dark, at: .init(x: 5, y: 0))
+            try! board.set(disk: .light, at: .init(x: 5, y: 1))
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             let willSetCoordinates = Coordinates(x: 0, y: 0)
             mockSpecifications.placing = [willSetCoordinates] + [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
@@ -119,13 +122,36 @@ final class ReversiViewModelTests: XCTestCase {
                     
                 }
             })
+            let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
+            darkPlayerExpectation.expectedFulfillmentCount = 2
+            let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時にのみ呼ばれる")
+            var darkCount = 1
+            cancellables.append(target.darkPlayerStatus.sink {
+                darkPlayerExpectation.fulfill()
+                XCTAssertEqual($0.diskCount, darkCount)
+                XCTAssertEqual($0.playerType, .manual)
+                switch darkCount {
+                case 1:
+                    XCTAssertEqual($0.diskCount, 1)
+                case 2:
+                    XCTAssertEqual($0.diskCount, 6)
+                default:
+                    XCTFail("3回以上呼ばれない")
+                }
+                darkCount += 1
+            })
+            cancellables.append(target.lightPlayerStatus.sink {
+                lightPlayerExpectation.fulfill()
+                XCTAssertEqual($0.diskCount, 1)
+                XCTAssertEqual($0.playerType, .computer)
+            })
             // When
             do {
                 try target.place(disk: .dark, at: willSetCoordinates)
             } catch {
                 XCTFail("エラーになる想定ではありません")
             }
-            wait(for: [boardExpectation], timeout: 0.1)
+            wait(for: [darkPlayerExpectation, lightPlayerExpectation, boardExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "diskが配置できない場合") { _ in
             // Given
