@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A1C9EC72463DA620044B0AD /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1C9EC62463DA620044B0AD /* Navigator.swift */; };
+		5A1C9EC92463DCF40044B0AD /* SpyNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1C9EC82463DCF40044B0AD /* SpyNavigator.swift */; };
 		5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD523245D70BC00C7815B /* DiskTests.swift */; };
 		5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */; };
 		5A3B8B7A2462495B000F2DA5 /* SetDiskDisplayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3B8B792462495B000F2DA5 /* SetDiskDisplayData.swift */; };
@@ -60,6 +61,7 @@
 
 /* Begin PBXFileReference section */
 		5A1C9EC62463DA620044B0AD /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
+		5A1C9EC82463DCF40044B0AD /* SpyNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpyNavigator.swift; sourceTree = "<group>"; };
 		5A3AD523245D70BC00C7815B /* DiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTests.swift; sourceTree = "<group>"; };
 		5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecificationsTests.swift; sourceTree = "<group>"; };
 		5A3B8B792462495B000F2DA5 /* SetDiskDisplayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDiskDisplayData.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				5AD702BE24600CD500F17A4C /* MockReversiViewModel.swift */,
 				5A54732C2460E3150090F6C3 /* MockUILablel.swift */,
 				5A4008402463CDFB0088C8EC /* MockUIIndicatorView.swift */,
+				5A1C9EC82463DCF40044B0AD /* SpyNavigator.swift */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 				D642BDCB23A9FE4700396732 /* ReversiViewControllerTests.swift in Sources */,
 				5A510685245E6E1D004673A0 /* MockReversiSpecifications.swift in Sources */,
 				5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */,
+				5A1C9EC92463DCF40044B0AD /* SpyNavigator.swift in Sources */,
 				5A4008412463CDFB0088C8EC /* MockUIIndicatorView.swift in Sources */,
 				5A62FA9D2453F6370097D64D /* FileIOTests.swift in Sources */,
 				5AD702BD24600BD700F17A4C /* ReversiViewModelTests.swift in Sources */,
