@@ -20,6 +20,10 @@ class ReversiViewControllerTests: XCTestCase {
         }
     }
     
+    var indicators: [UIActivityIndicatorView] {
+        return .init()
+    }
+    
     // MARK: Game Management
     
     func testNextTurn() {
@@ -31,9 +35,25 @@ class ReversiViewControllerTests: XCTestCase {
     
     func testPlayTurnOfComputer() {
         // Given
+        let viewModel = MockReversiViewModel()
+        let specifications = MockReversiSpecifications()
+        let darkIndicator = MockUIIndicatorView()
+        let lightIndicator = MockUIIndicatorView()
+        let repository = MockGameRepository()
         let target = ViewController()
+        target.playerActivityIndicators = []
+        target.playerActivityIndicators.append(darkIndicator)
+        target.playerActivityIndicators.append(lightIndicator)
+        target.specifications = specifications
+        target.viewModel = viewModel
+        target.gameRepository = repository
+        specifications.stubbedValidMovesResult = [.init(x: 0, y: 0)]
+        XCTAssertEqual(target.turn, .dark, "初期値の確認")
         // When
         target.playTurnOfComputer()
+        // Then
+        XCTAssertEqual(darkIndicator.startAnimatingCount, 1, "darkのターンなのでdark側のindicatorがstart")
+        XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
     }
     
     func testNewGame() {

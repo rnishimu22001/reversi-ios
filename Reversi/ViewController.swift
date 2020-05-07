@@ -97,7 +97,7 @@ final class ViewController: UIViewController {
         
         if viewHasAppeared { return }
         viewHasAppeared = true
-        waitForPlayer()
+        waitForPlayerIfNeeded()
     }
     
     var board: Board { viewModel.board }
@@ -193,7 +193,7 @@ extension ViewController {
     }
     
     /// プレイヤーの行動を待ちます。
-    func waitForPlayer() {
+    func waitForPlayerIfNeeded() {
         guard let turn = self.turn else { return }
         switch Player(rawValue: playerControls[turn.index].selectedSegmentIndex)! {
         case .manual:
@@ -233,7 +233,7 @@ extension ViewController {
         } else {
             self.turn = turn
             updateMessageViews()
-            waitForPlayer()
+            waitForPlayerIfNeeded()
         }
     }
     
@@ -310,7 +310,7 @@ extension ViewController {
             }
             
             self.newGame()
-            self.waitForPlayer()
+            self.waitForPlayerIfNeeded()
         })
         present(alertController, animated: true)
     }
