@@ -34,28 +34,64 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     func testPlayTurnOfComputer() {
-        // Given
-        let viewModel = MockReversiViewModel()
-        let specifications = MockReversiSpecifications()
-        let darkIndicator = MockUIIndicatorView()
-        let lightIndicator = MockUIIndicatorView()
-        let repository = MockGameRepository()
-        let target = ViewController()
-        target.playerActivityIndicators = []
-        target.playerActivityIndicators.append(darkIndicator)
-        target.playerActivityIndicators.append(lightIndicator)
-        target.specifications = specifications
-        target.viewModel = viewModel
-        target.gameRepository = repository
-        specifications.stubbedValidMovesResult = [.init(x: 0, y: 0)]
-        XCTAssertEqual(target.turn, .dark, "初期値の確認")
-        // When
-        target.playTurnOfComputer()
-        // Then
-        XCTAssertEqual(darkIndicator.startAnimatingCount, 1, "darkのターンなのでdark側のindicatorがstart")
-        XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
-        XCTAssertNil(target.playerCancellers[.light], "手番でない側はキャンセラーが設定されない")
-        XCTAssertNotNil(target.playerCancellers[.dark], "手番のプレイヤーはキャンセラーが設定される")
+        XCTContext.runActivity(named: "正常に置き換えが実行される場合") { _ in
+            // Given
+            let viewModel = MockReversiViewModel()
+            let specifications = MockReversiSpecifications()
+            let darkIndicator = MockUIIndicatorView()
+            let lightIndicator = MockUIIndicatorView()
+            let repository = MockGameRepository()
+            let target = ViewController()
+            target.playerActivityIndicators = []
+            target.playerActivityIndicators.append(darkIndicator)
+            target.playerActivityIndicators.append(lightIndicator)
+            target.specifications = specifications
+            target.viewModel = viewModel
+            target.gameRepository = repository
+            let validMoveResult = Coordinates(x: 0, y: 0)
+            specifications.stubbedValidMovesResult = [validMoveResult]
+            XCTAssertEqual(target.turn, .dark, "初期値の確認")
+            
+            // When
+            target.playTurnOfComputer()
+            // Then
+            XCTAssertEqual(darkIndicator.startAnimatingCount, 1, "darkのターンなのでdark側のindicatorがstart")
+            XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
+            XCTAssertNil(target.playerCancellers[.light], "手番でない側はキャンセラーが設定されない")
+            XCTAssertNotNil(target.playerCancellers[.dark], "手番のプレイヤーはキャンセラーが設定される")
+            wait(for: [], timeout: 3.0)
+            // Then
+            XCTAssertEqual(viewModel.invokedSetDiskDiskAtCoordinatesParametersList, [SetDiskArgForViewModel(disk: .dark, x: 0, y: 0)], "呼ばれるのは一回だけ。validMovesの座標が渡されること。")
+        }
+        XCTContext.runActivity(named: "実行待機中にリセットされて実行キャンセルされる場合") { _ in
+            // Given
+            let viewModel = MockReversiViewModel()
+            let specifications = MockReversiSpecifications()
+            let darkIndicator = MockUIIndicatorView()
+            let lightIndicator = MockUIIndicatorView()
+            let repository = MockGameRepository()
+            let target = ViewController()
+            target.playerActivityIndicators = []
+            target.playerActivityIndicators.append(darkIndicator)
+            target.playerActivityIndicators.append(lightIndicator)
+            target.specifications = specifications
+            target.viewModel = viewModel
+            target.gameRepository = repository
+            let validMoveResult = Coordinates(x: 0, y: 0)
+            specifications.stubbedValidMovesResult = [validMoveResult]
+            XCTAssertEqual(target.turn, .dark, "初期値の確認")
+            
+            // When
+            target.playTurnOfComputer()
+            target.playerCancellers[.dark]?.cancel()
+            // Then
+            XCTAssertEqual(darkIndicator.startAnimatingCount, 1, "darkのターンなのでdark側のindicatorがstart")
+            XCTAssertEqual(darkIndicator.stopAnimatingCount, 1, "実行中断でdark側のindicatorがstop")
+            XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
+            XCTAssertEqual(lightIndicator.stopAnimatingCount, 0)
+            XCTAssertNil(target.playerCancellers[.light], "手番でない側はキャンセラーが設定されない")
+            XCTAssertNil(target.playerCancellers[.dark], "手番のプレイヤーはキャンセラーが実行済みなので廃棄される")
+        }
     }
     
     func testNewGame() {

@@ -13,4 +13,8 @@ final class MockUIIndicatorView: UIActivityIndicatorView {
     override func startAnimating() {
         startAnimatingCount += 1
     }
+    var stopAnimatingCount = 0
+    override func stopAnimating() {
+        stopAnimatingCount += 1
+    }
 }
