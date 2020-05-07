@@ -9,6 +9,11 @@
 @testable import Reversi
 
 final class MockReversiSpecifications: ReversiSpecifications {
+    var placing: [Coordinates] = []
+    func placingDiskCoordinates(byPlacing disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {
+        placing
+    }
+    
     var initalBoard: Board = ReversiSpecificationsImplementation().initalState(from: Board())
     func initalState(from board: Board) -> Board {
         initalBoard

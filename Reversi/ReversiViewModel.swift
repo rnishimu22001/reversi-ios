@@ -24,7 +24,7 @@ protocol ReversiViewModel {
     mutating func nextTurn()
     mutating func changePlayer(on side: Disk)
     
-    mutating func place(disk: Disk, at coodinates: Coordinates)
+    mutating func place(disk: Disk, at coordinates: Coordinates) throws
     
     mutating func restore(from game: Game)
     mutating func reset()
@@ -79,8 +79,14 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         }
     }
     
-    mutating func place(disk: Disk, at coodinates: Coordinates) {
-        let willFlip = [coodinates] + specifications.flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: coodinates)
+    mutating func place(disk: Disk, at coordinates: Coordinates) throws {
+       
+        guard specifications.canPlaceDisk(disk, on: board, at: coordinates) else {
+            throw DiskPlacementError(disk: disk, x: coordinates.x, y: coordinates.y)
+        }
+        
+        let willFlip = specifications.placingDiskCoordinates(byPlacing: disk, on: board, at: coordinates)
+        
         willFlip.forEach {
             try? board.set(disk: disk, at: $0)
         }

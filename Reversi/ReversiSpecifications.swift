@@ -9,6 +9,7 @@
 protocol ReversiSpecifications {
     func initalState(from board: Board) -> Board
     func isEndOfGame(on board: Board) -> Bool
+    func placingDiskCoordinates(byPlacing disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates]
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates]
     /// `x`, `y` で指定されたセルに、 `disk` が置けるかを調べます。
     /// ディスクを置くためには、少なくとも 1 枚のディスクをひっくり返せる必要があります。
@@ -42,6 +43,10 @@ struct ReversiSpecificationsImplementation: ReversiSpecifications {
         Disk.allCases.reduce(true) { (previous, disk) in
             previous && self.validMoves(for: disk, on: board).isEmpty
         }
+    }
+    
+    func placingDiskCoordinates(byPlacing disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {
+        [coordinates] + flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: coordinates)
     }
     
     func flippedDiskCoordinatesByPlacing(disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {

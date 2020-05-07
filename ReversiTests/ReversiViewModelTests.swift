@@ -89,36 +89,68 @@ final class ReversiViewModelTests: XCTestCase {
             XCTAssertEqual($0.diskCount, 1)
             XCTAssertEqual($0.playerType, .computer)
         })
-        
-        target.place(disk: .dark, at: Coordinates(x: 1, y: 1))
+        mockSpecifications.stubbedCanPlaceDiskResult = true
+        mockSpecifications.placing = [.init(x: 1, y: 1)]
+        try! target.place(disk: .dark, at: Coordinates(x: 1, y: 1))
         target.updateDiskCount()
         wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
     }
     
     func testSetDisk() {
-        // Given
-        let mockSpecifications = MockReversiSpecifications()
-        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
-                                                    specifications: mockSpecifications)
-        let willSetCoordinates = Coordinates(x: 0, y: 0)
-        // Then
-        let boardExpectation = expectation(description: "ボードの情報が更新されること")
-        cancellables.append(target.boardStatus.sink {
-            boardExpectation.fulfill()
-            switch $0 {
-            case .withAnimation(let disks):
-                XCTAssertEqual([willSetCoordinates] + mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult,
-                               disks.map { $0.coordinates },
-                               "指定された並び方で座標が並ぶこと")
-            case .withoutAnimation:
-                XCTFail("アニメーションを伴う更新の想定")
-                
+        XCTContext.runActivity(named: "座標にdiskが配置できる場合") { _ in
+            // Given
+            let mockSpecifications = MockReversiSpecifications()
+            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            let willSetCoordinates = Coordinates(x: 0, y: 0)
+            mockSpecifications.placing = [willSetCoordinates] + [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
+            mockSpecifications.stubbedCanPlaceDiskResult = true
+            // Then
+            let boardExpectation = expectation(description: "ボードの情報が更新されること")
+            cancellables.append(target.boardStatus.sink {
+                boardExpectation.fulfill()
+                switch $0 {
+                case .withAnimation(let disks):
+                    XCTAssertEqual(mockSpecifications.placing,
+                                   disks.map { $0.coordinates },
+                                   "指定された並び方で座標が並ぶこと")
+                case .withoutAnimation:
+                    XCTFail("アニメーションを伴う更新の想定")
+                    
+                }
+            })
+            // When
+            do {
+                try target.place(disk: .dark, at: willSetCoordinates)
+            } catch {
+                XCTFail("エラーになる想定ではありません")
             }
-        })
-        // When
-        mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
-        target.place(disk: .dark, at: willSetCoordinates)
-        wait(for: [boardExpectation], timeout: 0.01)
+            wait(for: [boardExpectation], timeout: 0.1)
+        }
+        XCTContext.runActivity(named: "diskが配置できない場合") { _ in
+            // Given
+            let mockSpecifications = MockReversiSpecifications()
+            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            let willSetCoordinates = Coordinates(x: 0, y: 0)
+            // Then
+            cancellables.append(target.boardStatus.sink { _ in
+                XCTFail("ボード情報更新がされないこと")
+            })
+            // When
+            mockSpecifications.stubbedCanPlaceDiskResult = false
+            do {
+                try target.place(disk: .dark, at: willSetCoordinates)
+                XCTFail("失敗する想定です。")
+            } catch (let error as DiskPlacementError) {
+                XCTAssertEqual(error.disk, .dark)
+                XCTAssertEqual(error.x, willSetCoordinates.x)
+                XCTAssertEqual(error.y, willSetCoordinates.y)
+            } catch {
+                XCTFail("指定したエラーではありません")
+            }
+        }
+
     }
     
     func testNextTurn() {

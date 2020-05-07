@@ -138,7 +138,7 @@ extension ViewController {
         let cleanUp: () -> Void = { [weak self] in
             self?.animationCanceller = nil
         }
-        viewModel.place(disk: disk, at: Coordinates(x: x, y: y))
+        try? viewModel.place(disk: disk, at: Coordinates(x: x, y: y))
         animationCanceller = Canceller(cleanUp)
         animateSettingDisks(at: [(x, y)] + diskCoordinates, to: disk) { [weak self] isFinished in
             guard let self = self else { return }
