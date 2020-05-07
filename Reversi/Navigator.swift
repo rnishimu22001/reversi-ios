@@ -9,18 +9,18 @@
 import UIKit
 
 protocol Navigator {
-    func present(viewContorller: UIViewController, animated: Bool, completion: (() -> Void)?)
+    func present(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?)
 }
 
 final class NavigatorImplementation: Navigator {
     
-    private weak var navigationController: UINavigationController?
+    private weak var viewController: UIViewController?
    
-    init(navigationController: UINavigationController?) {
-        self.navigationController = navigationController
+    init(viewController: UIViewController?) {
+        self.viewController = viewController
     }
     
-    func present(viewContorller: UIViewController, animated: Bool, completion: (() -> Void)?) {
-        navigationController?.present(viewContorller, animated: animated, completion: completion)
+    func present(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
+        self.viewController?.present(viewController, animated: animated, completion: completion)
     }
 }

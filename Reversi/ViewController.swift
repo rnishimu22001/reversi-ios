@@ -22,6 +22,8 @@ final class ViewController: UIViewController {
     /// どちらの色のプレイヤーのターンかを表します。ゲーム終了時は `nil` です。
     private(set) var turn: Disk? = .dark
     
+    lazy var navigator: Navigator = NavigatorImplementation(viewController: self)
+    
     var animationCanceller: Canceller?
     private var isAnimating: Bool { animationCanceller != nil }
     
@@ -228,7 +230,7 @@ extension ViewController {
                 alertController.addAction(UIAlertAction(title: "Dismiss", style: .default) { [weak self] _ in
                     self?.nextTurn()
                 })
-                present(alertController, animated: true)
+                navigator.present(alertController, animated: true, completion: nil)
             }
         } else {
             self.turn = turn
@@ -312,7 +314,8 @@ extension ViewController {
             self.newGame()
             self.waitForPlayerIfNeeded()
         })
-        present(alertController, animated: true)
+        
+        navigator.present(alertController, animated: true, completion: nil)
     }
     
     /// プレイヤーのモードが変更された場合に呼ばれるハンドラーです。
