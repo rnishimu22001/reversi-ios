@@ -122,36 +122,13 @@ final class ReversiViewModelTests: XCTestCase {
                     
                 }
             })
-            let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
-            darkPlayerExpectation.expectedFulfillmentCount = 2
-            let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時にのみ呼ばれる")
-            var darkCount = 1
-            cancellables.append(target.darkPlayerStatus.sink {
-                darkPlayerExpectation.fulfill()
-                XCTAssertEqual($0.diskCount, darkCount)
-                XCTAssertEqual($0.playerType, .manual)
-                switch darkCount {
-                case 1:
-                    XCTAssertEqual($0.diskCount, 1)
-                case 2:
-                    XCTAssertEqual($0.diskCount, 6)
-                default:
-                    XCTFail("3回以上呼ばれない")
-                }
-                darkCount += 1
-            })
-            cancellables.append(target.lightPlayerStatus.sink {
-                lightPlayerExpectation.fulfill()
-                XCTAssertEqual($0.diskCount, 1)
-                XCTAssertEqual($0.playerType, .computer)
-            })
             // When
             do {
                 try target.place(disk: .dark, at: willSetCoordinates)
             } catch {
                 XCTFail("エラーになる想定ではありません")
             }
-            wait(for: [darkPlayerExpectation, lightPlayerExpectation, boardExpectation], timeout: 0.1)
+            wait(for: [boardExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "diskが配置できない場合") { _ in
             // Given
