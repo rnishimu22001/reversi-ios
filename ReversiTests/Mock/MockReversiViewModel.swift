@@ -51,14 +51,14 @@ final class MockReversiViewModel: ReversiViewModel {
 
     var invokedSetDiskDiskAtCoordinates = false
     var invokedSetDiskDiskAtCoordinatesCount = 0
-    var invokedSetDiskDiskAtCoordinatesParameters: (disk: Disk, coodinates: Coordinates)?
+    var invokedSetDiskDiskAtCoordinatesParameters: ((Disk, Coordinates) -> Void)?
     var invokedSetDiskDiskAtCoordinatesParametersList = [SetDiskArgForViewModel]()
 
-    func place(disk: Disk, at coodinates: Coordinates) {
+    func place(disk: Disk, at coordinates: Coordinates) {
         invokedSetDiskDiskAtCoordinates = true
         invokedSetDiskDiskAtCoordinatesCount += 1
-        invokedSetDiskDiskAtCoordinatesParameters = (disk, coodinates)
-        invokedSetDiskDiskAtCoordinatesParametersList.append(SetDiskArgForViewModel(disk: disk, x: coodinates.x, y: coodinates.y))
+        invokedSetDiskDiskAtCoordinatesParameters?(disk, coordinates)
+        invokedSetDiskDiskAtCoordinatesParametersList.append(SetDiskArgForViewModel(disk: disk, x: coordinates.x, y: coordinates.y))
     }
 
     var invokedReset = false

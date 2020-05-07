@@ -42,15 +42,25 @@ class ReversiViewControllerTests: XCTestCase {
             let lightIndicator = MockUIIndicatorView()
             let repository = MockGameRepository()
             let target = ViewController()
+            target.boardView = MockBoardView()
             target.playerActivityIndicators = []
             target.playerActivityIndicators.append(darkIndicator)
             target.playerActivityIndicators.append(lightIndicator)
             target.specifications = specifications
             target.viewModel = viewModel
             target.gameRepository = repository
+            target.playerControls = controls
             let validMoveResult = Coordinates(x: 0, y: 0)
             specifications.stubbedValidMovesResult = [validMoveResult]
+            specifications.stubbedFlippedDiskCoordinatesByPlacingResult = [Coordinates(x: 1, y: 1)]
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
+            // Then
+            let placeDiskExpectation = expectation(description: "viewModelのplaceが呼ばれること")
+            viewModel.invokedSetDiskDiskAtCoordinatesParameters = { (disk, coordinates) in
+                placeDiskExpectation.fulfill()
+                XCTAssertEqual(disk, .dark)
+                XCTAssertEqual(coordinates, validMoveResult)
+            }
             
             // When
             target.playTurnOfComputer()
@@ -59,9 +69,8 @@ class ReversiViewControllerTests: XCTestCase {
             XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
             XCTAssertNil(target.playerCancellers[.light], "手番でない側はキャンセラーが設定されない")
             XCTAssertNotNil(target.playerCancellers[.dark], "手番のプレイヤーはキャンセラーが設定される")
-            wait(for: [], timeout: 3.0)
-            // Then
-            XCTAssertEqual(viewModel.invokedSetDiskDiskAtCoordinatesParametersList, [SetDiskArgForViewModel(disk: .dark, x: 0, y: 0)], "呼ばれるのは一回だけ。validMovesの座標が渡されること。")
+            
+            wait(for: [placeDiskExpectation], timeout: 3)
         }
         XCTContext.runActivity(named: "実行待機中にリセットされて実行キャンセルされる場合") { _ in
             // Given
