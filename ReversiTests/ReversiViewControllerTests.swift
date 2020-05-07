@@ -54,6 +54,8 @@ class ReversiViewControllerTests: XCTestCase {
         // Then
         XCTAssertEqual(darkIndicator.startAnimatingCount, 1, "darkのターンなのでdark側のindicatorがstart")
         XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
+        XCTAssertNil(target.playerCancellers[.light], "手番でない側はキャンセラーが設定されない")
+        XCTAssertNotNil(target.playerCancellers[.dark], "手番のプレイヤーはキャンセラーが設定される")
     }
     
     func testNewGame() {

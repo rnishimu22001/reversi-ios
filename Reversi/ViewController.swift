@@ -25,7 +25,7 @@ final class ViewController: UIViewController {
     var animationCanceller: Canceller?
     private var isAnimating: Bool { animationCanceller != nil }
     
-    private var playerCancellers: [Disk: Canceller] = [:]
+    private(set) var playerCancellers: [Disk: Canceller] = [:]
     
     private var cancellables: Set<AnyCancellable> = []
     
