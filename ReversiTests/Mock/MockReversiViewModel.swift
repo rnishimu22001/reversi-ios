@@ -23,21 +23,23 @@ final class MockReversiViewModel: ReversiViewModel {
     }
     
     var turn: Disk?
-    
+   
+    var nextTurnsInvokeCount: Int = 0
     func nextTurn() {
-        
+        nextTurnsInvokeCount += 1
     }
     
     func restore(from game: Game) {
         
     }
-    
+    var updateMessageInvokedCount: Int = 0
     func updateMessage() {
-        
+        updateMessageInvokedCount += 1
     }
-    
+   
+    var updateDiskInvokedCount: Int = 0
     func updateDiskCount() {
-        
+        updateDiskInvokedCount += 1
     }
     
     var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))

@@ -42,9 +42,12 @@ final class MockReversiSpecifications: ReversiSpecifications {
         return stubbedCanPlaceDiskResult
     }
 
+    var validMoveCompletion: ((Disk, Board) -> [Coordinates])?
     var stubbedValidMovesResult: [Coordinates]! = []
-
     func validMoves(for side: Disk, on board: Board) -> [Coordinates] {
-        return stubbedValidMovesResult
+        guard let completion = validMoveCompletion else {
+            return stubbedValidMovesResult
+        }
+        return completion(side, board)
     }
 }

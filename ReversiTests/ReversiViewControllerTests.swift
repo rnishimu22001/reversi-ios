@@ -27,10 +27,118 @@ class ReversiViewControllerTests: XCTestCase {
     // MARK: Game Management
     
     func testNextTurn() {
-        // Given
-        let target = ViewController()
-        // When
-        target.nextTurn()
+        XCTContext.runActivity(named: "現在のターンがManualのプレイヤー、次がcomputerの場合") { _ in
+            // Given
+            let viewModel = MockReversiViewModel()
+            let specifications = MockReversiSpecifications()
+            let darkIndicator = MockUIIndicatorView()
+            let lightIndicator = MockUIIndicatorView()
+            let repository = MockGameRepository()
+            let target = ViewController()
+            target.boardView = MockBoardView()
+            target.playerActivityIndicators = []
+            target.playerActivityIndicators.append(darkIndicator)
+            target.playerActivityIndicators.append(lightIndicator)
+            target.specifications = specifications
+            target.viewModel = viewModel
+            target.gameRepository = repository
+            target.playerControls = controls
+            let validMoveResult = Coordinates(x: 0, y: 0)
+            specifications.stubbedValidMovesResult = [validMoveResult]
+            specifications.stubbedFlippedDiskCoordinatesByPlacingResult = [Coordinates(x: 1, y: 1)]
+            XCTAssertEqual(target.turn, .dark, "初期値の確認")
+            
+            // When
+            target.nextTurn()
+            // Then
+            XCTAssertEqual(viewModel.nextTurnsInvokeCount, 1, "darkから手番が移る一回だけ呼ばれる")
+            XCTAssertEqual(target.turn, .light, "ターンが切り替わったので手番がlightに移る")
+            XCTAssertEqual(darkIndicator.startAnimatingCount, 0, "darkはComputerではない")
+            XCTAssertEqual(lightIndicator.startAnimatingCount, 1, "lightはcomputerなのでlight側のindicatorがstart")
+            XCTAssertNotNil(target.playerCancellers[.light],  "手番のプレイヤーはキャンセラーが設定される")
+            XCTAssertNil(target.playerCancellers[.dark], "手番でない側はキャンセラーが設定されない")
+            XCTAssertEqual(viewModel.updateMessageInvokedCount, 1)
+        }
+        XCTContext.runActivity(named: "darkとlight両方置ける場所がなくなった場合") { _ in
+            // Given
+            let viewModel = MockReversiViewModel()
+            let specifications = MockReversiSpecifications()
+            let darkIndicator = MockUIIndicatorView()
+            let lightIndicator = MockUIIndicatorView()
+            let repository = MockGameRepository()
+            let target = ViewController()
+            target.boardView = MockBoardView()
+            target.playerActivityIndicators = []
+            target.playerActivityIndicators.append(darkIndicator)
+            target.playerActivityIndicators.append(lightIndicator)
+            target.specifications = specifications
+            target.viewModel = viewModel
+            target.gameRepository = repository
+            target.playerControls = controls
+            specifications.stubbedValidMovesResult = []
+            specifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
+            XCTAssertEqual(target.turn, .dark, "初期値の確認")
+            
+            // When
+            target.nextTurn()
+            // Then
+            XCTAssertEqual(viewModel.updateMessageInvokedCount, 1)
+            XCTAssertEqual(viewModel.nextTurnsInvokeCount, 1, "darkから手番が移る一回だけ呼ばれる")
+            XCTAssertNil(target.turn, "決着がついたのでnilになる")
+            XCTAssertEqual(darkIndicator.startAnimatingCount, 0, "darkはComputerではない")
+            XCTAssertEqual(lightIndicator.startAnimatingCount, 0, "決着がついたので呼び出されない")
+            XCTAssertNil(target.playerCancellers[.light],  "決着がついたので設定されない")
+            XCTAssertNil(target.playerCancellers[.dark], "手番でない側はキャンセラーが設定されない")
+        }
+        XCTContext.runActivity(named: "dark側だけ置ける場所がなくなった場合") { _ in
+            // Given
+            let viewModel = MockReversiViewModel()
+            let specifications = MockReversiSpecifications()
+            let darkIndicator = MockUIIndicatorView()
+            let lightIndicator = MockUIIndicatorView()
+            let repository = MockGameRepository()
+            let target = ViewController()
+            let navigation = SpyNavigator()
+            target.navigator = navigation
+            target.boardView = MockBoardView()
+            target.playerActivityIndicators = []
+            target.playerActivityIndicators.append(darkIndicator)
+            target.playerActivityIndicators.append(lightIndicator)
+            target.specifications = specifications
+            target.viewModel = viewModel
+            target.gameRepository = repository
+            target.playerControls = controls
+            specifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
+            XCTAssertEqual(target.turn, .dark, "初期値の確認")
+            // When
+            specifications.validMoveCompletion = { side, coordinates in
+                switch side {
+                case .dark:
+                    return [.init(x: 0, y: 0)]
+                case .light:
+                    return []
+                }
+            }
+            // When
+            target.nextTurn()
+            // Then
+            XCTAssertEqual(viewModel.updateMessageInvokedCount, 1)
+            XCTAssertEqual(viewModel.nextTurnsInvokeCount, 1, "darkから手番が移る一回だけ呼ばれる")
+            XCTAssertEqual(target.turn, .light, "次のプレイヤーに手番が移る")
+            XCTAssertEqual(darkIndicator.startAnimatingCount, 0, "darkはComputerではない")
+            XCTAssertEqual(lightIndicator.startAnimatingCount, 0, "lightは手番を飛ばされたのでIndicatorがStartしない")
+            XCTAssertNil(target.playerCancellers[.light],  "lightは手番を飛ばされたのでキャンセラーが設定されない")
+            XCTAssertNil(target.playerCancellers[.dark], "手番でない側はキャンセラーが設定されない")
+            XCTAssertEqual(navigation.presentArgs.count, 1, "Alertの表示回数は一回だけ")
+            guard let alert = navigation.presentArgs.first?.0 as? UIAlertController else {
+                XCTFail("想定していないcontrollerが表示されています")
+                return
+            }
+            XCTAssertEqual(alert.message, "Cannot place a disk.")
+            XCTAssertEqual(alert.title, "Pass")
+            XCTAssertEqual(alert.actions.count, 1)
+            XCTAssertEqual(alert.actions.first?.title, "Dismiss")
+        }
     }
     
     func testPlayTurnOfComputer() {
