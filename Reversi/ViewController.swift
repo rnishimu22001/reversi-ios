@@ -213,27 +213,31 @@ extension ViewController {
 
         turn.flip()
         viewModel.nextTurn()
+        defer {
+            updateMessageViews()
+        }
+       
+        // ゲームが終わっているかを確認j
+        guard !specifications.isEndOfGame(on: board) else {
+            self.turn = nil
+            return
+        }
         
         if validMoves(for: turn).isEmpty {
-            if validMoves(for: turn.flipped).isEmpty {
-                self.turn = nil
-            } else {
-                self.turn = turn
-                let alertController = UIAlertController(
-                    title: "Pass",
-                    message: "Cannot place a disk.",
-                    preferredStyle: .alert
-                )
-                alertController.addAction(UIAlertAction(title: "Dismiss", style: .default) { [weak self] _ in
-                    self?.nextTurn()
-                })
-                navigator.present(alertController, animated: true, completion: nil)
-            }
+            self.turn = turn
+            let alertController = UIAlertController(
+                title: "Pass",
+                message: "Cannot place a disk.",
+                preferredStyle: .alert
+            )
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: .default) { [weak self] _ in
+                self?.nextTurn()
+            })
+            navigator.present(alertController, animated: true, completion: nil)
         } else {
             self.turn = turn
             waitForPlayerIfNeeded()
         }
-        updateMessageViews()
     }
     
     /// "Computer" が選択されている場合のプレイヤーの行動を決定します。
