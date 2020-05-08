@@ -46,6 +46,8 @@ class ReversiViewControllerTests: XCTestCase {
             let validMoveResult = Coordinates(x: 0, y: 0)
             specifications.stubbedValidMovesResult = [validMoveResult]
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = [Coordinates(x: 1, y: 1)]
+            // まだゲームが終わっていないことを設定
+            specifications.isEndOfGame = false
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             
             // When
@@ -77,6 +79,8 @@ class ReversiViewControllerTests: XCTestCase {
             target.playerControls = controls
             specifications.stubbedValidMovesResult = []
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
+            // 互いにおける場所がなくなった場合を設定
+            specifications.isEndOfGame = true
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             
             // When
@@ -161,6 +165,8 @@ class ReversiViewControllerTests: XCTestCase {
             let validMoveResult = Coordinates(x: 0, y: 0)
             specifications.stubbedValidMovesResult = [validMoveResult]
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = [Coordinates(x: 1, y: 1)]
+            // まだゲームが終わっていないことを設定
+            specifications.isEndOfGame = false
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             // Then
             let placeDiskExpectation = expectation(description: "viewModelのplaceが呼ばれること")
