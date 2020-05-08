@@ -217,11 +217,8 @@ extension ViewController {
         if validMoves(for: turn).isEmpty {
             if validMoves(for: turn.flipped).isEmpty {
                 self.turn = nil
-                updateMessageViews()
             } else {
                 self.turn = turn
-                updateMessageViews()
-                
                 let alertController = UIAlertController(
                     title: "Pass",
                     message: "Cannot place a disk.",
@@ -234,9 +231,9 @@ extension ViewController {
             }
         } else {
             self.turn = turn
-            updateMessageViews()
             waitForPlayerIfNeeded()
         }
+        updateMessageViews()
     }
     
     /// "Computer" が選択されている場合のプレイヤーの行動を決定します。
