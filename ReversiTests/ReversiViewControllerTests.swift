@@ -297,7 +297,6 @@ class ReversiViewControllerTests: XCTestCase {
         let diskSize: CGFloat = 5
         XCTContext.runActivity(named: "ゲーム中") { _ in
             // Given
-            let mockRepository = MockGameRepository()
             let target = ViewController()
             target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
             target.boardView = BoardView(frame: .zero)
@@ -309,15 +308,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.messageDiskSizeConstraint.isActive = true
             target.messageLabel = UILabel(frame: .zero)
             target.messageDiskSize = diskSize
-            target.gameRepository = mockRepository
-            var board = Board()
-            do {
-                try board.set(disk: .dark, at: .init(x: 1, y: 1))
-                try board.set(disk: .light, at: .init(x: 2, y: 2))
-            } catch {
-                fatalError()
-            }
-            mockRepository.restored = Game(turn: .light, board: board, darkPlayer: .computer, lightPlayer: .manual)
+            let displayData = MessageDisplayData(status: .playing(turn: .light))
             // Then
             let messageExpectation = expectation(description: "messageLabelが更新されること")
             observation.append(target.messageLabel.observe(\.text) { _, change in
@@ -327,20 +318,13 @@ class ReversiViewControllerTests: XCTestCase {
                 messageExpectation.fulfill()
             })
             // When
-            target.sink()
-            do {
-                try target.loadGame()
-            } catch {
-                fatalError()
-            }
-            target.updateMessageViews()
+            target.updateMessageViews(with: displayData)
             wait(for: [messageExpectation], timeout: 0.1)
             
         }
         XCTContext.runActivity(named: "ゲーム終了") { _ in
             XCTContext.runActivity(named: "一方の勝ち") { _ in
                 // Given
-                let mockRepository = MockGameRepository()
                 let target = ViewController()
                 target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
                 target.boardView = BoardView(frame: .zero)
@@ -353,22 +337,7 @@ class ReversiViewControllerTests: XCTestCase {
                 target.messageDiskSizeConstraint.isActive = true
                 target.messageLabel = UILabel(frame: .zero)
                 target.messageDiskSize = diskSize
-                target.gameRepository = mockRepository
-                var board = Board()
-                // dark側がディスクが多い状態
-                do {
-                    try board.set(disk: .dark, at: Coordinates(x: 0, y: 0))
-                } catch {
-                    fatalError()
-                }
-                // turnがnilでゲーム終了
-                mockRepository.restored = Game(turn: nil, board: board, darkPlayer: .computer, lightPlayer: .manual)
-                target.sink()
-                do {
-                    try target.loadGame()
-                } catch {
-                    fatalError()
-                }
+
                 // Then
                 let messageExpectation = expectation(description: "messageLabelが更新されること")
                 observation.append(target.messageLabel.observe(\.text) { _, change in
@@ -379,12 +348,11 @@ class ReversiViewControllerTests: XCTestCase {
                     messageExpectation.fulfill()
                 })
                 
-                target.updateMessageViews()
+                target.updateMessageViews(with: MessageDisplayData(status: .ending(winner: .dark)))
                 wait(for: [messageExpectation], timeout: 0.1)
                 
             }
             XCTContext.runActivity(named: "引き分け") { _ in
-                let mockRepository = MockGameRepository()
                 let target = ViewController()
                 target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
                 target.boardView = BoardView(frame: .zero)
@@ -397,15 +365,6 @@ class ReversiViewControllerTests: XCTestCase {
                 target.messageDiskSizeConstraint.isActive = true
                 target.messageLabel = UILabel(frame: .zero)
                 target.messageDiskSize = diskSize
-                target.gameRepository = mockRepository
-                // turnがnilでゲーム終了
-                mockRepository.restored = Game(turn: nil, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
-                target.sink()
-                do {
-                    try target.loadGame()
-                } catch {
-                    fatalError()
-                }
                 // Then
                 let messageExpectation = expectation(description: "messageLabelが更新されること")
                 observation.append(target.messageLabel.observe(\.text) { _, change in
@@ -415,8 +374,7 @@ class ReversiViewControllerTests: XCTestCase {
                     messageExpectation.fulfill()
                 })
                 // When
-                target.updateMessageViews()
-                // Then
+                target.updateMessageViews(with: MessageDisplayData(status: .ending(winner: nil)))
                 wait(for: [messageExpectation], timeout: 0.1)
             }
         }

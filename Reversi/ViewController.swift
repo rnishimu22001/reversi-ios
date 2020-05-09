@@ -214,7 +214,7 @@ extension ViewController {
         turn.flip()
         viewModel.nextTurn()
         defer {
-            updateMessageViews()
+            viewModel.updateMessage()
         }
        
         // ゲームが終わっているかを確認
@@ -230,6 +230,7 @@ extension ViewController {
             waitForPlayerIfNeeded()
             return
         }
+        
         // おける場所がなければAlert表示
         let alertController = UIAlertController(
             title: "Pass",
@@ -273,10 +274,6 @@ extension ViewController {
 // MARK: Views
 
 extension ViewController {
-    
-    func updateMessageViews() {
-        viewModel.updateMessage()
-    }
     
     /// DisplayDataをもとにメッセージを表示します。
     func updateMessageViews(with displayData: MessageDisplayData) {
