@@ -204,7 +204,6 @@ extension ViewController {
     /// もし、次のプレイヤーに有効な手が存在しない場合、パスとなります。
     /// 両プレイヤーに有効な手がない場合、ゲームの勝敗を表示します。
     func nextTurn() {
-        guard turn != nil else { return }
         viewModel.nextTurn()
         guard let turn = self.turn else { return }
         // diskを置ける場所が無いことを確認

@@ -75,6 +75,8 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     }
     
     mutating func nextTurn() {
+        // turnが設定されていない場合は何もしない
+        guard turn != nil else { return }
         defer {
             updateMessage()
         }
