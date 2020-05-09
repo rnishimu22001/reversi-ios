@@ -298,9 +298,6 @@ class ReversiViewControllerTests: XCTestCase {
         XCTContext.runActivity(named: "ゲーム中") { _ in
             // Given
             let target = ViewController()
-            target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
-            target.boardView = BoardView(frame: .zero)
-            target.playerControls = controls
             target.messageDiskView = DiskView(frame: .zero)
             target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
             target.messageDiskView.layoutIfNeeded()
@@ -326,18 +323,13 @@ class ReversiViewControllerTests: XCTestCase {
             XCTContext.runActivity(named: "一方の勝ち") { _ in
                 // Given
                 let target = ViewController()
-                target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
-                target.boardView = BoardView(frame: .zero)
                 target.messageDiskView = DiskView(frame: .zero)
                 target.messageLabel = UILabel(frame: .zero)
-                target.playerControls = controls
                 target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
-                target.messageDiskView.layoutIfNeeded()
                 target.messageDiskView.layoutIfNeeded()
                 target.messageDiskSizeConstraint.isActive = true
                 target.messageLabel = UILabel(frame: .zero)
                 target.messageDiskSize = diskSize
-
                 // Then
                 let messageExpectation = expectation(description: "messageLabelが更新されること")
                 observation.append(target.messageLabel.observe(\.text) { _, change in
@@ -354,13 +346,9 @@ class ReversiViewControllerTests: XCTestCase {
             }
             XCTContext.runActivity(named: "引き分け") { _ in
                 let target = ViewController()
-                target.countLabels = [.init(frame: .zero), .init(frame: .zero)]
-                target.boardView = BoardView(frame: .zero)
                 target.messageDiskView = DiskView(frame: .zero)
                 target.messageLabel = UILabel(frame: .zero)
-                target.playerControls = controls
                 target.messageDiskSizeConstraint = target.messageDiskView.widthAnchor.constraint(equalToConstant: 8)
-                target.messageDiskView.layoutIfNeeded()
                 target.messageDiskView.layoutIfNeeded()
                 target.messageDiskSizeConstraint.isActive = true
                 target.messageLabel = UILabel(frame: .zero)
