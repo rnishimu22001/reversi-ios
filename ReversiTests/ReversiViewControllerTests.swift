@@ -398,38 +398,11 @@ class ReversiViewControllerTests: XCTestCase {
     }
     
     func testPlaceDisk() {
-        XCTContext.runActivity(named: "盤上にセット可能な箇所がない") { _ in
-            // Given
-            let target = ViewController()
-            let mockBord = MockBoardView(frame: .zero)
-            target.boardView = mockBord
-            let mockViewModel = MockReversiViewModel()
-            target.viewModel = mockViewModel
-            let mockSpecifications = MockReversiSpecifications()
-            target.specifications = mockSpecifications
-            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
-            do {
-                try target.placeDisk(.dark, atX: 0, y: 0) { _ in XCTFail("completionが呼ばれない") }
-                XCTFail()
-            } catch(let error) {
-                if let placementError = error as? DiskPlacementError {
-                    XCTAssertEqual(placementError.x, 0)
-                    XCTAssertEqual(placementError.y, 0)
-                    XCTAssertEqual(placementError.disk, .dark)
-                } else {
-                    XCTFail("指定のエラーではない場合")
-                }
-            }
-            XCTAssertTrue(mockBord.setDiskArgs.isEmpty, "ディスクのセットが呼ばれないこと")
-            XCTAssertTrue(mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.isEmpty, "ディスクのセットが呼ばれないこと")
-        }
         XCTContext.runActivity(named: "盤上にセット可能な箇所がある") { _ in
             // Given
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
-            let mockViewModel = MockReversiViewModel()
-            target.viewModel = mockViewModel
             target.playerControls = controls
             target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
             let willSetDiskArgs = [
@@ -437,33 +410,22 @@ class ReversiViewControllerTests: XCTestCase {
                 SetDiskArgForMockView(disk: .dark, x: 1, y: 1, aniamted: true),
                 SetDiskArgForMockView(disk: .dark, x: 2, y: 2, aniamted: true)
             ]
-            let mockSpecifications = MockReversiSpecifications()
-            target.specifications = mockSpecifications
-            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [
+            let completionExpectation = expectation(description: "plac diskのcompletionが実行されること")
+            // When
+            let willPlaceCoordinates = [
+                Coordinates(x: 0, y: 0),
                 Coordinates(x: 1, y: 1),
                 Coordinates(x: 2, y: 2)
             ]
-            let completionExpectation = expectation(description: "plac diskのcompletionが実行されること")
-            // When
-            let willPlaceCoordinates = Coordinates(x: 0, y: 0)
             let willPlaceSide = Disk.dark
-            do {
-                try target.placeDisk(willPlaceSide, atX: willPlaceCoordinates.x, y: willPlaceCoordinates.y, completion: { isFinished in
-                    completionExpectation.fulfill()
-                    XCTAssertTrue(isFinished)
-                })
-            } catch {
-                XCTFail("成功する想定")
+            
+            target.animateSettingDisks(at: willPlaceCoordinates, to: willPlaceSide) { isFinished in
+                completionExpectation.fulfill()
+                XCTAssertTrue(isFinished)
             }
+            
             // Then
             XCTAssertEqual(mockBord.setDiskArgs, willSetDiskArgs, "viewに対して指定された順番でディスクのセットが実行される")
-            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.count, 1,
-                           "diskのflipなどは全てviewModel内で行われるので呼び出しは1回のみ")
-            mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.enumerated().forEach {
-                XCTAssertEqual(willPlaceSide, $0.element.disk)
-                XCTAssertEqual(willPlaceCoordinates.x, $0.element.x)
-                XCTAssertEqual(willPlaceCoordinates.y, $0.element.y)
-            }
             XCTAssertNil(target.animationCanceller, "実行完了後にcancellerがnilに")
             wait(for: [completionExpectation], timeout: 0.01)
         }
@@ -472,25 +434,23 @@ class ReversiViewControllerTests: XCTestCase {
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
-            let mockViewModel = MockReversiViewModel()
-            target.viewModel = mockViewModel
             target.playerControls = controls
             target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
             
             let mockSpecifications = MockReversiSpecifications()
             target.specifications = mockSpecifications
-            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [
+            let willPlaceCoordinates = [
+                Coordinates(x: 0, y: 0),
                 Coordinates(x: 1, y: 1),
                 Coordinates(x: 2, y: 2)
             ]
-            // completionをキャプチャーして実行させない
+            // キャンセラー発動のため、mock側はcompletionをキャプチャーして実行させない
             mockBord.shouldCaputreCompletion = true
             // When
-            do {
-                try target.placeDisk(.dark, atX: 0, y: 0, completion: {_ in XCTFail("cancel済みのためcompletionが実行されない") })
-            } catch {
-                XCTFail("成功する想定")
-            }
+            target.animateSettingDisks(at: willPlaceCoordinates, to: .dark, completion: { _ in
+                XCTFail("cancel済みのためcompletionが実行されない")
+            })
+            
             // キャンセルされた後のcompletionの実行を再現
             let canceler = Canceller(nil)
             canceler.cancel()
@@ -509,31 +469,22 @@ class ReversiViewControllerTests: XCTestCase {
             let target = ViewController()
             let mockBord = MockBoardView(frame: .zero)
             target.boardView = mockBord
-            let mockViewModel = MockReversiViewModel()
-            target.viewModel = mockViewModel
             target.playerControls = controls
             target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
-            
-            let mockSpecifications = MockReversiSpecifications()
-            target.specifications = mockSpecifications
-            mockSpecifications.stubbedFlippedDiskCoordinatesByPlacingResult = [
-                Coordinates(x: 1, y: 1),
-                Coordinates(x: 2, y: 2)
-            ]
-            // completionをキャプチャーして実行させない
+            // キャンセラー発動のため、mock側はcompletionをキャプチャーして実行させない
             mockBord.shouldCaputreCompletion = true
             let completionExpectation = expectation(description: "setDisk完了後にcompletionが実行される")
             // When
-            let willPlaceCoordinates = Coordinates(x: 0, y: 0)
+            let willPlaceCoordinates = [
+                Coordinates(x: 0, y: 0),
+                Coordinates(x: 1, y: 1),
+                Coordinates(x: 2, y: 2)
+            ]
             let willPlaceSide = Disk.dark
-            do {
-                try target.placeDisk(willPlaceSide, atX: willPlaceCoordinates.x, y: willPlaceCoordinates.y, completion: { isFinished in
-                    completionExpectation.fulfill()
-                    XCTAssertFalse(isFinished)
-                })
-            } catch {
-                XCTFail("成功する想定")
-            }
+            target.animateSettingDisks(at: willPlaceCoordinates, to: willPlaceSide, completion: { isFinished in
+                completionExpectation.fulfill()
+                XCTAssertFalse(isFinished)
+            })
             // アニメーションが失敗すること再現
             mockBord.capturedCompletion?(false)
             // Then
@@ -545,14 +496,6 @@ class ReversiViewControllerTests: XCTestCase {
                 SetDiskArgForMockView(disk: .dark, x: 2, y: 2, aniamted: false),
             ]
             XCTAssertEqual(willSetDiskArgs, mockBord.setDiskArgs, "アニメーション有りのsetのあとアニメーション無しのsetが入る")
-            
-            XCTAssertEqual(mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.count, 1,
-                           "diskのflipはviewModel内で行われるので呼び出しは1回のみ")
-            mockViewModel.invokedSetDiskDiskAtCoordinatesParametersList.enumerated().forEach {
-                XCTAssertEqual(willPlaceSide, $0.element.disk, "指定された順番でディスクのセットが実行される")
-                XCTAssertEqual(willPlaceCoordinates.x, $0.element.x)
-                XCTAssertEqual(willPlaceCoordinates.y, $0.element.y)
-            }
             wait(for: [completionExpectation], timeout: 0.01)
         }
     }
