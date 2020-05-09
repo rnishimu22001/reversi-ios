@@ -20,7 +20,7 @@ final class ViewController: UIViewController {
     @IBOutlet var playerActivityIndicators: [UIActivityIndicatorView]!
     
     /// どちらの色のプレイヤーのターンかを表します。ゲーム終了時は `nil` です。
-    private(set) var turn: Disk? = .dark
+    var turn: Disk? { viewModel.turn }
     
     lazy var navigator: Navigator = NavigatorImplementation(viewController: self)
     
@@ -41,40 +41,17 @@ final class ViewController: UIViewController {
         
         boardView.delegate = self
         messageDiskSize = messageDiskSizeConstraint.constant
-        sink()
+        sinkPlayerStatus()
+        sinkMessage()
+        sinkBoard()
         do {
             try loadGame()
         } catch _ {
             newGame()
         }
     }
-    
-    func sink() {
-    
-        viewModel
-            .darkPlayerStatus
-            .subscribe(on: DispatchQueue.main)
-            .sink { [weak self] data in
-            // プレイヤータイプのつなぎ込みもしておくこと
-            guard let self = self else { return }
-            self.playerControls[Disk.dark.index].selectedSegmentIndex = data.playerType.rawValue
-            self.countLabels[Disk.dark.index].text = data.diskCount.description
         
-        }
-        .store(in: &cancellables)
-        viewModel.lightPlayerStatus.subscribe(on: DispatchQueue.main).sink { [weak self] data in
-            // プレイヤータイプのつなぎ込みもしておくこと
-            guard let self = self else { return }
-            self.playerControls[Disk.light.index].selectedSegmentIndex = data.playerType.rawValue
-            self.countLabels[Disk.light.index].text = data.diskCount.description
-        }.store(in: &cancellables)
-        
-        viewModel
-            .message
-            .subscribe(on: DispatchQueue.main)
-            .sink { [weak self] data in self?.updateMessageViews(with: data) }
-            .store(in: &cancellables)
-        
+    func sinkBoard() {
         viewModel
             .boardStatus
             .sink { [weak self] type in
@@ -91,6 +68,36 @@ final class ViewController: UIViewController {
                 }
         }
         .store(in: &cancellables)
+    }
+    
+    func sinkMessage() {
+        viewModel
+            .message
+            .subscribe(on: DispatchQueue.main)
+            .sink { [weak self] data in self?.updateMessageViews(with: data) }
+            .store(in: &cancellables)
+    }
+    
+    func sinkPlayerStatus() {
+        viewModel
+            .darkPlayerStatus
+            .subscribe(on: DispatchQueue.main)
+            .sink { [weak self] data in
+                guard let self = self else { return }
+                self.playerControls[Disk.dark.index].selectedSegmentIndex = data.playerType.rawValue
+                self.countLabels[Disk.dark.index].text = data.diskCount.description
+                
+        }
+        .store(in: &cancellables)
+        
+        viewModel
+            .lightPlayerStatus
+            .subscribe(on: DispatchQueue.main)
+            .sink { [weak self] data in
+                guard let self = self else { return }
+                self.playerControls[Disk.light.index].selectedSegmentIndex = data.playerType.rawValue
+                self.countLabels[Disk.light.index].text = data.diskCount.description
+        }.store(in: &cancellables)
     }
     
     private var viewHasAppeared: Bool = false
@@ -190,7 +197,6 @@ extension ViewController {
     func newGame() {
         viewModel.reset()
         boardView.reset()
-        turn = .dark
         try? saveGame()
     }
     
@@ -209,21 +215,9 @@ extension ViewController {
     /// もし、次のプレイヤーに有効な手が存在しない場合、パスとなります。
     /// 両プレイヤーに有効な手がない場合、ゲームの勝敗を表示します。
     func nextTurn() {
-        guard var turn = self.turn else { return }
-
-        turn.flip()
+        guard turn != nil else { return }
         viewModel.nextTurn()
-        defer {
-            viewModel.updateMessage()
-        }
-       
-        // ゲームが終わっているかを確認
-        guard !specifications.isEndOfGame(on: board) else {
-            self.turn = nil
-            return
-        }
-        // 終わっていなければ手番交代
-        self.turn = turn
+        guard let turn = self.turn else { return }
         // diskを置ける場所が無いことを確認
         guard validMoves(for: turn).isEmpty else {
             // 置ける場合はプレイヤーの行動を待つ
@@ -380,8 +374,6 @@ extension ViewController {
     
     func loadGame() throws {
         let game = try gameRepository.restore()
-        
-        turn = game.turn
         viewModel.restore(from: game)
     }
 }

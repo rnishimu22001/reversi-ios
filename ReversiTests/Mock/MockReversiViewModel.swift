@@ -26,6 +26,7 @@ final class MockReversiViewModel: ReversiViewModel {
    
     var nextTurnsInvokeCount: Int = 0
     func nextTurn() {
+        turn?.flip()
         nextTurnsInvokeCount += 1
     }
     

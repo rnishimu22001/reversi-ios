@@ -48,18 +48,19 @@ class ReversiViewControllerTests: XCTestCase {
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = [Coordinates(x: 1, y: 1)]
             // まだゲームが終わっていないことを設定
             specifications.isEndOfGame = false
+            viewModel.turn = .dark
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             
             // When
+            target.sinkPlayerStatus()
+            target.sinkMessage()
             target.nextTurn()
             // Then
             XCTAssertEqual(viewModel.nextTurnsInvokeCount, 1, "darkから手番が移る一回だけ呼ばれる")
-            XCTAssertEqual(target.turn, .light, "ターンが切り替わったので手番がlightに移る")
             XCTAssertEqual(darkIndicator.startAnimatingCount, 0, "darkはComputerではない")
             XCTAssertEqual(lightIndicator.startAnimatingCount, 1, "lightはcomputerなのでlight側のindicatorがstart")
             XCTAssertNotNil(target.playerCancellers[.light],  "手番のプレイヤーはキャンセラーが設定される")
             XCTAssertNil(target.playerCancellers[.dark], "手番でない側はキャンセラーが設定されない")
-            XCTAssertEqual(viewModel.updateMessageInvokedCount, 1)
         }
         XCTContext.runActivity(named: "darkとlight両方置ける場所がなくなった場合") { _ in
             // Given
@@ -77,18 +78,20 @@ class ReversiViewControllerTests: XCTestCase {
             target.viewModel = viewModel
             target.gameRepository = repository
             target.playerControls = controls
+            target.navigator = SpyNavigator()
             specifications.stubbedValidMovesResult = []
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
             // 互いにおける場所がなくなった場合を設定
             specifications.isEndOfGame = true
+            viewModel.turn = .dark
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             
             // When
+            target.sinkPlayerStatus()
+            target.sinkMessage()
             target.nextTurn()
             // Then
-            XCTAssertEqual(viewModel.updateMessageInvokedCount, 1)
             XCTAssertEqual(viewModel.nextTurnsInvokeCount, 1, "darkから手番が移る一回だけ呼ばれる")
-            XCTAssertNil(target.turn, "決着がついたのでnilになる")
             XCTAssertEqual(darkIndicator.startAnimatingCount, 0, "darkはComputerではない")
             XCTAssertEqual(lightIndicator.startAnimatingCount, 0, "決着がついたので呼び出されない")
             XCTAssertNil(target.playerCancellers[.light],  "決着がついたので設定されない")
@@ -113,6 +116,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.gameRepository = repository
             target.playerControls = controls
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = []
+            viewModel.turn = .dark
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             // When
             specifications.validMoveCompletion = { side, coordinates in
@@ -124,11 +128,11 @@ class ReversiViewControllerTests: XCTestCase {
                 }
             }
             // When
+            target.sinkPlayerStatus()
+            target.sinkMessage()
             target.nextTurn()
             // Then
-            XCTAssertEqual(viewModel.updateMessageInvokedCount, 1)
             XCTAssertEqual(viewModel.nextTurnsInvokeCount, 1, "darkから手番が移る一回だけ呼ばれる")
-            XCTAssertEqual(target.turn, .light, "次のプレイヤーに手番が移る")
             XCTAssertEqual(darkIndicator.startAnimatingCount, 0, "darkはComputerではない")
             XCTAssertEqual(lightIndicator.startAnimatingCount, 0, "lightは手番を飛ばされたのでIndicatorがStartしない")
             XCTAssertNil(target.playerCancellers[.light],  "lightは手番を飛ばされたのでキャンセラーが設定されない")
@@ -167,6 +171,7 @@ class ReversiViewControllerTests: XCTestCase {
             specifications.stubbedFlippedDiskCoordinatesByPlacingResult = [Coordinates(x: 1, y: 1)]
             // まだゲームが終わっていないことを設定
             specifications.isEndOfGame = false
+            viewModel.turn = .dark
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             // Then
             let placeDiskExpectation = expectation(description: "viewModelのplaceが呼ばれること")
@@ -202,6 +207,7 @@ class ReversiViewControllerTests: XCTestCase {
             target.gameRepository = repository
             let validMoveResult = Coordinates(x: 0, y: 0)
             specifications.stubbedValidMovesResult = [validMoveResult]
+            viewModel.turn = .dark
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
             
             // When
@@ -235,7 +241,7 @@ class ReversiViewControllerTests: XCTestCase {
         target.countLabels = [UILabel(frame: .zero), UILabel(frame: .zero)]
         target.gameRepository = mockRepository
         mockRepository.restored = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
-        target.sink()
+        
         // Then
         let controlExpectation = expectation(description: "controlが更新されること")
         controlExpectation.expectedFulfillmentCount = 2
@@ -249,6 +255,8 @@ class ReversiViewControllerTests: XCTestCase {
         let resetExpectation = expectation(description: "Viewのリセットがされること")
         mockBoard.resetCompletion = { resetExpectation.fulfill() }
         // When
+        target.sinkMessage()
+        target.sinkPlayerStatus()
         target.newGame()
         // Then
         XCTAssertEqual(target.turn, .dark)
@@ -289,7 +297,7 @@ class ReversiViewControllerTests: XCTestCase {
             lastExpectation.fulfill()
         })
         // When
-        target.sink()
+        target.sinkPlayerStatus()
         wait(for: [firstExpectation, lastExpectation], timeout: 1)
     }
     
@@ -581,6 +589,7 @@ class ReversiViewControllerTests: XCTestCase {
         let repository = MockGameRepository()
         target.gameRepository = repository
         // When
+        target.sinkMessage()
         do {
             try target.saveGame()
         } catch {
@@ -589,7 +598,6 @@ class ReversiViewControllerTests: XCTestCase {
         // Then
         XCTAssertEqual(repository.saved!.darkPlayer, .manual)
         XCTAssertEqual(repository.saved!.lightPlayer, .computer)
-        XCTAssertEqual(repository.saved!.turn, .dark)
         XCTAssertEqual(repository.saved!.board.disk(atX: 2, y: 3), .dark)
         XCTAssertEqual(repository.saved!.board.disk(atX: 3, y: 3), .dark)
         XCTAssertEqual(repository.saved!.board.disk(atX: 4, y: 3), .dark)
@@ -645,7 +653,8 @@ class ReversiViewControllerTests: XCTestCase {
                 lightExpectation.fulfill()
             }))
             // When
-            target.sink()
+            target.sinkPlayerStatus()
+            target.sinkBoard()
             do {
                 try target.loadGame()
             } catch {

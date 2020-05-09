@@ -157,32 +157,64 @@ final class ReversiViewModelTests: XCTestCase {
     }
     
     func testNextTurn() {
-        let mockSpecifications = MockReversiSpecifications()
-        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
-                                                    specifications: mockSpecifications)
-        mockSpecifications.isEndOfGame = false
-        let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
-        messageExpectation.expectedFulfillmentCount = 2
-        var messageCount = 1
-        cancellables.append(target.message.sink {
-            messageExpectation.fulfill()
-            switch messageCount {
-            case 1:
-                let status = MessageDisplayData(status: .playing(turn: .light))
-                XCTAssertEqual($0.displayedDisk, status.displayedDisk)
-                XCTAssertEqual($0.message, status.message)
-            case 2:
-                let status = MessageDisplayData(status: .playing(turn: .dark))
-                XCTAssertEqual($0.displayedDisk, status.displayedDisk)
-                XCTAssertEqual($0.message, status.message)
-            default:
-                XCTFail("3回以上呼ばれない")
-            }
-            messageCount += 1
-        })
-        target.nextTurn()
-        XCTAssertEqual(target.turn, .dark, "手番が交代したのでdarkに移る")
-        wait(for: [messageExpectation], timeout: 0.1)
+        XCTContext.runActivity(named: "ゲームが続く場合") { _ in
+            let mockSpecifications = MockReversiSpecifications()
+            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            mockSpecifications.isEndOfGame = false
+            let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
+            messageExpectation.expectedFulfillmentCount = 2
+            var messageCount = 1
+            cancellables.append(target.message.sink {
+                messageExpectation.fulfill()
+                switch messageCount {
+                case 1:
+                    let status = MessageDisplayData(status: .playing(turn: .light))
+                    XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                    XCTAssertEqual($0.message, status.message)
+                case 2:
+                    let status = MessageDisplayData(status: .playing(turn: .dark))
+                    XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                    XCTAssertEqual($0.message, status.message)
+                default:
+                    XCTFail("3回以上呼ばれない")
+                }
+                messageCount += 1
+            })
+            target.nextTurn()
+            XCTAssertEqual(target.turn, .dark, "手番が交代したのでdarkに移る")
+            wait(for: [messageExpectation], timeout: 0.1)
+        }
+        
+        XCTContext.runActivity(named: "ゲームが終了する場合") { _ in
+            let mockSpecifications = MockReversiSpecifications()
+            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            mockSpecifications.isEndOfGame = true
+            let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
+            messageExpectation.expectedFulfillmentCount = 2
+            var messageCount = 1
+            cancellables.append(target.message.sink {
+                messageExpectation.fulfill()
+                switch messageCount {
+                case 1:
+                    let status = MessageDisplayData(status: .playing(turn: .light))
+                    XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                    XCTAssertEqual($0.message, status.message)
+                case 2:
+                    let status = MessageDisplayData(status: .ending(winner: nil))
+                    XCTAssertEqual($0.displayedDisk, status.displayedDisk)
+                    XCTAssertEqual($0.message, status.message)
+                default:
+                    XCTFail("3回以上呼ばれない")
+                }
+                messageCount += 1
+            })
+            target.nextTurn()
+            XCTAssertNil(target.turn, "ゲーム終了のためnilになる")
+            wait(for: [messageExpectation], timeout: 0.1)
+        }
+        
     }
     
     func testChangePlayer() {

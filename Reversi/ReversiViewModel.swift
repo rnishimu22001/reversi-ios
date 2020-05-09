@@ -64,8 +64,15 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     }
     
     mutating func nextTurn() {
+        defer {
+            updateMessage()
+        }
+        // ゲームが終わったか確認
+        guard !specifications.isEndOfGame(on: board) else {
+            turn = nil
+            return
+        }
         turn?.flip()
-        updateMessage()
     }
     
     mutating func changePlayer(on side: Disk) {
