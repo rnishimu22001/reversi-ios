@@ -79,11 +79,11 @@ struct ReversiViewModelImplementation: ReversiViewModel {
             updateMessage()
         }
         // ゲームが終わったか確認
-        guard !specifications.isEndOfGame(on: board) else {
-            turn = nil
+        guard specifications.isEndOfGame(on: board) else {
+            turn?.flip()
             return
         }
-        turn?.flip()
+        turn = nil
     }
     
     mutating func changePlayer(on side: Disk) {
