@@ -348,16 +348,13 @@ extension ViewController: BoardViewDelegate {
 // MARK: Save and Load
 
 extension ViewController {
-    var path: String {
-        (NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first! as NSString).appendingPathComponent("Game")
-    }
     
     /// ゲームの状態をファイルに書き出し、保存します。
     func saveGame() throws {
         var game = Game(turn: turn, board: Board(), darkPlayer: .manual, lightPlayer: .manual)
         for side in Disk.allCases {
             guard let player = Player(rawValue: playerControls[side.index].selectedSegmentIndex) else {
-                throw FileIOError.read(path: path, cause: nil)
+                throw ViewSettingError(message: "playerControlsの数が少ないです")
             }
             switch side {
             case .light:
@@ -399,3 +396,6 @@ struct DiskPlacementError: Error {
     let y: Int
 }
 
+struct ViewSettingError: Error {
+    let message: String
+}
