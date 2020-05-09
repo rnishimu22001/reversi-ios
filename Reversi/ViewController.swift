@@ -119,12 +119,6 @@ final class ViewController: UIViewController {
 
 extension ViewController {
     
-    private func flippedDiskCoordinatesByPlacingDisk(_ disk: Disk, atX x: Int, y: Int) -> [(Int, Int)] {
-        return specifications
-            .flippedDiskCoordinatesByPlacing(disk: disk, on: board, at: Coordinates(x: x, y: y))
-            .map { ($0.x, $0.y) }
-    }
-    
     /// `side` で指定された色のディスクを置ける盤上のセルの座標をすべて返します。
     /// - Returns: `side` で指定された色のディスクを置ける盤上のすべてのセルの座標の配列です。
     func validMoves(for side: Disk) -> [(x: Int, y: Int)] {
@@ -133,10 +127,6 @@ extension ViewController {
         }
     }
 
-    /// `x`, `y` で指定された座標のdiskデータを更新します。
-    /// - Parameter x: セルの列です。
-    /// - Parameter y: セルの行です。
-    /// - Throws: もし `disk` を `x`, `y` で指定されるセルに置けない場合、 `DiskPlacementError` を `throw` します。
     func placeDisk(_ disk: Disk, atX x: Int, y: Int) throws {
         try viewModel.place(disk: disk, at: Coordinates(x: x, y: y))
     }

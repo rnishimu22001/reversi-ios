@@ -25,7 +25,10 @@ protocol ReversiViewModel {
     mutating func nextTurn()
     /// manualとcomputerを切り返る
     mutating func changePlayer(on side: Disk)
-    /// 盤上にdiskを置いてboard上のdiskを全てflipさせる
+    /// `x`, `y` で指定された座標のdiskデータをもとに盤面を更新します。
+    /// - Parameter x: セルの列です。
+    /// - Parameter y: セルの行です。
+    /// - Throws: もし `disk` を `x`, `y` で指定されるセルに置けない場合、 `DiskPlacementError` を `throw` します。
     mutating func place(disk: Disk, at coordinates: Coordinates) throws
    
     /// ゲームの状態を復元
