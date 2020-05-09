@@ -20,13 +20,17 @@ protocol ReversiViewModel {
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     var boardStatus: PassthroughSubject<BoardUpdate, Never> { get }
-    
+   
+    /// 次のターンに移る
     mutating func nextTurn()
+    /// manualとcomputerを切り返る
     mutating func changePlayer(on side: Disk)
-    
+    /// 盤上にdiskを置いてboard上のdiskを全てflipさせる
     mutating func place(disk: Disk, at coordinates: Coordinates) throws
-    
+   
+    /// ゲームの状態を復元
     mutating func restore(from game: Game)
+    /// ゲームの状態を初期状態に戻す
     mutating func reset()
     
     // MARK: のちに削除
@@ -115,12 +119,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     }
     
     mutating func reset() {
-        board = specifications.initalState(from: Board())
-        turn = .dark
-        darkPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .dark))
-        lightPlayerStatus.value = PlayerStatusDisplayData(playerType: .manual, diskCount: board.countDisks(of: .light))
-        restoreBoardWithoutAnimation()
-        updateMessage()
+        restore(from: Game(turn: .dark, board: specifications.initalState(from: Board()), darkPlayer: .manual, lightPlayer: .manual))
     }
     
     mutating func restoreBoardWithoutAnimation() {
