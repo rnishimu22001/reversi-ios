@@ -39,6 +39,7 @@ protocol ReversiViewModel {
     // MARK: のちに削除
     var turn: Disk? { get }
     var board: Board { get }
+    var game: Game { get }
     
     mutating func updateDiskCount()
     mutating func updateMessage()
@@ -56,6 +57,9 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     // MARK: ゲームの状態
     private(set) var board: Board
     private(set) var turn: Disk?
+    var game: Game {
+        Game(turn: turn, board: board, darkPlayer: darkPlayerStatus.value.playerType, lightPlayer: lightPlayerStatus.value.playerType)
+    }
     
     init(game: Game? = nil,
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {

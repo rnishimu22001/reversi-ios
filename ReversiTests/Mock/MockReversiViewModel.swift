@@ -16,6 +16,8 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    var game: Game = Game(turn: .dark, board: Board(), darkPlayer: .computer, lightPlayer: .computer)
+    
     var boardStatus: PassthroughSubject<BoardUpdate, Never> = .init()
     
     func changePlayer(on side: Disk) {

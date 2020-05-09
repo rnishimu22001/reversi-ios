@@ -434,4 +434,14 @@ final class ReversiViewModelTests: XCTestCase {
         XCTAssertFalse(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "以前のボード情報が削除されていること")
         wait(for: [boardExpectation, darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 0.1)
     }
+    
+    func testGame() {
+        
+        let game = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
+        var target = ReversiViewModelImplementation()
+        target.restore(from: game)
+        XCTAssertEqual(game.darkPlayer, target.game.darkPlayer)
+        XCTAssertEqual(game.lightPlayer, target.game.lightPlayer)
+        XCTAssertEqual(game.turn, target.game.turn)
+    }
 }

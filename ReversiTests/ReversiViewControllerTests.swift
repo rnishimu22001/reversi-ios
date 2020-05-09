@@ -504,15 +504,7 @@ class ReversiViewControllerTests: XCTestCase {
     
     func testSaveGame() {
         // Given
-        let boardView = BoardView(frame: .zero)
-        boardView.setDisk(.dark, atX: 2, y: 3, animated: false)
-        boardView.setDisk(.dark, atX: 3, y: 3, animated: false)
-        boardView.setDisk(.dark, atX: 4, y: 3, animated: false)
-        boardView.setDisk(.dark, atX: 3, y: 4, animated: false)
-        boardView.setDisk(.light, atX: 4, y: 4, animated: false)
-        
         let target = ViewController()
-        target.boardView = boardView
         var board = Board()
         do {
             try board.set(disk: .dark, at: Coordinates(x: 2, y: 3))
@@ -525,21 +517,19 @@ class ReversiViewControllerTests: XCTestCase {
         }
         
         let mockViewModel = MockReversiViewModel()
-        mockViewModel.board = board
+        mockViewModel.game = Game(turn: .dark, board: board, darkPlayer: .computer, lightPlayer: .computer)
         target.viewModel = mockViewModel
-        let controls = self.controls
-        target.playerControls = controls
         let repository = MockGameRepository()
         target.gameRepository = repository
         // When
-        target.sinkMessage()
         do {
             try target.saveGame()
         } catch {
             fatalError()
         }
         // Then
-        XCTAssertEqual(repository.saved!.darkPlayer, .manual)
+        XCTAssertEqual(repository.saved!.turn, .dark)
+        XCTAssertEqual(repository.saved!.darkPlayer, .computer)
         XCTAssertEqual(repository.saved!.lightPlayer, .computer)
         XCTAssertEqual(repository.saved!.board.disk(atX: 2, y: 3), .dark)
         XCTAssertEqual(repository.saved!.board.disk(atX: 3, y: 3), .dark)

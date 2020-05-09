@@ -119,8 +119,6 @@ final class ViewController: UIViewController {
 
 extension ViewController {
     
-    /// `side` で指定された色のディスクを置ける盤上のセルの座標をすべて返します。
-    /// - Returns: `side` で指定された色のディスクを置ける盤上のすべてのセルの座標の配列です。
     func validMoves(for side: Disk) -> [(x: Int, y: Int)] {
         specifications.validMoves(for: side, on: board).map {
             return (x: $0.x, y: $0.y)
@@ -130,6 +128,10 @@ extension ViewController {
     func placeDisk(_ disk: Disk, atX x: Int, y: Int) throws {
         try viewModel.place(disk: disk, at: Coordinates(x: x, y: y))
     }
+}
+
+// MARK: animation
+extension ViewController {
     
     func animateSettingDisks(at coordinates: [Coordinates], to disk: Disk, completion: ((Bool) -> Void)? = nil) {
         let cleanUp: () -> Void = { [weak self] in
@@ -333,22 +335,7 @@ extension ViewController {
     
     /// ゲームの状態をファイルに書き出し、保存します。
     func saveGame() throws {
-        var game = Game(turn: turn, board: Board(), darkPlayer: .manual, lightPlayer: .manual)
-        for side in Disk.allCases {
-            guard let player = Player(rawValue: playerControls[side.index].selectedSegmentIndex) else {
-                throw ViewSettingError(message: "playerControlsの数が少ないです")
-            }
-            switch side {
-            case .light:
-                game.lightPlayer = player
-            case .dark:
-                game.darkPlayer = player
-            }
-        }
-        
-        game.board = self.board
-        
-        try gameRepository.save(game: game)
+        try gameRepository.save(game: viewModel.game)
     }
     
     func loadGame() throws {
