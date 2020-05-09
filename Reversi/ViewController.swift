@@ -35,6 +35,7 @@ final class ViewController: UIViewController {
     var gameRepository: GameRepository = GameRepositoryImplementation()
     var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
     var viewModel: ReversiViewModel = ReversiViewModelImplementation()
+    lazy var manager: GameManager = GameManagerImplementation(specifications: specifications)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -229,7 +230,6 @@ extension ViewController {
     /// "Computer" が選択されている場合のプレイヤーの行動を決定します。
     func playTurnOfComputer() {
         guard let turn = self.turn else { preconditionFailure() }
-        let (x, y) = validMoves(for: turn).randomElement()!
 
         playerActivityIndicators[turn.index].startAnimating()
         
@@ -239,13 +239,13 @@ extension ViewController {
             self.playerCancellers[turn] = nil
         }
         let canceller = Canceller(cleanUp)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
-            guard let self = self else { return }
+        manager.playTurnOfComputer(side: turn, on: board) { [weak self] coordinates in
+            guard let coordinates = coordinates,
+                let self = self else { return }
             if canceller.isCancelled { return }
             cleanUp()
-            try? self.placeDisk(turn, atX: x, y: y)
+            try? self.placeDisk(turn, atX: coordinates.x, y: coordinates.y)
         }
-        
         playerCancellers[turn] = canceller
     }
 }
