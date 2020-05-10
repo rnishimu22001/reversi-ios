@@ -10,11 +10,14 @@ import UIKit
 
 final class MockUIIndicatorView: UIActivityIndicatorView {
     var startAnimatingCount = 0
+    var startCompletion: (() -> Void)?
     override func startAnimating() {
         startAnimatingCount += 1
     }
     var stopAnimatingCount = 0
+    var stopCompletion: (() -> Void)?
     override func stopAnimating() {
+        stopCompletion?()
         stopAnimatingCount += 1
     }
 }

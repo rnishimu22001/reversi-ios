@@ -209,13 +209,18 @@ class ReversiViewControllerTests: XCTestCase {
             specifications.stubbedValidMovesResult = [validMoveResult]
             viewModel.turn = .dark
             XCTAssertEqual(target.turn, .dark, "初期値の確認")
-            
+            // Then
+            let stopExepctation = expectation(description: "実行中断でdark側のindicatorがstop")
+            // メインスレッドで呼ばれるのでexepectaionで検出
+            darkIndicator.stopCompletion = {
+                stopExepctation.fulfill()
+            }
             // When
             target.playTurnOfComputer()
             target.playerCancellers[.dark]?.cancel()
+            wait(for: [stopExepctation], timeout: 0.1)
             // Then
             XCTAssertEqual(darkIndicator.startAnimatingCount, 1, "darkのターンなのでdark側のindicatorがstart")
-            XCTAssertEqual(darkIndicator.stopAnimatingCount, 1, "実行中断でdark側のindicatorがstop")
             XCTAssertEqual(lightIndicator.startAnimatingCount, 0)
             XCTAssertEqual(lightIndicator.stopAnimatingCount, 0)
             XCTAssertNil(target.playerCancellers[.light], "手番でない側はキャンセラーが設定されない")
