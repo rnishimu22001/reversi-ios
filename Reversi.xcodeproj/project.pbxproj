@@ -13,6 +13,8 @@
 		5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */; };
 		5A3B8B7A2462495B000F2DA5 /* SetDiskDisplayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3B8B792462495B000F2DA5 /* SetDiskDisplayData.swift */; };
 		5A4008412463CDFB0088C8EC /* MockUIIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4008402463CDFB0088C8EC /* MockUIIndicatorView.swift */; };
+		5A416CD32467B5AA0013019B /* Canceller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A416CD22467B5AA0013019B /* Canceller.swift */; };
+		5A416CD52467B6D10013019B /* CancellerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A416CD42467B6D10013019B /* CancellerTests.swift */; };
 		5A44D7B52466A3C60070EED2 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A44D7B42466A3C60070EED2 /* GameManager.swift */; };
 		5A510685245E6E1D004673A0 /* MockReversiSpecifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */; };
 		5A54732D2460E3150090F6C3 /* MockUILablel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A54732C2460E3150090F6C3 /* MockUILablel.swift */; };
@@ -66,6 +68,8 @@
 		5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversiSpecificationsTests.swift; sourceTree = "<group>"; };
 		5A3B8B792462495B000F2DA5 /* SetDiskDisplayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDiskDisplayData.swift; sourceTree = "<group>"; };
 		5A4008402463CDFB0088C8EC /* MockUIIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUIIndicatorView.swift; sourceTree = "<group>"; };
+		5A416CD22467B5AA0013019B /* Canceller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canceller.swift; sourceTree = "<group>"; };
+		5A416CD42467B6D10013019B /* CancellerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancellerTests.swift; sourceTree = "<group>"; };
 		5A44D7B42466A3C60070EED2 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		5A510684245E6E1D004673A0 /* MockReversiSpecifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockReversiSpecifications.swift; sourceTree = "<group>"; };
 		5A54732C2460E3150090F6C3 /* MockUILablel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUILablel.swift; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				5A44D7B42466A3C60070EED2 /* GameManager.swift */,
+				5A416CD22467B5AA0013019B /* Canceller.swift */,
 			);
 			name = Manager;
 			sourceTree = "<group>";
@@ -274,6 +279,7 @@
 				5A3AD525245D75A300C7815B /* ReversiSpecificationsTests.swift */,
 				5AD702BC24600BD700F17A4C /* ReversiViewModelTests.swift */,
 				5AF14385246033CE005EBF3B /* MessageDisplayDataTests.swift */,
+				5A416CD42467B6D10013019B /* CancellerTests.swift */,
 			);
 			path = ReversiTests;
 			sourceTree = "<group>";
@@ -399,6 +405,7 @@
 				5A44D7B52466A3C60070EED2 /* GameManager.swift in Sources */,
 				5AFEEE772453CAE9007C45B8 /* FileIOAdapter.swift in Sources */,
 				D642BDB823A9FE4500396732 /* ViewController.swift in Sources */,
+				5A416CD32467B5AA0013019B /* Canceller.swift in Sources */,
 				D642BDDC23AA137C00396732 /* BoardView.swift in Sources */,
 				D642BDB423A9FE4500396732 /* AppDelegate.swift in Sources */,
 				D642BDB623A9FE4500396732 /* SceneDelegate.swift in Sources */,
@@ -425,6 +432,7 @@
 				5A3AD526245D75A300C7815B /* ReversiSpecificationsTests.swift in Sources */,
 				5AF14386246033CE005EBF3B /* MessageDisplayDataTests.swift in Sources */,
 				5AD702BF24600CD500F17A4C /* MockReversiViewModel.swift in Sources */,
+				5A416CD52467B6D10013019B /* CancellerTests.swift in Sources */,
 				5A62FA9B2453F5060097D64D /* MockFileIO.swift in Sources */,
 				5AFEEE69245303AC007C45B8 /* MockBoardView.swift in Sources */,
 				5A54732D2460E3150090F6C3 /* MockUILablel.swift in Sources */,

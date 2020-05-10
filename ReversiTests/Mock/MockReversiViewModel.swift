@@ -16,6 +16,10 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    var darkPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
+    
+    var lightPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
+    
     var game: Game = Game(turn: .dark, board: Board(), darkPlayer: .computer, lightPlayer: .computer)
     
     var boardStatus: PassthroughSubject<BoardUpdate, Never> = .init()

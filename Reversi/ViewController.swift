@@ -344,32 +344,6 @@ extension ViewController {
     }
 }
 
-final class Canceller {
-    private(set) var isCancelled: Bool = false
-    private var body: (() -> Void)?
-    
-    init(_ body: (() -> Void)?) {
-        self.body = body
-    }
-    
-    func prepareForReuse() {
-        isCancelled = false
-        body = nil
-    }
-    
-    func cancel() {
-        if isCancelled { return }
-        isCancelled = true
-        body?()
-    }
-}
-
-struct DiskPlacementError: Error {
-    let disk: Disk
-    let x: Int
-    let y: Int
-}
-
 struct ViewSettingError: Error {
     let message: String
 }
