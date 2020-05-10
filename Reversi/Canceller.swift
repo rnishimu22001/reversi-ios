@@ -6,29 +6,43 @@
 //  Copyright © 2020 Yuta Koshizawa. All rights reserved.
 //
 
-final class Canceller {
+enum CancellerState {
+    case executed
+    case hold
+    case invalid
+}
+
+protocol Canceller {
+    var state: CancellerState { get }
+    var isCancelled: Bool { get }
+    func prepareForReuse(_ body: (() -> Void)?)
+    func cancel()
+    func invalidate()
+}
+
+final class CancellerImplementation: Canceller {
     
-    enum State {
-        case canceled
-        case hold
-        case applied
-    }
-    
-    private(set) var isCancelled: Bool = false
+    private(set) var state: CancellerState = .hold
+    var isCancelled: Bool { state == .executed }
     private var body: (() -> Void)?
     
     init(_ body: (() -> Void)?) {
         self.body = body
     }
     
-    func prepareForReuse() {
-        isCancelled = false
-        body = nil
+    func prepareForReuse(_ body: (() -> Void)?) {
+        state = .hold
+        self.body = body
     }
     
     func cancel() {
-        if isCancelled { return }
-        isCancelled = true
+        guard case .hold = state else { return }
+        state = .executed
         body?()
+    }
+    
+    func invalidate() {
+        state = .invalid
+        body = nil
     }
 }

@@ -138,7 +138,7 @@ extension ViewController {
         let cleanUp: () -> Void = { [weak self] in
             self?.animationCanceller = nil
         }
-        animationCanceller = Canceller(cleanUp)
+        animationCanceller = CancellerImplementation(cleanUp)
         animateSettingDisks(at: coordinates.map { ($0.x, $0.y) }, to: disk) { [weak self] isFinished in
             guard let self = self else { return }
             guard let canceller = self.animationCanceller else { return }
@@ -235,10 +235,12 @@ extension ViewController {
         
         let cleanUp: () -> Void = { [weak self] in
             guard let self = self else { return }
-            self.playerActivityIndicators[turn.index].stopAnimating()
+            DispatchQueue.main.async {
+                self.playerActivityIndicators[turn.index].stopAnimating()
+            }
             self.playerCancellers[turn] = nil
         }
-        let canceller = Canceller(cleanUp)
+        let canceller = CancellerImplementation(cleanUp)
         manager.playTurnOfComputer(side: turn, on: board) { [weak self] coordinates in
             guard let coordinates = coordinates,
                 let self = self else { return }

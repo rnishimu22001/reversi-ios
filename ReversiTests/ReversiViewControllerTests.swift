@@ -452,7 +452,7 @@ class ReversiViewControllerTests: XCTestCase {
             })
             
             // キャンセルされた後のcompletionの実行を再現
-            let canceler = Canceller(nil)
+            let canceler = CancellerImplementation(nil)
             canceler.cancel()
             target.animationCanceller = canceler
             mockBord.capturedCompletion?(true)
