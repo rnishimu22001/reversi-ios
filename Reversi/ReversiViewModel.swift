@@ -18,7 +18,9 @@ protocol ReversiViewModel {
     // MARK: 通知用
     var message: CurrentValueSubject<MessageDisplayData, Never> { get }
     var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
+    var darkPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> { get }
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
+    var lightPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> { get }
     var boardStatus: PassthroughSubject<BoardUpdate, Never> { get }
    
     /// 次のターンに移る
@@ -52,6 +54,9 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     private(set) var message: CurrentValueSubject<MessageDisplayData, Never> = .init(MessageDisplayData(status: .playing(turn: .dark)))
     private(set) var darkPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
+    var darkPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
+    var lightPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
+    
     private(set) var boardStatus: PassthroughSubject<BoardUpdate, Never> = .init()
     
     // MARK: ゲームの状態

@@ -304,7 +304,7 @@ extension ViewController {
         let side: Disk = Disk(index: playerControls.firstIndex(of: sender)!)
         viewModel.changePlayer(on: side)
         try? saveGame()
-        
+        manager.cancelPlaying(on: side)
         if let canceller = playerCancellers[side] {
             canceller.cancel()
         }
@@ -346,10 +346,15 @@ extension ViewController {
 
 final class Canceller {
     private(set) var isCancelled: Bool = false
-    private let body: (() -> Void)?
+    private var body: (() -> Void)?
     
     init(_ body: (() -> Void)?) {
         self.body = body
+    }
+    
+    func prepareForReuse() {
+        isCancelled = false
+        body = nil
     }
     
     func cancel() {
