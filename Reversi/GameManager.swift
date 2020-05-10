@@ -10,6 +10,7 @@ import Foundation
 
 protocol GameManager {
     func playTurnOfComputer(side: Disk, on board: Board, completion: @escaping ((Coordinates?) -> Void))
+    func reset()
 }
 
 protocol GameManagerDelegate: class {

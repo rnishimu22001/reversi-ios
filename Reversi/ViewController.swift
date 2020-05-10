@@ -290,6 +290,7 @@ extension ViewController {
                 self.playerCancellers[side]?.cancel()
                 self.playerCancellers.removeValue(forKey: side)
             }
+            self.manager.reset()
             
             self.newGame()
             self.waitForPlayerIfNeeded()
