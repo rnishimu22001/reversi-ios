@@ -91,6 +91,8 @@ final class ReversiViewModelImplementation: ReversiViewModel {
         guard var turn = turn else { return }
         // ゲームが終わったか確認
         guard !specifications.isEndOfGame(on: board) else {
+            darkPlayerIndicatorAnimating.value = false
+            lightPlayerIndicatorAnimating.value = false
             self.turn = nil
             updateMessage()
             return

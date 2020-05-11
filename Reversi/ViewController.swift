@@ -33,7 +33,6 @@ final class ViewController: UIViewController {
     
     /// リファクタリング用、後ほど削除
     var gameRepository: GameRepository = GameRepositoryImplementation()
-    var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
     var viewModel: ReversiViewModel = ReversiViewModelImplementation()
     
     override func viewDidLoad() {
@@ -154,12 +153,6 @@ final class ViewController: UIViewController {
 // MARK: Reversi logics
 
 extension ViewController {
-    
-    func validMoves(for side: Disk) -> [(x: Int, y: Int)] {
-        specifications.validMoves(for: side, on: board).map {
-            return (x: $0.x, y: $0.y)
-        }
-    }
 
     func placeDisk(_ disk: Disk, atX x: Int, y: Int) throws {
         try viewModel.place(disk: disk, at: Coordinates(x: x, y: y))
