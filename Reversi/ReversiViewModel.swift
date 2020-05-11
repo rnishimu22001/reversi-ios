@@ -163,6 +163,14 @@ final class ReversiViewModelImplementation: ReversiViewModel {
         manager.canceleAllPlaying()
         restoreBoardWithoutAnimation()
         updateMessage()
+        // ゲームが終了している場合
+        guard !specifications.isEndOfGame(on: board) else { return }
+        // すでにスキップの場合
+        guard let turn = turn,
+            !specifications.shouldSkip(turn: turn, on: board) else {
+                showSkipAlert.send()
+                return
+        }
         waitForComputerIfNeeded()
     }
     
