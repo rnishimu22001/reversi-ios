@@ -11,7 +11,7 @@ import Foundation
 protocol GameManager {
     func playTurnOfComputer(side: Disk, on board: Board, completion: @escaping ((Coordinates?) -> Void))
     func cancelPlaying(on side: Disk)
-    func reset()
+    func canceleAllPlaying()
 }
 
 protocol GameManagerDelegate: class {
@@ -21,12 +21,13 @@ protocol GameManagerDelegate: class {
 final class GameManagerImplementation: GameManager {
    
     let specifications: ReversiSpecifications
-    private var darkPlayerCanceller: Canceller?
-    var isPlayingDark: Bool { darkPlayerCanceller != nil }
-    private var lightPlayerCanceller: Canceller?
-    var isPlayingLight: Bool { lightPlayerCanceller != nil }
+    private var cancellers: [Disk: Canceller] = [:]
     
-    init(specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
+    init(darkCanceller: Canceller = CancellerImplementation(nil),
+         lightCanceller: Canceller = CancellerImplementation(nil),
+         specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
+        self.cancellers[.dark] = darkCanceller
+        self.cancellers[.light] = lightCanceller
         self.specifications = specifications
     }
    
@@ -35,42 +36,29 @@ final class GameManagerImplementation: GameManager {
             completion(nil)
             return
         }
+        cancellers[side]?.prepareForReuse(nil)
         DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + 2.0) { [weak self] in
             guard let self = self,
                 !self.isCanceled(on: side) else {
                 return
             }
+            self.cancellers[side]?.invalidate()
             completion(coordinates)
         }
     }
     
     func isCanceled(on side: Disk) -> Bool {
-        switch side {
-        case .dark:
-            guard let canceller = darkPlayerCanceller else {
-                return false
-            }
-            return canceller.isCancelled
-        case .light:
-            guard let canceller = lightPlayerCanceller else {
-                return false
-            }
-            return canceller.isCancelled
+        guard let canceller = cancellers[side] else {
+            return false
         }
+        return canceller.isCancelled
     }
     
     func cancelPlaying(on side: Disk) {
-        switch side {
-        case .dark:
-            darkPlayerCanceller?.cancel()
-            darkPlayerCanceller = nil
-        case .light:
-            lightPlayerCanceller?.cancel()
-            lightPlayerCanceller = nil
-        }
+        cancellers[side]?.cancel()
     }
     
-    func reset() {
+    func canceleAllPlaying() {
         Disk.allCases.forEach { cancelPlaying(on: $0) }
     }
 }
