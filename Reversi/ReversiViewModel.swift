@@ -98,6 +98,7 @@ final class ReversiViewModelImplementation: ReversiViewModel {
     }
     
     func changePlayer(on side: Disk) {
+        manager.cancelPlaying(on: side)
         switch side {
         case .dark:
             darkPlayerStatus.value = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType.changed,
@@ -105,6 +106,15 @@ final class ReversiViewModelImplementation: ReversiViewModel {
         case .light:
             lightPlayerStatus.value = PlayerStatusDisplayData(playerType: lightPlayerStatus.value.playerType.changed,
                                                               diskCount: lightPlayerStatus.value.diskCount)
+        }
+        // manualに変更された場合はindicatorを切っておく
+        switch side {
+        case .dark where darkPlayerStatus.value.playerType == .manual:
+            darkPlayerIndicatorAnimating.value = false
+        case .light where darkPlayerStatus.value.playerType == .manual:
+            lightPlayerIndicatorAnimating.value = false
+        default:
+            break
         }
         waitForComputerIfNeeded()
     }
@@ -135,6 +145,7 @@ final class ReversiViewModelImplementation: ReversiViewModel {
         darkPlayerIndicatorAnimating.value = false
         lightPlayerStatus.value = PlayerStatusDisplayData(playerType: game.lightPlayer, diskCount: board.countDisks(of: .light))
         lightPlayerIndicatorAnimating.value = false
+        manager.canceleAllPlaying()
         restoreBoardWithoutAnimation()
         updateMessage()
         waitForComputerIfNeeded()

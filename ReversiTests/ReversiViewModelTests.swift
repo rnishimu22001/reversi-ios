@@ -270,12 +270,26 @@ final class ReversiViewModelTests: XCTestCase {
                 XCTAssertEqual($0.diskCount, 0)
                 XCTAssertEqual($0.playerType, .computer)
             })
-            
+            let darkIndicatorExpectation = expectation(description: "dark側のindicatorがスタートされる,購読時とスタート時で2回呼ばれる")
+            darkIndicatorExpectation.expectedFulfillmentCount = 2
+            var darkIndicatorCount = 1
+            cancellables.append(target.darkPlayerIndicatorAnimating.sink { shouldStartAnimating in
+                darkIndicatorExpectation.fulfill()
+                switch darkIndicatorCount {
+                case 1:
+                    XCTAssertFalse(shouldStartAnimating)
+                case 2:
+                    XCTAssertTrue(shouldStartAnimating)
+                default:
+                    XCTFail("3回以上呼ばれる想定ではない")
+                }
+                darkIndicatorCount += 1
+            })
             target.changePlayer(on: .dark)
-            wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
+            wait(for: [darkPlayerExpectation, lightPlayerExpectation, darkIndicatorExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "lightの切り替え") { _ in
-            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
             let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる")
             let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
             lightPlayerExpectation.expectedFulfillmentCount = 2
@@ -299,8 +313,23 @@ final class ReversiViewModelTests: XCTestCase {
                 
                 lightCount += 1
             })
+            let lightIndicatorExpectation = expectation(description: "light側のindicatorがストップされる,購読時とストップ時で2回呼ばれる")
+            lightIndicatorExpectation.expectedFulfillmentCount = 2
+            var lightIndicatorCount = 1
+            cancellables.append(target.lightPlayerIndicatorAnimating.sink { shouldStartAnimating in
+                lightIndicatorExpectation.fulfill()
+                switch lightIndicatorCount {
+                case 1:
+                    XCTAssertTrue(shouldStartAnimating)
+                case 2:
+                    XCTAssertFalse(shouldStartAnimating)
+                default:
+                    XCTFail("3回以上呼ばれない")
+                }
+                lightIndicatorCount += 1
+            })
             target.changePlayer(on: .light)
-            wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
+            wait(for: [darkPlayerExpectation, lightPlayerExpectation, lightIndicatorExpectation], timeout: 0.1)
         }
     }
     
