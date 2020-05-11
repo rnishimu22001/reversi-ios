@@ -21,7 +21,7 @@ final class ReversiViewModelTests: XCTestCase {
     func testUpdateMessage() {
         XCTContext.runActivity(named: "ゲーム中") { _ in
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             mockSpecifications.isEndOfGame = false
             let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
@@ -37,7 +37,7 @@ final class ReversiViewModelTests: XCTestCase {
         }
         XCTContext.runActivity(named: "ゲーム終了") { _ in
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             mockSpecifications.isEndOfGame = true
             let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
@@ -72,7 +72,7 @@ final class ReversiViewModelTests: XCTestCase {
         try! board.set(disk: .dark, at: Coordinates(x: 2, y: 4))
         try! board.set(disk: .light, at: Coordinates(x: 1, y: 4))
         let mockSpecifications = MockReversiSpecifications()
-        var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer),
+        let  target = ReversiViewModelImplementation(game: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer),
                                                     specifications: mockSpecifications)
         let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
         darkPlayerExpectation.expectedFulfillmentCount = 2
@@ -103,7 +103,7 @@ final class ReversiViewModelTests: XCTestCase {
             try! board.set(disk: .dark, at: .init(x: 5, y: 0))
             try! board.set(disk: .light, at: .init(x: 5, y: 1))
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             let willSetCoordinates = Coordinates(x: 0, y: 0)
             mockSpecifications.placing = [willSetCoordinates] + [.init(x: 1, y: 1), .init(x: 2, y: 2), .init(x: 3, y: 3), .init(x: 1, y: 5)]
@@ -133,7 +133,7 @@ final class ReversiViewModelTests: XCTestCase {
         XCTContext.runActivity(named: "diskが配置できない場合") { _ in
             // Given
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             let willSetCoordinates = Coordinates(x: 0, y: 0)
             // Then
@@ -159,7 +159,7 @@ final class ReversiViewModelTests: XCTestCase {
     func testNextTurn() {
         XCTContext.runActivity(named: "ゲームが続く場合") { _ in
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             mockSpecifications.isEndOfGame = false
             let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
@@ -188,7 +188,7 @@ final class ReversiViewModelTests: XCTestCase {
         
         XCTContext.runActivity(named: "ゲームが終了する場合") { _ in
             let mockSpecifications = MockReversiSpecifications()
-            var target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
             mockSpecifications.isEndOfGame = true
             let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
@@ -219,7 +219,7 @@ final class ReversiViewModelTests: XCTestCase {
     
     func testChangePlayer() {
         XCTContext.runActivity(named: "darkの切り替え") { _ in
-            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
             let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
             darkPlayerExpectation.expectedFulfillmentCount = 2
             var darkCount = 1
@@ -247,7 +247,7 @@ final class ReversiViewModelTests: XCTestCase {
             wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "lightの切り替え") { _ in
-            var target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
             let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる")
             let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
             lightPlayerExpectation.expectedFulfillmentCount = 2
@@ -279,7 +279,7 @@ final class ReversiViewModelTests: XCTestCase {
     func testRestore() {
         // Given
         let mockSpecifications = MockReversiSpecifications()
-        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: ReversiSpecificationsImplementation().initalState(from: Board()), darkPlayer: .manual, lightPlayer: .computer),
+        let target = ReversiViewModelImplementation(game: Game(turn: .light, board: ReversiSpecificationsImplementation().initalState(from: Board()), darkPlayer: .manual, lightPlayer: .computer),
                                                     specifications: mockSpecifications)
         mockSpecifications.isEndOfGame = false
         let dummyCoordinatesFirst = Coordinates(x: 1, y: 4)
@@ -364,7 +364,7 @@ final class ReversiViewModelTests: XCTestCase {
         try! board.set(disk: .light, at: .init(x: 6, y: 6))
         try! board.set(disk: .light, at: .init(x: 1, y: 5))
         let mockSpecifications = MockReversiSpecifications()
-        var target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
+        let target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
                                                     specifications: mockSpecifications)
         mockSpecifications.isEndOfGame = false
         
@@ -438,7 +438,7 @@ final class ReversiViewModelTests: XCTestCase {
     func testGame() {
         
         let game = Game(turn: .light, board: Board(), darkPlayer: .computer, lightPlayer: .manual)
-        var target = ReversiViewModelImplementation()
+        let target = ReversiViewModelImplementation()
         target.restore(from: game)
         XCTAssertEqual(game.darkPlayer, target.game.darkPlayer)
         XCTAssertEqual(game.lightPlayer, target.game.lightPlayer)
