@@ -96,7 +96,7 @@ final class ReversiViewModelTests: XCTestCase {
         wait(for: [darkPlayerExpectation, lightPlayerExpectation], timeout: 0.1)
     }
     
-    func testSetDisk() {
+    func testPlaceDisk() {
         XCTContext.runActivity(named: "座標にdiskが配置できる場合") { _ in
             // Given
             var board = Board()
@@ -157,7 +157,7 @@ final class ReversiViewModelTests: XCTestCase {
     }
     
     func testNextTurn() {
-        XCTContext.runActivity(named: "ゲームが続く場合") { _ in
+        XCTContext.runActivity(named: "ゲームが続く場合 - 次の手番がmanual") { _ in
             let mockSpecifications = MockReversiSpecifications()
             let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
                                                         specifications: mockSpecifications)
@@ -185,7 +185,35 @@ final class ReversiViewModelTests: XCTestCase {
             XCTAssertEqual(target.turn, .dark, "手番が交代したのでdarkに移る")
             wait(for: [messageExpectation], timeout: 0.1)
         }
-        
+        XCTContext.runActivity(named: "ゲームが続く場合 - 次の手番がcomputer") { _ in
+            let mockSpecifications = MockReversiSpecifications()
+            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            mockSpecifications.isEndOfGame = false
+            let lightIndicatorExpectation = expectation(description: "light側のindicatorがスタートされる,購読時とスタート時で2回呼ばれる")
+            lightIndicatorExpectation.expectedFulfillmentCount = 2
+            var lightIndicatorCount = 1
+            cancellables.append(target.lightPlayerIndicatorAnimating.sink { shouldStartAnimating in
+                lightIndicatorExpectation.fulfill()
+                switch lightIndicatorCount {
+                case 1:
+                    XCTAssertFalse(shouldStartAnimating)
+                case 2:
+                    XCTAssertTrue(shouldStartAnimating)
+                default:
+                    XCTFail("3回以上呼ばれない")
+                }
+                lightIndicatorCount += 1
+            })
+            let darkIndicatorExpectation = expectation(description: "dark側のindicatorがスタートされる,購読時とスタート時で2回呼ばれる")
+            cancellables.append(target.darkPlayerIndicatorAnimating.sink { shouldStartAnimating in
+                darkIndicatorExpectation.fulfill()
+                XCTAssertFalse(shouldStartAnimating)
+            })
+            target.nextTurn()
+            XCTAssertEqual(target.turn, .light, "手番が交代したのでdarkに移る")
+            wait(for: [darkIndicatorExpectation, lightIndicatorExpectation], timeout: 0.1)
+        }
         XCTContext.runActivity(named: "ゲームが終了する場合") { _ in
             let mockSpecifications = MockReversiSpecifications()
             let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
