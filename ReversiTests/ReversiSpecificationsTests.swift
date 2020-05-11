@@ -47,6 +47,21 @@ final class ReversiSpecificationsTests: XCTestCase {
         }
     }
     
+    func testShouldSkip() {
+        XCTContext.runActivity(named: "片方だけDiskが置ける場合") { _ in
+            var board = Board()
+            let target = ReversiSpecificationsImplementation()
+            do {
+                try board.set(disk: .dark, at: .init(x: 0, y: 0))
+                try board.set(disk: .light, at: .init(x: 1, y: 1))
+            } catch {
+                fatalError()
+            }
+            XCTAssertTrue(target.shouldSkip(turn: .light, on: board), "lightは置ける場所が無いのでskip")
+            XCTAssertFalse(target.shouldSkip(turn: .dark, on: board), "darkは置ける場所がある")
+        }
+    }
+    
     func testInitalState() {
         let willDelete = Coordinates(x: 0, y: 0)
         var board = Board(width: 8, height: 8)

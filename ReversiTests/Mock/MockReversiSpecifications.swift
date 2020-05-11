@@ -9,6 +9,12 @@
 @testable import Reversi
 
 final class MockReversiSpecifications: ReversiSpecifications {
+    
+    var shouldSkip = false
+    func shouldSkip(turn: Disk, on board: Board) -> Bool {
+        shouldSkip
+    }
+    
     var placing: [Coordinates] = []
     func placingDiskCoordinates(byPlacing disk: Disk, on board: Board, at coordinates: Coordinates) -> [Coordinates] {
         placing
