@@ -580,8 +580,8 @@ final class ReversiViewModelTests: XCTestCase {
         // When
         target.reset()
         // Then
-        XCTAssertEqual(manager.invokedCancelPlayingCount, 1, "playerの動作がキャンセルされること")
-        XCTAssertEqual(manager.invokedPlayTurnOfComputerCount, 0, "呼び出されないこと")
+        XCTAssertEqual(manager.invokedCanceleAllPlayingCount, 2, "playerの動作がキャンセルされること、initとresetで二回呼ばれる")
+        XCTAssertEqual(manager.invokedPlayTurnOfComputerCount, 1, "initの初回の一回だけ呼ばれる")
         XCTAssertEqual(target.board.disks.count, 4, " 初期数に戻っていること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, " 初期数に戻っていること")
         XCTAssertEqual(target.turn, .dark)
