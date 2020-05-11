@@ -24,8 +24,10 @@ protocol ReversiViewModel {
     var boardStatus: PassthroughSubject<BoardUpdate, Never> { get }
     var showSkipAlert: PassthroughSubject<Void, Never> { get }
    
-    /// 次のターンに移る
+    /// 勝敗判定をしたあと次のターンに移る
     mutating func nextTurn()
+    /// 強制的に次のターンに移る
+    mutating func skipTurn()
     /// manualとcomputerを切り返る
     mutating func changePlayer(on side: Disk)
     /// `x`, `y` で指定された座標のdiskデータをもとに盤面を更新します。
@@ -87,26 +89,27 @@ final class ReversiViewModelImplementation: ReversiViewModel {
     func nextTurn() {
         // turnが設定されていない場合は何もしない
         guard var turn = turn else { return }
-        defer {
-            updateMessage()
-        }
         // ゲームが終わったか確認
         guard !specifications.isEndOfGame(on: board) else {
             self.turn = nil
+            updateMessage()
             return
         }
         guard !specifications.shouldSkip(turn: turn, on: board) else {
+            // skip時はアラート表示のみ
             showSkipAlert.send()
             return
         }
         turn.flip()
         self.turn = turn
         waitForComputerIfNeeded()
+        updateMessage()
     }
     
     func skipTurn() {
         turn?.flip()
         waitForComputerIfNeeded()
+        updateMessage()
     }
     
     func changePlayer(on side: Disk) {

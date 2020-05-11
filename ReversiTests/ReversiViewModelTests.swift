@@ -205,7 +205,7 @@ final class ReversiViewModelTests: XCTestCase {
                 }
                 lightIndicatorCount += 1
             })
-            let darkIndicatorExpectation = expectation(description: "dark側のindicatorがスタートされる,購読時とスタート時で2回呼ばれる")
+            let darkIndicatorExpectation = expectation(description: "dark側のindicatorが購読時に呼ばれる")
             cancellables.append(target.darkPlayerIndicatorAnimating.sink { shouldStartAnimating in
                 darkIndicatorExpectation.fulfill()
                 XCTAssertFalse(shouldStartAnimating)
@@ -213,6 +213,34 @@ final class ReversiViewModelTests: XCTestCase {
             target.nextTurn()
             XCTAssertEqual(target.turn, .light, "手番が交代したのでdarkに移る")
             wait(for: [darkIndicatorExpectation, lightIndicatorExpectation], timeout: 0.1)
+        }
+        XCTContext.runActivity(named: "ゲームが続く場合 - 次の手番がskipされる場合") { _ in
+            let mockSpecifications = MockReversiSpecifications()
+            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: mockSpecifications)
+            mockSpecifications.isEndOfGame = false
+            mockSpecifications.shouldSkip = true
+            let skipAlertExpectation = expectation(description: "skip alertのイベントが呼ばれる")
+            cancellables.append(target.showSkipAlert.sink(receiveValue: {
+                skipAlertExpectation.fulfill()
+            }))
+            let lightIndicatorExpecation = expectation(description: "lightのindicatorが購読時のみ呼ばれる")
+            cancellables.append(target.lightPlayerIndicatorAnimating.sink { shouldStartAnimating in
+                XCTAssertFalse(shouldStartAnimating, "lgithはcomputerだが手番では無いのでstartされない")
+                lightIndicatorExpecation.fulfill()
+            })
+            let darkIndicatorExpectation = expectation(description: "dark側のindicatorが購読時に呼ばれる")
+            cancellables.append(target.darkPlayerIndicatorAnimating.sink { shouldstartanimating in
+                XCTAssertFalse(shouldstartanimating, "darkはcomputerではない")
+                darkIndicatorExpectation.fulfill()
+            })
+            let messageExpectation = expectation(description: "messageの更新が購読時に呼ばれる")
+            cancellables.append(target.message.sink { _ in
+                messageExpectation.fulfill()
+            })
+            target.nextTurn()
+            XCTAssertEqual(target.turn, .dark, "手番が交代しない")
+            wait(for: [messageExpectation, darkIndicatorExpectation, lightIndicatorExpecation, skipAlertExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "ゲームが終了する場合") { _ in
             let mockSpecifications = MockReversiSpecifications()

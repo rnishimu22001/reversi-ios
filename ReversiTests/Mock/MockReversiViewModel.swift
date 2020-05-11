@@ -16,6 +16,13 @@ struct SetDiskArgForViewModel: SetDiskArg {
 }
 
 final class MockReversiViewModel: ReversiViewModel {
+    var showSkipAlert: PassthroughSubject<Void, Never> = .init()
+   
+    var invokedSkipTurnCount = 0
+    func skipTurn() {
+        invokedSkipTurnCount += 1
+    }
+    
     var darkPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
     
     var lightPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
