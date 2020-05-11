@@ -42,7 +42,7 @@ struct ReversiSpecificationsImplementation: ReversiSpecifications {
     
     func isEndOfGame(on board: Board) -> Bool {
         Disk.allCases.reduce(true) { (previous, disk) in
-            previous && self.validMoves(for: disk, on: board).isEmpty
+            previous && shouldSkip(turn: disk, on: board)
         }
     }
     
