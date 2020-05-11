@@ -35,7 +35,6 @@ final class ViewController: UIViewController {
     var gameRepository: GameRepository = GameRepositoryImplementation()
     var specifications: ReversiSpecifications = ReversiSpecificationsImplementation()
     var viewModel: ReversiViewModel = ReversiViewModelImplementation()
-    lazy var manager: GameManager = GameManagerImplementation(specifications: specifications)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,6 +44,8 @@ final class ViewController: UIViewController {
         sinkPlayerStatus()
         sinkMessage()
         sinkBoard()
+        sinkSkipAlert()
+        sinkIndicators()
         do {
             try loadGame()
         } catch _ {
@@ -104,13 +105,47 @@ final class ViewController: UIViewController {
         }.store(in: &cancellables)
     }
     
+    func sinkSkipAlert() {
+        viewModel
+            .showSkipAlert
+            .sink { [weak self] data in
+                DispatchQueue.main.async {
+                    self?.showSkipAlert()
+                }
+        }.store(in: &cancellables)
+    }
+    
+    func sinkIndicators() {
+        viewModel
+            .darkPlayerIndicatorAnimating
+            .sink { [weak self] shouldAnimate in
+                DispatchQueue.main.async {
+                    if shouldAnimate {
+                        self?.playerActivityIndicators[Disk.dark.index].startAnimating()
+                    } else {
+                        self?.playerActivityIndicators[Disk.dark.index].stopAnimating()
+                    }
+                }
+        }.store(in: &cancellables)
+        viewModel
+            .lightPlayerIndicatorAnimating
+            .sink { [weak self] shouldAnimate in
+                DispatchQueue.main.async {
+                    if shouldAnimate {
+                        self?.playerActivityIndicators[Disk.light.index].startAnimating()
+                    } else {
+                        self?.playerActivityIndicators[Disk.light.index].stopAnimating()
+                    }
+                }
+        }.store(in: &cancellables)
+    }
+    
     private var viewHasAppeared: Bool = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if viewHasAppeared { return }
         viewHasAppeared = true
-        waitForPlayerIfNeeded()
     }
     
     var board: Board { viewModel.board }
@@ -163,10 +198,11 @@ extension ViewController {
             return
         }
         // アニメーション中にリセットされるとクラッシュする
-        let animationCanceller = self.animationCanceller!
+        let animationCanceller = self.animationCanceller
         boardView.setDisk(disk, atX: x, y: y, animated: true) { [weak self] isFinished in
-            guard let self = self else { return }
-            if animationCanceller.isCancelled { return }
+            guard let self = self,
+               let canceller = animationCanceller else { return }
+            if canceller.isCancelled { return }
             if isFinished {
                 self.animateSettingDisks(at: coordinates.dropFirst(), to: disk, completion: completion)
             } else {
@@ -185,21 +221,9 @@ extension ViewController {
 extension ViewController {
     /// ゲームの状態を初期化し、新しいゲームを開始します。
     func newGame() {
-        manager.canceleAllPlaying()
         viewModel.reset()
         boardView.reset()
         try? saveGame()
-    }
-    
-    /// プレイヤーの行動を待ちます。
-    func waitForPlayerIfNeeded() {
-        guard let turn = self.turn else { return }
-        switch Player(rawValue: playerControls[turn.index].selectedSegmentIndex)! {
-        case .manual:
-            break
-        case .computer:
-            playTurnOfComputer()
-        }
     }
     
     /// プレイヤーの行動後、そのプレイヤーのターンを終了して次のターンを開始します。
@@ -207,14 +231,9 @@ extension ViewController {
     /// 両プレイヤーに有効な手がない場合、ゲームの勝敗を表示します。
     func nextTurn() {
         viewModel.nextTurn()
-        guard let turn = self.turn else { return }
-        // diskを置ける場所が無いことを確認
-        guard validMoves(for: turn).isEmpty else {
-            // 置ける場合はプレイヤーの行動を待つ
-            waitForPlayerIfNeeded()
-            return
-        }
-        
+    }
+    
+    func showSkipAlert() {
         // おける場所がなければAlert表示
         let alertController = UIAlertController(
             title: "Pass",
@@ -223,33 +242,9 @@ extension ViewController {
         )
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .default) { [weak self] _ in
             // 確認後スキップ
-            self?.nextTurn()
+            self?.viewModel.skipTurn()
         })
         navigator.present(alertController, animated: true, completion: nil)
-    }
-    
-    /// "Computer" が選択されている場合のプレイヤーの行動を決定します。
-    func playTurnOfComputer() {
-        guard let turn = self.turn else { preconditionFailure() }
-
-        playerActivityIndicators[turn.index].startAnimating()
-        
-        let cleanUp: () -> Void = { [weak self] in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                self.playerActivityIndicators[turn.index].stopAnimating()
-            }
-            self.playerCancellers[turn] = nil
-        }
-        let canceller = CancellerImplementation(cleanUp)
-        manager.playTurnOfComputer(side: turn, on: board) { [weak self] coordinates in
-            guard let coordinates = coordinates,
-                let self = self else { return }
-            if canceller.isCancelled { return }
-            cleanUp()
-            try? self.placeDisk(turn, atX: coordinates.x, y: coordinates.y)
-        }
-        playerCancellers[turn] = canceller
     }
 }
 
@@ -289,13 +284,7 @@ extension ViewController {
             self.animationCanceller?.cancel()
             self.animationCanceller = nil
             
-            for side in Disk.allCases {
-                self.playerCancellers[side]?.cancel()
-                self.playerCancellers.removeValue(forKey: side)
-            }
-            
             self.newGame()
-            self.waitForPlayerIfNeeded()
         })
         
         navigator.present(alertController, animated: true, completion: nil)
@@ -306,14 +295,6 @@ extension ViewController {
         let side: Disk = Disk(index: playerControls.firstIndex(of: sender)!)
         viewModel.changePlayer(on: side)
         try? saveGame()
-        manager.cancelPlaying(on: side)
-        if let canceller = playerCancellers[side] {
-            canceller.cancel()
-        }
-        
-        if !isAnimating, side == turn, case .computer = Player(rawValue: sender.selectedSegmentIndex)! {
-            playTurnOfComputer()
-        }
     }
 }
 

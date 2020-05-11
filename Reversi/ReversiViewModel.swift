@@ -95,13 +95,13 @@ final class ReversiViewModelImplementation: ReversiViewModel {
             updateMessage()
             return
         }
+        turn.flip()
+        self.turn = turn
         guard !specifications.shouldSkip(turn: turn, on: board) else {
             // skip時はアラート表示のみ
             showSkipAlert.send()
             return
         }
-        turn.flip()
-        self.turn = turn
         waitForComputerIfNeeded()
         updateMessage()
     }
@@ -165,7 +165,7 @@ final class ReversiViewModelImplementation: ReversiViewModel {
         updateMessage()
         // ゲームが終了している場合
         guard !specifications.isEndOfGame(on: board) else { return }
-        // すでにスキップの場合
+        // すでにスキップされるべき状態の場合
         guard let turn = turn,
             !specifications.shouldSkip(turn: turn, on: board) else {
                 showSkipAlert.send()

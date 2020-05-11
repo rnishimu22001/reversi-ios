@@ -239,7 +239,7 @@ final class ReversiViewModelTests: XCTestCase {
                 messageExpectation.fulfill()
             })
             target.nextTurn()
-            XCTAssertEqual(target.turn, .dark, "手番が交代しない")
+            XCTAssertEqual(target.turn, .light, "手番が交代する")
             wait(for: [messageExpectation, darkIndicatorExpectation, lightIndicatorExpecation, skipAlertExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "ゲームが終了する場合") { _ in
