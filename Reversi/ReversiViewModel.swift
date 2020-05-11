@@ -22,6 +22,7 @@ protocol ReversiViewModel {
     var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> { get }
     var lightPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> { get }
     var boardStatus: PassthroughSubject<BoardUpdate, Never> { get }
+    var showSkipAlert: PassthroughSubject<Void, Never> { get }
    
     /// 次のターンに移る
     mutating func nextTurn()
@@ -56,6 +57,7 @@ final class ReversiViewModelImplementation: ReversiViewModel {
     private(set) var lightPlayerStatus: CurrentValueSubject<PlayerStatusDisplayData, Never> = .init(PlayerStatusDisplayData(playerType: .manual, diskCount: 0))
     var darkPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
     var lightPlayerIndicatorAnimating: CurrentValueSubject<Bool, Never> = .init(false)
+    var showSkipAlert: PassthroughSubject<Void, Never> = .init()
     
     private(set) var boardStatus: PassthroughSubject<BoardUpdate, Never> = .init()
     
@@ -84,15 +86,25 @@ final class ReversiViewModelImplementation: ReversiViewModel {
     
     func nextTurn() {
         // turnが設定されていない場合は何もしない
-        guard turn != nil else { return }
+        guard var turn = turn else { return }
         defer {
             updateMessage()
         }
         // ゲームが終わったか確認
         guard !specifications.isEndOfGame(on: board) else {
-            turn = nil
+            self.turn = nil
             return
         }
+        guard !specifications.shouldSkip(turn: turn, on: board) else {
+            showSkipAlert.send()
+            return
+        }
+        turn.flip()
+        self.turn = turn
+        waitForComputerIfNeeded()
+    }
+    
+    func skipTurn() {
         turn?.flip()
         waitForComputerIfNeeded()
     }
