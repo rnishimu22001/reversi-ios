@@ -132,7 +132,9 @@ final class ReversiViewModelImplementation: ReversiViewModel {
         board = game.board
         turn = game.turn
         darkPlayerStatus.value = PlayerStatusDisplayData(playerType: game.darkPlayer, diskCount: board.countDisks(of: .dark))
+        darkPlayerIndicatorAnimating.value = false
         lightPlayerStatus.value = PlayerStatusDisplayData(playerType: game.lightPlayer, diskCount: board.countDisks(of: .light))
+        lightPlayerIndicatorAnimating.value = false
         restoreBoardWithoutAnimation()
         updateMessage()
         waitForComputerIfNeeded()

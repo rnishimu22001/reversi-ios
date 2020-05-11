@@ -376,6 +376,21 @@ final class ReversiViewModelTests: XCTestCase {
             XCTAssertEqual($0.diskCount, 2)
             XCTAssertEqual($0.playerType, .manual)
         })
+        let darkIndicatorExpectation = expectation(description: "darkのindicatorのイベントが呼ばれること")
+        darkIndicatorExpectation.expectedFulfillmentCount = 2
+        var darkIndicatorCount = 1
+        cancellables.append(target.lightPlayerIndicatorAnimating.sink { animated in
+            darkIndicatorExpectation.fulfill()
+            switch darkIndicatorCount {
+            case 1:
+                XCTAssertTrue(animated)
+            case 2:
+                XCTAssertFalse(animated)
+            default:
+                XCTFail("3回以上は呼ばれない想定です")
+            }
+            darkIndicatorCount += 1
+        })
         let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
         lightPlayerExpectation.expectedFulfillmentCount = 2
         var lightCount = 1
@@ -392,6 +407,21 @@ final class ReversiViewModelTests: XCTestCase {
                 XCTFail("3回以上は呼ばれない想定です")
             }
             lightCount += 1
+        })
+        let lightIndicatorExpectation = expectation(description: "lightのindicatorがstopされること")
+        lightIndicatorExpectation.expectedFulfillmentCount = 2
+        var lightIndicatorCount = 1
+        cancellables.append(target.lightPlayerIndicatorAnimating.sink { animated in
+            lightIndicatorExpectation.fulfill()
+            switch lightIndicatorCount {
+            case 1:
+                XCTAssertTrue(animated)
+            case 2:
+                XCTAssertFalse(animated)
+            default:
+                XCTFail("3回以上は呼ばれない想定です")
+            }
+            lightIndicatorCount += 1
         })
         let messageExpectation = expectation(description: "messageの情報が更新されること, 購読とメソッド実行で2回呼ばれる")
         messageExpectation.expectedFulfillmentCount = 2
@@ -432,7 +462,7 @@ final class ReversiViewModelTests: XCTestCase {
         XCTAssertEqual(target.board.disks.count, 4, " 初期数に戻っていること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, " 初期数に戻っていること")
         XCTAssertFalse(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "以前のボード情報が削除されていること")
-        wait(for: [boardExpectation, darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 0.1)
+        wait(for: [darkIndicatorExpectation, lightIndicatorExpectation, boardExpectation, darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 3.0)
     }
     
     func testGame() {
