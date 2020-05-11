@@ -420,7 +420,7 @@ final class ReversiViewModelTests: XCTestCase {
                 XCTAssertEqual($0.displayedDisk, status.displayedDisk)
                 XCTAssertEqual($0.message, status.message)
             case 2:
-                let status = MessageDisplayData(status: .playing(turn: .dark))
+                let status = MessageDisplayData(status: .playing(turn: .light))
                 XCTAssertEqual($0.displayedDisk, status.displayedDisk)
                 XCTAssertEqual($0.message, status.message)
             default:
@@ -584,6 +584,7 @@ final class ReversiViewModelTests: XCTestCase {
         XCTAssertEqual(manager.invokedPlayTurnOfComputerCount, 0, "呼び出されないこと")
         XCTAssertEqual(target.board.disks.count, 4, " 初期数に戻っていること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, " 初期数に戻っていること")
+        XCTAssertEqual(target.turn, .dark)
         XCTAssertFalse(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "以前のボード情報が削除されていること")
         wait(for: [darkIndicatorExpectation, lightIndicatorExpectation, boardExpectation, darkPlayerExpectation, lightPlayerExpectation, messageExpectation], timeout: 3.0)
     }
