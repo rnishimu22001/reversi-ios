@@ -47,7 +47,7 @@ protocol ReversiViewModel {
     mutating func updateMessage()
 }
 
-struct ReversiViewModelImplementation: ReversiViewModel {
+final class ReversiViewModelImplementation: ReversiViewModel {
     
     private(set) var specifications: ReversiSpecifications
    
@@ -62,12 +62,15 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     // MARK: ゲームの状態
     private(set) var board: Board
     private(set) var turn: Disk?
+    private let manager: GameManager
     var game: Game {
         Game(turn: turn, board: board, darkPlayer: darkPlayerStatus.value.playerType, lightPlayer: lightPlayerStatus.value.playerType)
     }
     
     init(game: Game? = nil,
+         manager: GameManager = GameManagerImplementation(),
          specifications: ReversiSpecifications = ReversiSpecificationsImplementation()) {
+        self.manager = manager
         self.board = Board()
         self.specifications = specifications
         if let game = game {
@@ -79,21 +82,22 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         updateMessage()
     }
     
-    mutating func nextTurn() {
+    func nextTurn() {
         // turnが設定されていない場合は何もしない
         guard turn != nil else { return }
         defer {
             updateMessage()
         }
         // ゲームが終わったか確認
-        guard specifications.isEndOfGame(on: board) else {
-            turn?.flip()
+        guard !specifications.isEndOfGame(on: board) else {
+            turn = nil
             return
         }
-        turn = nil
+        turn?.flip()
+        waitForComputerIfNeeded()
     }
     
-    mutating func changePlayer(on side: Disk) {
+    func changePlayer(on side: Disk) {
         switch side {
         case .dark:
             darkPlayerStatus.value = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType.changed,
@@ -102,9 +106,10 @@ struct ReversiViewModelImplementation: ReversiViewModel {
             lightPlayerStatus.value = PlayerStatusDisplayData(playerType: lightPlayerStatus.value.playerType.changed,
                                                               diskCount: lightPlayerStatus.value.diskCount)
         }
+        waitForComputerIfNeeded()
     }
     
-    mutating func place(disk: Disk, at coordinates: Coordinates) throws {
+    func place(disk: Disk, at coordinates: Coordinates) throws {
        
         guard specifications.canPlaceDisk(disk, on: board, at: coordinates) else {
             throw DiskPlacementError(disk: disk, x: coordinates.x, y: coordinates.y)
@@ -123,20 +128,21 @@ struct ReversiViewModelImplementation: ReversiViewModel {
         )
     }
     
-    mutating func restore(from game: Game) {
+    func restore(from game: Game) {
         board = game.board
         turn = game.turn
         darkPlayerStatus.value = PlayerStatusDisplayData(playerType: game.darkPlayer, diskCount: board.countDisks(of: .dark))
         lightPlayerStatus.value = PlayerStatusDisplayData(playerType: game.lightPlayer, diskCount: board.countDisks(of: .light))
         restoreBoardWithoutAnimation()
         updateMessage()
+        waitForComputerIfNeeded()
     }
     
-    mutating func reset() {
+    func reset() {
         restore(from: Game(turn: .dark, board: specifications.initalState(from: Board()), darkPlayer: .manual, lightPlayer: .manual))
     }
     
-    mutating func restoreBoardWithoutAnimation() {
+    func restoreBoardWithoutAnimation() {
         boardStatus
             .send(
                 .withoutAnimation(disks:
@@ -147,7 +153,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     }
    
     /// 各プレイヤーの獲得したディスクの枚数を更新します。
-    mutating func updateDiskCount() {
+    func updateDiskCount() {
         let dark = PlayerStatusDisplayData(playerType: darkPlayerStatus.value.playerType,
                                            diskCount: board.countDisks(of: .dark))
         if dark != darkPlayerStatus.value {
@@ -161,7 +167,7 @@ struct ReversiViewModelImplementation: ReversiViewModel {
     }
    
     /// 現在のターン、勝敗の決着などに関する情報を更新します。
-    mutating func updateMessage() {
+    func updateMessage() {
         if specifications.isEndOfGame(on: board) {
             message.value = MessageDisplayData(status: .ending(winner: board.sideWithMoreDisks()))
         } else {
@@ -169,6 +175,37 @@ struct ReversiViewModelImplementation: ReversiViewModel {
                 fatalError("ゲーム中の手番が設定されていません")
             }
             message.value = MessageDisplayData(status: .playing(turn: turn))
+        }
+    }
+    
+    func waitForComputerIfNeeded() {
+        switch turn {
+        case .dark where game.darkPlayer == .computer:
+            waitForComputer(on: .dark)
+        case .light where game.lightPlayer == .computer:
+            waitForComputer(on: .light)
+        default:
+            break
+        }
+    }
+    
+    func waitForComputer(on side: Disk) {
+        switch side {
+        case .dark:
+            self.darkPlayerIndicatorAnimating.value = true
+        case .light:
+            self.lightPlayerIndicatorAnimating.value = true
+        }
+        manager.playTurnOfComputer(side: side, on: board) { [weak self] coordinates in
+            guard let self = self,
+               let coordinates = coordinates else { return }
+            switch side {
+            case .dark:
+                self.darkPlayerIndicatorAnimating.value = false
+            case .light:
+                self.lightPlayerIndicatorAnimating.value = false
+            }
+            try? self.place(disk: side, at: coordinates)
         }
     }
 }

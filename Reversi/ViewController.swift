@@ -185,6 +185,7 @@ extension ViewController {
 extension ViewController {
     /// ゲームの状態を初期化し、新しいゲームを開始します。
     func newGame() {
+        manager.canceleAllPlaying()
         viewModel.reset()
         boardView.reset()
         try? saveGame()
@@ -292,7 +293,6 @@ extension ViewController {
                 self.playerCancellers[side]?.cancel()
                 self.playerCancellers.removeValue(forKey: side)
             }
-            self.manager.canceleAllPlaying()
             
             self.newGame()
             self.waitForPlayerIfNeeded()

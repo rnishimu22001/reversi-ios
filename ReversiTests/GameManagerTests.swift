@@ -50,8 +50,4 @@ final class GameManagerTests: XCTestCase {
             XCTAssertEqual(lightCanceller.invokedInvalidateCount, 0, "関係ないので呼ばれない")
         }
     }
-    
-    func isCanceled() {
-        
-    }
 }
