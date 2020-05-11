@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A13A6FF24695DAE00163CE7 /* SpyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A13A6FE24695DAE00163CE7 /* SpyManager.swift */; };
 		5A1C9EC72463DA620044B0AD /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1C9EC62463DA620044B0AD /* Navigator.swift */; };
 		5A1C9EC92463DCF40044B0AD /* SpyNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1C9EC82463DCF40044B0AD /* SpyNavigator.swift */; };
 		5A3AD524245D70BC00C7815B /* DiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AD523245D70BC00C7815B /* DiskTests.swift */; };
@@ -64,6 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5A13A6FE24695DAE00163CE7 /* SpyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpyManager.swift; sourceTree = "<group>"; };
 		5A1C9EC62463DA620044B0AD /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
 		5A1C9EC82463DCF40044B0AD /* SpyNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpyNavigator.swift; sourceTree = "<group>"; };
 		5A3AD523245D70BC00C7815B /* DiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTests.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				5A4008402463CDFB0088C8EC /* MockUIIndicatorView.swift */,
 				5A1C9EC82463DCF40044B0AD /* SpyNavigator.swift */,
 				5A73FC0D2468E89300B71F41 /* SpyCanceller.swift */,
+				5A13A6FE24695DAE00163CE7 /* SpyManager.swift */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -432,6 +435,7 @@
 				5A510685245E6E1D004673A0 /* MockReversiSpecifications.swift in Sources */,
 				5A5A52A32468CD11009794F2 /* GameManagerTests.swift in Sources */,
 				5A62FAA32455751A0097D64D /* GameRepositoryTests.swift in Sources */,
+				5A13A6FF24695DAE00163CE7 /* SpyManager.swift in Sources */,
 				5A1C9EC92463DCF40044B0AD /* SpyNavigator.swift in Sources */,
 				5A4008412463CDFB0088C8EC /* MockUIIndicatorView.swift in Sources */,
 				5AD702BD24600BD700F17A4C /* ReversiViewModelTests.swift in Sources */,

@@ -371,9 +371,12 @@ final class ReversiViewModelTests: XCTestCase {
     func testRestore() {
         // Given
         let mockSpecifications = MockReversiSpecifications()
+        let manager = SpyManager()
         let target = ReversiViewModelImplementation(game: Game(turn: .light, board: ReversiSpecificationsImplementation().initalState(from: Board()), darkPlayer: .manual, lightPlayer: .computer),
+                                                    manager: manager,
                                                     specifications: mockSpecifications)
         mockSpecifications.isEndOfGame = false
+        mockSpecifications.shouldSkip = false
         let dummyCoordinatesFirst = Coordinates(x: 1, y: 4)
         let dummyCoordinatesLast = Coordinates(x: 2, y: 4)
         var board = Board()
@@ -436,14 +439,38 @@ final class ReversiViewModelTests: XCTestCase {
                 XCTAssertEqual(board.disks.map { $0.key }, disks.map { $0.coordinates })
             }
         })
+        let lightIndicatorExpectation = expectation(description: "lightのindicatorイベントが発行されること")
+        lightIndicatorExpectation.expectedFulfillmentCount = 4
+        var lightIndicatorCount = 1
+        cancellables.append(target.lightPlayerIndicatorAnimating.sink { animated in
+            lightIndicatorExpectation.fulfill()
+            switch lightIndicatorCount {
+            case 1:
+                XCTAssertTrue(animated, "lightのターンでcomputerとして動作")
+            case 2:
+                XCTAssertFalse(animated, "restoreでアニメーションが止まる")
+            case 3:
+                XCTAssertTrue(animated, "lightのターンで再度computerとして動作")
+            case 4:
+                XCTAssertFalse(animated, "computerの思考時間が終了して止まる")
+            default:
+                XCTFail("5回以上は呼ばれない想定です")
+            }
+            lightIndicatorCount += 1
+        })
         // When
-        target.restore(from: Game(turn: .dark, board: board, darkPlayer: .manual, lightPlayer: .computer))
+        target.restore(from: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer))
             
         // Then
+        XCTAssertEqual(manager.invokedCanceleAllPlayingCount, 2, "playerの動作がキャンセルされること、initとrestoreで2回")
+        XCTAssertEqual(manager.invokedPlayTurnOfComputerCount, 2, "computerの動作が呼びされること、initとrestoreで2回")
+        XCTAssertEqual(manager.invokedPlayTurnOfComputerParametersList.first!.side, .light, "computerの動作が呼びされること")
+        XCTAssertEqual(manager.invokedPlayTurnOfComputerParametersList.last!.side, .light, "computerの動作が呼びされること")
         XCTAssertEqual(target.board.disks.count, 5, "ボード情報が上書きされること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, "ボード情報が上書きされること")
         XCTAssertTrue(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "ボードの情報が上書きされていること")
-        wait(for: [darkPlayerExpectation, lightPlayerExpectation, messageExpectation, boardExpectation], timeout: 0.5)
+        manager.caputuredPlayTurnOfComputerCompletion?(.init(x: 0, y: 0))
+        wait(for: [darkPlayerExpectation, lightPlayerExpectation, messageExpectation, boardExpectation, lightIndicatorExpectation], timeout: 0.5)
     }
     
     func testReset() {
@@ -455,11 +482,13 @@ final class ReversiViewModelTests: XCTestCase {
         try! board.set(disk: .dark, at: dummyCoordinatesFirst)
         try! board.set(disk: .light, at: .init(x: 6, y: 6))
         try! board.set(disk: .light, at: .init(x: 1, y: 5))
+        let manager = SpyManager()
         let mockSpecifications = MockReversiSpecifications()
         let target = ReversiViewModelImplementation(game: Game(turn: .light, board: board, darkPlayer: .manual, lightPlayer: .computer),
+                                                    manager: manager,
                                                     specifications: mockSpecifications)
         mockSpecifications.isEndOfGame = false
-        
+        mockSpecifications.shouldSkip = false
         // Then
         let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とreset時に呼ばれる。")
         darkPlayerExpectation.expectedFulfillmentCount = 2
@@ -551,6 +580,8 @@ final class ReversiViewModelTests: XCTestCase {
         // When
         target.reset()
         // Then
+        XCTAssertEqual(manager.invokedCancelPlayingCount, 1, "playerの動作がキャンセルされること")
+        XCTAssertEqual(manager.invokedPlayTurnOfComputerCount, 0, "呼び出されないこと")
         XCTAssertEqual(target.board.disks.count, 4, " 初期数に戻っていること")
         XCTAssertEqual(target.board.disks.filter { $0.value == .dark }.count, 2, " 初期数に戻っていること")
         XCTAssertFalse(target.board.disks.contains(where: { $0.key == dummyCoordinatesFirst || $0.key == dummyCoordinatesLast }), "以前のボード情報が削除されていること")
