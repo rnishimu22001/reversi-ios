@@ -275,7 +275,10 @@ final class ReversiViewModelTests: XCTestCase {
     
     func testChangePlayer() {
         XCTContext.runActivity(named: "darkの切り替え") { _ in
-            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let specifications = MockReversiSpecifications()
+            let target = ReversiViewModelImplementation(game: Game(turn: .dark, board: Board(), darkPlayer: .manual, lightPlayer: .computer), specifications: specifications)
+            specifications.isEndOfGame = false
+            specifications.shouldSkip = false
             let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
             darkPlayerExpectation.expectedFulfillmentCount = 2
             var darkCount = 1
@@ -317,7 +320,11 @@ final class ReversiViewModelTests: XCTestCase {
             wait(for: [darkPlayerExpectation, lightPlayerExpectation, darkIndicatorExpectation], timeout: 0.1)
         }
         XCTContext.runActivity(named: "lightの切り替え") { _ in
-            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer))
+            let specifications = MockReversiSpecifications()
+            specifications.isEndOfGame = false
+            specifications.shouldSkip = false
+            let target = ReversiViewModelImplementation(game: Game(turn: .light, board: Board(), darkPlayer: .manual, lightPlayer: .computer),
+                                                        specifications: specifications)
             let darkPlayerExpectation = expectation(description: "darkのplayer情報が更新されること、購読時のみ呼ばれる")
             let lightPlayerExpectation = expectation(description: "lightのplayer情報が更新されること、購読時とアップデート時で2回呼ばれる")
             lightPlayerExpectation.expectedFulfillmentCount = 2
