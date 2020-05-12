@@ -132,6 +132,10 @@ public class BoardView: UIView {
         cellViewAt(x: x, y: y)?.disk
     }
     
+    func setDisk(_ disk: Disk?, at coordinates: Coordinates, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        setDisk(disk, atX: coordinates.x, y: coordinates.y, animated: animated, completion: completion)
+    }
+    
     /// `x`, `y` で指定されたセルの状態を、与えられた `disk` に変更します。
     /// `animated` が `true` の場合、アニメーションが実行されます。
     /// アニメーションの完了通知は `completion` ハンドラーで受け取ることができます。
